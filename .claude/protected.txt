@@ -1,0 +1,13 @@
+# Paths Claude may read but never change.
+# One pattern per line, relative to the project root.
+# A trailing /** protects everything under a folder.
+# Edit this file yourself, outside Claude.
+
+criteria/sealed/**
+criteria/SEALS.txt
+results/raw/**
+src/dialedin/metrics.py
+scripts/seal.sh
+.claude/hooks/**
+.claude/settings.json
+.claude/protected.txt

@@ -15,7 +15,8 @@
 #   4096. a = 0.3 added little SNR and was less linear, so the candidates stop at 0.1. The pilot
 #   never computed or printed a gain. SNR per N loosely tracks gain size, so those four SNR values
 #   are a weak hint of shape; they are disclosed here, and no rule below depends on them.
-#   A second pilot run printed only ratios at N = 2 and 3: PILOT23_RESULT
+#   A second pilot run printed only ratios at N = 2 and 3: (/workspace/env/pilot_sine_n23.json) at a = 0.01, 0.03, 0.1:
+#   N = 2 ratios 1.887, 1.974, 1.983; N = 3 ratios 1.748, 1.908, 1.983.
 # Everything else (window, operator, noise bins, validity, outcomes, run rules) is carried over
 #   from v4 unchanged, with the pulse-specific parts replaced.
 # Every value is a proposal until Keenan seals this file with scripts/seal.sh.
@@ -222,7 +223,7 @@ budget:
   cost: about $7 for the expected 2.9 counted hours and $10 at the 4-hour cap, at about $2.50 per pod hour; pod time between processes is billed by RunPod but not counted, so actual spend is higher
   estimate: Phase A 32 passes (1 undriven, 1 sham, 3 candidates x 5 N x 2 amplitudes); Phase B 15 books x 49 passes (1 undriven, 2 sham, 23 main, 23 control) = 735 passes; 767 passes at about 13.3 s is about 2.83 hours plus about 0.05 for loads
   peak_gpu_memory: about 77 GiB (model 55.5, 32K forward about 6, stored undriven head outputs for 50 layers about 13, plus about 4.5 held briefly by the float32 drive in the hook)
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: measured 2026-10-27 with src/dialedin/smoke_c1v5.py at commit f9037ad, real v5 Session, book 1342; driven passes at N = 2 and 4096, both phases, 13.30 to 13.41 s per pass, undriven and sham 13.20 to 13.23 s, peak 74.3 GiB, opening and closing sham 0 differing values, outputs finite, realized over nominal drive 0.99986 to 1.00000; 767 passes at 13.4 s is about 2.85 hours plus about 0.05 for loads
 
 analysis:
   runner: src/dialedin/run_c1v5.py

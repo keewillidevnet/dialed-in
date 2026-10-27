@@ -16,3 +16,6 @@ src/dialedin/glimmer.py
 src/dialedin/run_c1.py
 src/dialedin/analyze_c1.py
 results/ledger/**
+src/dialedin/wave.py
+src/dialedin/run_c1v5.py
+src/dialedin/analyze_c1v5.py

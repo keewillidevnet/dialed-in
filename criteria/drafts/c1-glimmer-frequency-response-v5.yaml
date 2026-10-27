@@ -1,0 +1,239 @@
+# C1: Glimmer frequency response, v5 (sine drive)
+# DRAFT v5. Forked from the sealed v4 (criteria/sealed/c1-glimmer-frequency-response-v4.yaml,
+# sha256 04b08fb8a2c138ad2334f12b53277c638971c3f9b88b4e061cabb7f54af0a8b1).
+# Why v5 exists: the v4 run (results/raw/c1v4-20261027T064341Z) stopped in Phase A as sealed,
+#   outcome U: no amplitude passed linearity. Its Phase A data showed the reason. With one pulse
+#   every N tokens, the response at N = 128 and 1024 sat on a floor that did not change across a
+#   twentyfold range of amplitude (whole-model SNR about 0.93 to 1.27). A pulse train puts only
+#   1/N of its energy at the target frequency, and BF16 rounding noise does not shrink with the
+#   pulse. v4 is reported as stopped; v5 does not rescue it.
+# What changes: every token is driven by a sine of period N, so the target component builds over
+#   the whole window at every N. An exploratory pilot (src/dialedin/pilot_sine.py, output
+#   /workspace/env/pilot_sine.json) on a token range no C1 run uses (book 2701, a set A book, tokens
+#   98,304 to 131,071; C1 uses only tokens 0 to 32,767 of each book) printed only linearity ratios
+#   and SNR: at a = 0.1 the ratios were 1.980 to 1.986 and SNR 9.4 to 18.7 at N = 16, 128, 1024 and
+#   4096. a = 0.3 added little SNR and was less linear, so the candidates stop at 0.1. The pilot
+#   never computed or printed a gain. SNR per N loosely tracks gain size, so those four SNR values
+#   are a weak hint of shape; they are disclosed here, and no rule below depends on them.
+#   A second pilot run printed only ratios at N = 2 and 3: PILOT23_RESULT
+# Everything else (window, operator, noise bins, validity, outcomes, run rules) is carried over
+#   from v4 unchanged, with the pulse-specific parts replaced.
+# Every value is a proposal until Keenan seals this file with scripts/seal.sh.
+
+id: c1-glimmer-frequency-response-v5
+version: 5
+drafted: 2026-10-27
+supersedes: c1-glimmer-frequency-response-v4 (sealed and run; stopped in Phase A, outcome U, reported as is)
+status: draft
+
+questions:
+  C1: Does Muse Glimmer-30B respond to a sine drive, swept over period N, with a resonance, a high-pass or low-pass cutoff, a tilt, another replicated structure, or a flat response?
+  direction_words: Short N is high frequency (1/N cycles per token). Gain falling as N grows passes high frequencies (high-pass, HP). Gain rising as N grows passes low frequencies (low-pass, LP).
+  C1b: Descriptive only, not a gate. How do the local-layer and global-layer curves compare?
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  start: first token of the main text, after the Project Gutenberg header is stripped
+  special_tokens: none (no BOS); input = first 32,768 token ids of the stripped text
+  prompt_sets:                      # 3 independent sets, 5 public-domain books each, no author shared across sets
+    # Project Gutenberg ebook IDs. Text = body between the *** START and *** END markers.
+    A: {1342: Pride and Prejudice, 2701: Moby Dick, 1400: Great Expectations, 145: Middlemarch, 1184: The Count of Monte Cristo}
+    B: {1260: Jane Eyre, 768: Wuthering Heights, 345: Dracula, 84: Frankenstein, 25344: The Scarlet Letter}
+    C: {37106: Little Women, 74: The Adventures of Tom Sawyer, 120: Treasure Island, 174: The Picture of Dorian Gray, 940: The Last of the Mohicans}
+  token_counts_checked: 2026-10-26, shortest 94,774 tokens (Treasure Island), all at least 33,792
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+  reserved_for_C3_and_knob_gates: never used in C1; chosen in the C3 file
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: >
+    At every token t = 0 .. 32767, add w_t * direction with w_t = A * cos(2 pi t / N + phase),
+    A = a times the amplitude reference. Main phase 0; control phase pi / 4 (nonzero at N = 2,
+    where phase pi / 2 would vanish).
+  add: computed in float32 (residual value + w_t * direction), cast once to bfloat16; where w_t * direction is exactly zero the value is kept unchanged; the realized drive along the direction, sum over dims of (stored minus original) times direction, is kept per token
+  amplitude_reference: median per-token residual-stream norm at the layer 1 output, from each book's own undriven run (the norm probe is armed only for that pass)
+  amplitude_rule: >
+    Linearity check (Phase A) on book 1342 (set A, its first 32,768 tokens as in Phase B) at
+    N = 2, 16, 128, 1024 and 4096, main phase. Candidates a in [0.01, 0.03, 0.1]. For each
+    candidate, run A and 2A. A candidate qualifies if the whole-model target response
+    magnitude (mean over heads) at 2A is 2x that at A within 10 percent, at all five N.
+    Choose the largest qualifying a. If none qualifies, stop: C1 is not run (outcome U).
+    Phase A runs are recorded but never enter the C1 curves.
+  power_gate: >
+    After choosing a, the whole-model SNR (as defined under measurement) of the run at A,
+    N = 4096, on book 1342 must be at least 3. N = 4096 had the lowest SNR in the pilot. If it
+    fails, stop: C1 is not run, outcome U (inconclusive, not the kill). The gate uses SNR
+    only, never gain; SNR is a weak indicator of gain size at that one N, and no rule uses it otherwise.
+  interval_grid_N: [2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048, 3072, 4096]
+  controls:
+    sham: zero wave, run twice per book (before and after the sweep) and once in Phase A. Every head-output value at every token and measured layer must have the same bits as the undriven run (compared as int16), or the run stops, a failure record is written, and that book is not written.
+    control_phase: the same drive at phase pi / 4, every N, every book. A time-invariant linear system has the same gain at any phase. Reported as a cross-check (its own outcome and the control-to-main gain ratio), not a gate.
+  low_order_note: At N = 2, 3 and 4, harmonics of a weakly nonlinear response fold onto the target bin (at N = 3 the second harmonic, at N = 4 the third), so those points include low-order response. Their phase dependence differs from the fundamental's, so a control-to-main ratio away from 1 at those N flags it; the ratio is reported per N.
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128)
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: tokens [8192, 32768), W = 24576. Every grid N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 tokens are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4), at N = 3072 only 5; at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all 1,600 measured heads of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    A grid point counts for a set only if the median over the set's five books of the
+    whole-model SNR is at least 3. Invalid points are excluded from that set's curves and
+    listed in the output.
+  curves:
+    per_book: mean gain over all heads in layers 2 to 51 (whole), over local-layer heads (local), and over global-layer heads (global), per N
+    per_set: the mean over its five books of each book's curve, per N
+    normalization: each set curve divided by its own maximum over valid grid points
+
+statistic: Spearman rank correlation for shape agreement and trend tests
+
+pass_criteria:
+  C1:
+    outcome_R_resonance: >
+      On all 3 sets, the normalized whole-model curve's maximum over valid points sits at
+      full-grid index 2 to 20 (not the two shortest or two longest N), is at least 1.5x the
+      median over valid points, and has at least 2 valid points on each side that are at most
+      peak / 1.5. The three peak indices differ by at most 1.
+    cutoff_rule: >
+      HP: plateau = the three shortest valid N. N_c is where the curve, scanning toward
+      longer N, crosses below half the plateau mean and stays below it at every longer
+      valid point. LP: plateau = the three longest valid N. N_c is where the curve,
+      scanning toward shorter N, crosses below half the plateau mean and stays below it at
+      every shorter valid point. Crossings are interpolated linearly in log N between
+      consecutive valid points. A direction counts only if (1) its plateau mean is at least
+      0.7 of the normalized maximum, (2) the three plateau points agree within 15 percent
+      (max / min at most 1.15), and (3) the knee is sharp: N_90, the crossing of 0.9 times
+      the plateau nearest N_c on the plateau side, is within a factor of 4 of N_c. A power
+      law has no plateau or knee, so it is a tilt. The two directions cannot both hold.
+      Needs 6 valid points.
+    outcome_U_inconclusive: >
+      Any set has fewer than half of the 23 grid points valid, or Phase A stopped C1, or the
+      curve is not flat and fits no rule below and its shape does not replicate across sets.
+      U is not the kill.
+    order: after the U validity check, the rules are tried in the order R, HP or LP, T, F, S; the first that holds is the outcome
+    outcome_HP_or_LP_cutoff: Not R, and all 3 sets have the same cutoff direction and their N_c agree within a factor of 1.5. The outcome is named by that direction.
+    outcome_T_tilt: Not R, HP or LP, and Spearman rho of normalized gain vs N over valid points has |rho| at least 0.8 with the same sign on all 3 sets. rho below 0 is a high-pass tilt; above 0 a low-pass tilt.
+    outcome_F_flat: None of the above, and on every set every valid normalized point is at least 0.67.
+    outcome_S_structured: None of the above, and every pair of set curves has Spearman rho at least 0.8 over shared valid points (a replicated shape such as a notch, described under C1b).
+    incomplete_run: if any of the 15 books lacks a valid record, there is no outcome; a partial look is labeled PARTIAL and never reported as C1
+    shape_replication: Spearman rho between every pair of set curves over shared valid points, with a flag for rho at least 0.8; reported for all outcomes, not a gate
+  C1b_descriptive:
+    report: the normalized local and global curves averaged over the three sets
+    exploratory_notch_index: gain at N = 2048 divided by the mean of gains at N = 1536 and 3072, for local and for global; reported, not a gate
+    box_filter_reference: the response of a plain 2048-token moving average at each grid N (zero wherever N divides 2048), reported beside the curves as a null shape
+    note: A sliding-window filter passes long periods and blocks N = 2048 and its fractions, and local layers after layer 3 read a residual stream the global layers have mixed. The structural test of the architecture is C2.
+
+uncertainty:
+  bootstrap: >
+    Within each set, resample its five books with replacement 1,000 times (numpy
+    default_rng([0, i]) for the i-th set in sorted order); for each resample recompute
+    validity, the set curve, normalization, cutoff direction and period, and peak
+    location. Report 95 percent percentile intervals, the fraction of resamples with each
+    cutoff direction, the cutoff period interval separately for each direction, and the
+    fraction with a cutoff. Five books allow only 126 distinct
+    resamples, so intervals are coarse.
+
+diagnostics_not_gates:
+  noise_corrected_gain: sqrt(max(target^2 - floor^2 / m, 0)) / input, with m = (1 - 2/(9*256))^3 the median-to-mean ratio of a chi-square with 256 degrees of freedom (one head, 128 dims, real and imaginary); its outcome is reported beside the primary
+  control_phase_outcome: the C1 outcome of the control-phase curves, computed by the same rules
+  control_over_main: median over books of the control-to-main whole-model gain ratio per N
+  realized_drive: median over books and N of realized over nominal input component, and of the off-direction part of the realized drive as a fraction of the peak amplitude
+
+decisions:
+  R_or_HP_or_LP_or_T: Gate 1 passes; continue to C2 with the outcome as the story
+  S: Gate 1 passes on a replicated structure; continue to C2, with the shape described from C1b
+  F: kill rule; switch the submission to the autonomous interpretability lab on public targets
+  U: inconclusive, not the kill; report it as underpowered and decide next steps (for example a new sealed version with more books) without rescuing this run
+  no_rescue: NF4, eager attention, other input lengths, other models, other amplitudes or other analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in
+    results/ledger/). Each run writes STARTED.json before any GPU work. A new run is
+    refused if any earlier run under the seal is complete or was stopped by rule in Phase A
+    (no amplitude, or underpowered), and otherwise needs a written reason (an
+    infrastructure failure: crash, failed sham, preflight failure). Only the newest run
+    may continue to Phase B, and Phase B needs that run's STARTED.json. Every book attempt
+    writes an ATTEMPT record first; a book with an earlier attempt or failure record may be
+    retried only with a written reason, stamped on that book. All earlier runs and records
+    are kept and listed in the summary. The analysis refuses to run if more than one run
+    under the seal is complete, requires phaseA.json, and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 4                  # wall-clock hours of every run process under this seal, from start to exit, including model loads
+  ledger: results/ledger/c1v5_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  preflight: each phase refuses to start if hours used plus its projected need exceed the cap; every pass also checks the cap first
+  cost: about $7 for the expected 2.9 counted hours and $10 at the 4-hour cap, at about $2.50 per pod hour; pod time between processes is billed by RunPod but not counted, so actual spend is higher
+  estimate: Phase A 32 passes (1 undriven, 1 sham, 3 candidates x 5 N x 2 amplitudes); Phase B 15 books x 49 passes (1 undriven, 2 sham, 23 main, 23 control) = 735 passes; 767 passes at about 13.3 s is about 2.83 hours plus about 0.05 for loads
+  peak_gpu_memory: about 77 GiB (model 55.5, 32K forward about 6, stored undriven head outputs for 50 layers about 13, plus about 4.5 held briefly by the float32 drive in the hook)
+  pre_seal_smoke: SMOKE_RESULT
+
+analysis:
+  runner: src/dialedin/run_c1v5.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/run_c1v5.py: 2f15f584d8a929db7306712669cbc4ec5c7775111b56d1de29c9d2c063974dd0
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json; one book_<set>_<id>.json per book with, per N, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component, the same for the control phase, and realized-drive statistics; a record of seal, code, platform, text and token hashes; any *.ATTEMPT.<utc>.json and *.FAILED.<utc>.json records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c1_summary.json and c1_curves.png, citing every raw file used

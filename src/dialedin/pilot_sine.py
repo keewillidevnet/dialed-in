@@ -71,6 +71,9 @@ def main():
     ap.add_argument("--weights", default="/workspace/weights/Muse-Glimmer-30B")
     ap.add_argument("--manifest", default="/workspace/data/books/MANIFEST.json")
     ap.add_argument("--out", default="/workspace/env/pilot_sine.json")
+    ap.add_argument("--n", type=int, nargs="+", default=list(PILOT_N), help="periods to test")
+    ap.add_argument("--amps", type=float, nargs="+", default=list(AMPS), help="amplitudes a to test")
+    ap.add_argument("--ratios-only", action="store_true", help="print and save only linearity ratios")
     args = ap.parse_args()
     spec = yaml.safe_load(open(SPEC))
     texts = glimmer.load_texts(spec, args.manifest, os.path.dirname(args.manifest))
@@ -104,9 +107,9 @@ def main():
     print(f"== book {BOOK} tokens {START}..{START + T - 1}; median norm {m:.2f}; sham differing values {sham}")
     t = np.arange(T, dtype=np.float64)
     rows = []
-    for N in PILOT_N:
+    for N in args.n:
         cos_b, sin_b = probe.set_frequencies(N, T, "cuda")
-        for a in AMPS:
+        for a in args.amps:
             resp, snr, drive_err = [], None, None
             for scale in (1, 2):
                 w = a * scale * m * np.cos(2 * np.pi * t / N)
@@ -121,9 +124,13 @@ def main():
                     snr = metrics.aggregate_snr(out["target"], out["bin_power"], out["n_below"])
                     drive_err = inp / nominal - 1
             ratio = resp[1] / resp[0]
-            rows.append({"N": N, "a": a, "ratio": ratio, "snr": snr, "realized_over_nominal_minus_1": drive_err})
-            print(f"   N={N:<5} a={a:<5} ratio={ratio:.3f}  SNR={snr:8.2f}  drive error {drive_err:+.3%}  ({sec:.1f} s/pass)",
-                  flush=True)
+            if args.ratios_only:
+                rows.append({"N": N, "a": a, "ratio": ratio, "realized_over_nominal_minus_1": drive_err})
+                print(f"   N={N:<5} a={a:<5} ratio={ratio:.3f}  drive error {drive_err:+.3%}  ({sec:.1f} s/pass)", flush=True)
+            else:
+                rows.append({"N": N, "a": a, "ratio": ratio, "snr": snr, "realized_over_nominal_minus_1": drive_err})
+                print(f"   N={N:<5} a={a:<5} ratio={ratio:.3f}  SNR={snr:8.2f}  drive error {drive_err:+.3%}  ({sec:.1f} s/pass)",
+                      flush=True)
     json.dump({"book": BOOK, "start": START, "T": T, "median_norm": m, "sham": sham, "platform": platform,
                "rows": rows}, open(args.out, "w"), indent=1)
     print(f"== wrote {args.out}")

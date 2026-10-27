@@ -189,7 +189,7 @@ budget:
   estimate: Phase A 26 passes (1 sham, then per condition 1 undriven and 4 driven); Phase B 15 books x 46 passes (per condition 1 undriven, 1 sham and 7 driven, plus 1 closing sham) = 690 passes; 716 passes at about 13.4 s is about 2.67 hours plus about 0.05 for loads
   cost: about $7 at about $2.50 per pod hour for counted time; pod time between processes is billed separately
   peak_gpu_memory: same as C1 v5 (74.3 GiB measured); the knob hook adds no stored tensors
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: measured 2026-10-27 with src/dialedin/smoke_c2.py at commit 8872531, real C2 Session, book 1342, conditions G1.0, G0.5, G1.5 and L0.5; 13.09 to 13.52 s per pass, peak 74.3 GiB, every sham and the closing sham 0 differing values, amplitude reference unchanged by the knob, outputs finite, knob-size probe ran on 26 layers; 716 passes at 13.4 s is about 2.67 hours plus about 0.05 for loads
 
 analysis:
   runner: src/dialedin/run_c2.py

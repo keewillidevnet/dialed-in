@@ -19,3 +19,6 @@ results/ledger/**
 src/dialedin/wave.py
 src/dialedin/run_c1v5.py
 src/dialedin/analyze_c1v5.py
+src/dialedin/metrics_c2.py
+src/dialedin/run_c2.py
+src/dialedin/analyze_c2.py

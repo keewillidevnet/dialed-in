@@ -1,0 +1,70 @@
+{"utc": "2026-10-27T06:43:50+00:00", "what": "startup and model load", "seconds": 9.002}
+{"utc": "2026-10-27T06:43:51+00:00", "what": "before unpulsed", "seconds": 0.233}
+{"utc": "2026-10-27T06:44:04+00:00", "what": "unpulsed", "seconds": 13.281}
+{"utc": "2026-10-27T06:44:04+00:00", "what": "before sham", "seconds": 0.01}
+{"utc": "2026-10-27T06:44:17+00:00", "what": "sham", "seconds": 13.195}
+{"utc": "2026-10-27T06:44:17+00:00", "what": "before phaseA a=0.01x1 N=2", "seconds": 0.041}
+{"utc": "2026-10-27T06:44:30+00:00", "what": "phaseA a=0.01x1 N=2", "seconds": 13.215}
+{"utc": "2026-10-27T06:44:30+00:00", "what": "before phaseA a=0.01x2 N=2", "seconds": 0.097}
+{"utc": "2026-10-27T06:44:44+00:00", "what": "phaseA a=0.01x2 N=2", "seconds": 13.244}
+{"utc": "2026-10-27T06:44:44+00:00", "what": "before phaseA a=0.01x1 N=16", "seconds": 0.139}
+{"utc": "2026-10-27T06:44:57+00:00", "what": "phaseA a=0.01x1 N=16", "seconds": 13.183}
+{"utc": "2026-10-27T06:44:57+00:00", "what": "before phaseA a=0.01x2 N=16", "seconds": 0.133}
+{"utc": "2026-10-27T06:45:10+00:00", "what": "phaseA a=0.01x2 N=16", "seconds": 13.267}
+{"utc": "2026-10-27T06:45:10+00:00", "what": "before phaseA a=0.01x1 N=128", "seconds": 0.134}
+{"utc": "2026-10-27T06:45:24+00:00", "what": "phaseA a=0.01x1 N=128", "seconds": 13.261}
+{"utc": "2026-10-27T06:45:24+00:00", "what": "before phaseA a=0.01x2 N=128", "seconds": 0.128}
+{"utc": "2026-10-27T06:45:37+00:00", "what": "phaseA a=0.01x2 N=128", "seconds": 13.199}
+{"utc": "2026-10-27T06:45:37+00:00", "what": "before phaseA a=0.01x1 N=1024", "seconds": 0.194}
+{"utc": "2026-10-27T06:45:50+00:00", "what": "phaseA a=0.01x1 N=1024", "seconds": 13.204}
+{"utc": "2026-10-27T06:45:51+00:00", "what": "before phaseA a=0.01x2 N=1024", "seconds": 0.113}
+{"utc": "2026-10-27T06:46:04+00:00", "what": "phaseA a=0.01x2 N=1024", "seconds": 13.269}
+{"utc": "2026-10-27T06:46:04+00:00", "what": "before phaseA a=0.02x1 N=2", "seconds": 0.122}
+{"utc": "2026-10-27T06:46:17+00:00", "what": "phaseA a=0.02x1 N=2", "seconds": 13.212}
+{"utc": "2026-10-27T06:46:17+00:00", "what": "before phaseA a=0.02x2 N=2", "seconds": 0.095}
+{"utc": "2026-10-27T06:46:30+00:00", "what": "phaseA a=0.02x2 N=2", "seconds": 13.211}
+{"utc": "2026-10-27T06:46:31+00:00", "what": "before phaseA a=0.02x1 N=16", "seconds": 0.176}
+{"utc": "2026-10-27T06:46:44+00:00", "what": "phaseA a=0.02x1 N=16", "seconds": 13.206}
+{"utc": "2026-10-27T06:46:44+00:00", "what": "before phaseA a=0.02x2 N=16", "seconds": 0.1}
+{"utc": "2026-10-27T06:46:57+00:00", "what": "phaseA a=0.02x2 N=16", "seconds": 13.207}
+{"utc": "2026-10-27T06:46:57+00:00", "what": "before phaseA a=0.02x1 N=128", "seconds": 0.093}
+{"utc": "2026-10-27T06:47:10+00:00", "what": "phaseA a=0.02x1 N=128", "seconds": 13.206}
+{"utc": "2026-10-27T06:47:11+00:00", "what": "before phaseA a=0.02x2 N=128", "seconds": 0.104}
+{"utc": "2026-10-27T06:47:24+00:00", "what": "phaseA a=0.02x2 N=128", "seconds": 13.276}
+{"utc": "2026-10-27T06:47:24+00:00", "what": "before phaseA a=0.02x1 N=1024", "seconds": 0.122}
+{"utc": "2026-10-27T06:47:37+00:00", "what": "phaseA a=0.02x1 N=1024", "seconds": 13.257}
+{"utc": "2026-10-27T06:47:37+00:00", "what": "before phaseA a=0.02x2 N=1024", "seconds": 0.129}
+{"utc": "2026-10-27T06:47:51+00:00", "what": "phaseA a=0.02x2 N=1024", "seconds": 13.203}
+{"utc": "2026-10-27T06:47:51+00:00", "what": "before phaseA a=0.05x1 N=2", "seconds": 0.095}
+{"utc": "2026-10-27T06:48:04+00:00", "what": "phaseA a=0.05x1 N=2", "seconds": 13.208}
+{"utc": "2026-10-27T06:48:04+00:00", "what": "before phaseA a=0.05x2 N=2", "seconds": 0.092}
+{"utc": "2026-10-27T06:48:17+00:00", "what": "phaseA a=0.05x2 N=2", "seconds": 13.217}
+{"utc": "2026-10-27T06:48:17+00:00", "what": "before phaseA a=0.05x1 N=16", "seconds": 0.092}
+{"utc": "2026-10-27T06:48:30+00:00", "what": "phaseA a=0.05x1 N=16", "seconds": 13.213}
+{"utc": "2026-10-27T06:48:31+00:00", "what": "before phaseA a=0.05x2 N=16", "seconds": 0.088}
+{"utc": "2026-10-27T06:48:44+00:00", "what": "phaseA a=0.05x2 N=16", "seconds": 13.214}
+{"utc": "2026-10-27T06:48:44+00:00", "what": "before phaseA a=0.05x1 N=128", "seconds": 0.087}
+{"utc": "2026-10-27T06:48:57+00:00", "what": "phaseA a=0.05x1 N=128", "seconds": 13.291}
+{"utc": "2026-10-27T06:48:57+00:00", "what": "before phaseA a=0.05x2 N=128", "seconds": 0.115}
+{"utc": "2026-10-27T06:49:11+00:00", "what": "phaseA a=0.05x2 N=128", "seconds": 13.291}
+{"utc": "2026-10-27T06:49:11+00:00", "what": "before phaseA a=0.05x1 N=1024", "seconds": 0.1}
+{"utc": "2026-10-27T06:49:24+00:00", "what": "phaseA a=0.05x1 N=1024", "seconds": 13.216}
+{"utc": "2026-10-27T06:49:24+00:00", "what": "before phaseA a=0.05x2 N=1024", "seconds": 0.174}
+{"utc": "2026-10-27T06:49:37+00:00", "what": "phaseA a=0.05x2 N=1024", "seconds": 13.215}
+{"utc": "2026-10-27T06:49:37+00:00", "what": "before phaseA a=0.1x1 N=2", "seconds": 0.099}
+{"utc": "2026-10-27T06:49:51+00:00", "what": "phaseA a=0.1x1 N=2", "seconds": 13.219}
+{"utc": "2026-10-27T06:49:51+00:00", "what": "before phaseA a=0.1x2 N=2", "seconds": 0.176}
+{"utc": "2026-10-27T06:50:04+00:00", "what": "phaseA a=0.1x2 N=2", "seconds": 13.217}
+{"utc": "2026-10-27T06:50:04+00:00", "what": "before phaseA a=0.1x1 N=16", "seconds": 0.177}
+{"utc": "2026-10-27T06:50:17+00:00", "what": "phaseA a=0.1x1 N=16", "seconds": 13.209}
+{"utc": "2026-10-27T06:50:17+00:00", "what": "before phaseA a=0.1x2 N=16", "seconds": 0.091}
+{"utc": "2026-10-27T06:50:31+00:00", "what": "phaseA a=0.1x2 N=16", "seconds": 13.209}
+{"utc": "2026-10-27T06:50:31+00:00", "what": "before phaseA a=0.1x1 N=128", "seconds": 0.09}
+{"utc": "2026-10-27T06:50:44+00:00", "what": "phaseA a=0.1x1 N=128", "seconds": 13.21}
+{"utc": "2026-10-27T06:50:44+00:00", "what": "before phaseA a=0.1x2 N=128", "seconds": 0.1}
+{"utc": "2026-10-27T06:50:57+00:00", "what": "phaseA a=0.1x2 N=128", "seconds": 13.209}
+{"utc": "2026-10-27T06:50:57+00:00", "what": "before phaseA a=0.1x1 N=1024", "seconds": 0.091}
+{"utc": "2026-10-27T06:51:11+00:00", "what": "phaseA a=0.1x1 N=1024", "seconds": 13.209}
+{"utc": "2026-10-27T06:51:11+00:00", "what": "before phaseA a=0.1x2 N=1024", "seconds": 0.081}
+{"utc": "2026-10-27T06:51:24+00:00", "what": "phaseA a=0.1x2 N=1024", "seconds": 13.208}
+{"utc": "2026-10-27T06:51:24+00:00", "what": "process exit", "seconds": 0.007}

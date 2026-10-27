@@ -11,3 +11,8 @@ scripts/seal.sh
 .claude/hooks/**
 .claude/settings.json
 .claude/protected.txt
+src/dialedin/hooks.py
+src/dialedin/glimmer.py
+src/dialedin/run_c1.py
+src/dialedin/analyze_c1.py
+results/ledger/**

@@ -1,1 +1,2 @@
 2026-10-27T04:21:08Z 93bc1b4435bafa29907b62c7ca95026a2d1aa923821a85b80662e036e50eb3e2 criteria/sealed/c1-glimmer-frequency-response-v2.yaml
+2026-10-27T06:42:30Z 04b08fb8a2c138ad2334f12b53277c638971c3f9b88b4e061cabb7f54af0a8b1 criteria/sealed/c1-glimmer-frequency-response-v4.yaml

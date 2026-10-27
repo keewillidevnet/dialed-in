@@ -214,7 +214,7 @@ budget:
   cost: about $7 for the expected 2.9 counted hours and $10 at the 4-hour cap, at about $2.50 per pod hour; pod time between processes is billed by RunPod but not counted, so actual spend is higher
   estimate: Phase A 34 passes (1 unpulsed, 1 sham, 4 candidates x 4 N x 2 amplitudes); Phase B 15 books x 49 passes (1 unpulsed, 2 sham, 23 periodic, 23 aperiodic) = 735 passes; 769 passes at about 13 s is about 2.78 hours plus about 0.1 for loads
   peak_gpu_memory: about 77 GiB (model 55.5, 32K forward about 6, stored unpulsed head outputs for 50 layers about 13)
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: measured 2026-10-27 with src/dialedin/smoke_c1.py at commit 7a82c9f, hooks armed, 32,768 tokens of book 1342; 13.18 to 13.34 s per pass, peak 74.3 GiB, opening and closing sham 0 differing values, outputs finite; 769 passes at 13.3 s is about 2.84 hours plus about 0.05 for two model loads of 73 s
 
 analysis:
   runner: src/dialedin/run_c1.py

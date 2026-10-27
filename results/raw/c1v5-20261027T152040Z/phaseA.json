@@ -1,0 +1,247 @@
+{
+  "phase": "A",
+  "finished_utc": "2026-10-27T15:27:58+00:00",
+  "wall_seconds_per_pass": 13.406192362308502,
+  "book": 1342,
+  "median_norm": 64.93833923339844,
+  "power_gate": {
+    "N": 4096,
+    "snr": 10.374690827492184
+  },
+  "stopped": null,
+  "outcome_if_stopped": null,
+  "sham_differences": 0,
+  "rows": [
+    {
+      "a": 0.01,
+      "by_N": {
+        "2": {
+          "response_a": 6.103430953845382,
+          "response_2a": 11.012370650582016,
+          "ratio": 1.8042918374695178,
+          "within_10pct": true,
+          "snr_at_a": 5.8200536257661675
+        },
+        "16": {
+          "response_a": 4.409633503612131,
+          "response_2a": 8.133146705515683,
+          "ratio": 1.8444042342415654,
+          "within_10pct": true,
+          "snr_at_a": 4.522670030660829
+        },
+        "128": {
+          "response_a": 6.337564835622906,
+          "response_2a": 11.155038179419934,
+          "ratio": 1.760145808168845,
+          "within_10pct": false,
+          "snr_at_a": 4.040884385867073
+        },
+        "1024": {
+          "response_a": 7.475166785325855,
+          "response_2a": 13.529208829663695,
+          "ratio": 1.8098872196701006,
+          "within_10pct": true,
+          "snr_at_a": 3.6758407608543138
+        },
+        "4096": {
+          "response_a": 9.33195260077715,
+          "response_2a": 15.300632223505527,
+          "ratio": 1.63959600718839,
+          "within_10pct": false,
+          "snr_at_a": 2.427291843559104
+        }
+      },
+      "qualifies": false
+    },
+    {
+      "a": 0.03,
+      "by_N": {
+        "2": {
+          "response_a": 16.195387302860617,
+          "response_2a": 31.609457996562124,
+          "ratio": 1.9517568431956485,
+          "within_10pct": true,
+          "snr_at_a": 13.011881901443893
+        },
+        "16": {
+          "response_a": 11.74148970330134,
+          "response_2a": 22.45427914682776,
+          "ratio": 1.912387585751944,
+          "within_10pct": true,
+          "snr_at_a": 9.481903166976837
+        },
+        "128": {
+          "response_a": 15.99191989928484,
+          "response_2a": 31.397003245763482,
+          "ratio": 1.9633041838314584,
+          "within_10pct": true,
+          "snr_at_a": 11.38114586752655
+        },
+        "1024": {
+          "response_a": 19.515961705967783,
+          "response_2a": 37.84897222332656,
+          "ratio": 1.9393854524603178,
+          "within_10pct": true,
+          "snr_at_a": 9.443949368701984
+        },
+        "4096": {
+          "response_a": 22.21871523462236,
+          "response_2a": 42.23790745925158,
+          "ratio": 1.9010058418424787,
+          "within_10pct": true,
+          "snr_at_a": 5.97105665482406
+        }
+      },
+      "qualifies": true
+    },
+    {
+      "a": 0.1,
+      "by_N": {
+        "2": {
+          "response_a": 52.37466515436768,
+          "response_2a": 103.57209528721869,
+          "ratio": 1.977522815314486,
+          "within_10pct": true,
+          "snr_at_a": 18.540658863916367
+        },
+        "16": {
+          "response_a": 36.950726660601795,
+          "response_2a": 73.11735814005137,
+          "ratio": 1.9787799793937948,
+          "within_10pct": true,
+          "snr_at_a": 18.4511758184023
+        },
+        "128": {
+          "response_a": 51.90410926841199,
+          "response_2a": 102.7796633888036,
+          "ratio": 1.9801835507338847,
+          "within_10pct": true,
+          "snr_at_a": 17.791358820801804
+        },
+        "1024": {
+          "response_a": 62.67701137281954,
+          "response_2a": 124.07052142769098,
+          "ratio": 1.9795219764019458,
+          "within_10pct": true,
+          "snr_at_a": 16.903323143132678
+        },
+        "4096": {
+          "response_a": 69.51929942570627,
+          "response_2a": 137.70289267778398,
+          "ratio": 1.9807865415120303,
+          "within_10pct": true,
+          "snr_at_a": 10.374690827492184
+        }
+      },
+      "qualifies": true
+    }
+  ],
+  "chosen_a": 0.1,
+  "seconds_per_pass_last": 13.275521039962769,
+  "record": {
+    "sealed_file": "criteria/sealed/c1-glimmer-frequency-response-v5.yaml",
+    "seal_sha256": "44810da4c9148c1c0065241a834d51d43eaca3a444e6214379347851f7d2f97b",
+    "code_sha256": {
+      "src/dialedin/metrics.py": "be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113",
+      "src/dialedin/hooks.py": "f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd",
+      "src/dialedin/glimmer.py": "b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c",
+      "src/dialedin/wave.py": "2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5",
+      "src/dialedin/run_c1v5.py": "2f15f584d8a929db7306712669cbc4ec5c7775111b56d1de29c9d2c063974dd0",
+      "src/dialedin/analyze_c1v5.py": "43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f"
+    },
+    "platform": {
+      "dtype": "bfloat16",
+      "attention": "sdpa",
+      "revision": "cec94fcfd6512f2cfe708138c32533b346ea4f69",
+      "transformers": "5.21.0",
+      "torch": "2.8.0+cu128",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "global_layers": [
+        3,
+        7,
+        11,
+        15,
+        19,
+        23,
+        27,
+        31,
+        35,
+        39,
+        43,
+        47,
+        51
+      ],
+      "batch_size": 1,
+      "deterministic": true,
+      "tf32": false
+    },
+    "gutenberg_id": 1342,
+    "text_sha256": "cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138",
+    "token_ids_sha256": "278b3e5731ecff7f2deb94669f6f6f6c24d61dbf293d195f92d1bf3ba9e9aff1",
+    "tokenizer": "TokenizersBackend",
+    "direction_seed": 0,
+    "direction_sha256": "7f7b3201448c4c105df27346222373740699340e00be64a2e550770a1965d894",
+    "drive": {
+      "form": "amplitude * cos(2 pi t / N + phase) at every token t",
+      "phase_main": 0.0,
+      "phase_control": 0.7853981633974483
+    },
+    "window": [
+      8192,
+      32768
+    ],
+    "T": 32768,
+    "layers_measured": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ]
+  }
+}

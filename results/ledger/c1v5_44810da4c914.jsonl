@@ -1,0 +1,1538 @@
+{"utc": "2026-10-27T15:20:49+00:00", "what": "startup and model load", "seconds": 9.069}
+{"utc": "2026-10-27T15:20:49+00:00", "what": "before undriven", "seconds": 0.263}
+{"utc": "2026-10-27T15:21:02+00:00", "what": "undriven", "seconds": 13.295}
+{"utc": "2026-10-27T15:21:02+00:00", "what": "before sham", "seconds": 0.013}
+{"utc": "2026-10-27T15:21:16+00:00", "what": "sham", "seconds": 13.177}
+{"utc": "2026-10-27T15:21:16+00:00", "what": "before phaseA a=0.01x1 N=2", "seconds": 0.059}
+{"utc": "2026-10-27T15:21:29+00:00", "what": "phaseA a=0.01x1 N=2", "seconds": 13.255}
+{"utc": "2026-10-27T15:21:29+00:00", "what": "before phaseA a=0.01x2 N=2", "seconds": 0.157}
+{"utc": "2026-10-27T15:21:42+00:00", "what": "phaseA a=0.01x2 N=2", "seconds": 13.202}
+{"utc": "2026-10-27T15:21:42+00:00", "what": "before phaseA a=0.01x1 N=16", "seconds": 0.179}
+{"utc": "2026-10-27T15:21:56+00:00", "what": "phaseA a=0.01x1 N=16", "seconds": 13.214}
+{"utc": "2026-10-27T15:21:56+00:00", "what": "before phaseA a=0.01x2 N=16", "seconds": 0.186}
+{"utc": "2026-10-27T15:22:09+00:00", "what": "phaseA a=0.01x2 N=16", "seconds": 13.218}
+{"utc": "2026-10-27T15:22:09+00:00", "what": "before phaseA a=0.01x1 N=128", "seconds": 0.104}
+{"utc": "2026-10-27T15:22:22+00:00", "what": "phaseA a=0.01x1 N=128", "seconds": 13.284}
+{"utc": "2026-10-27T15:22:22+00:00", "what": "before phaseA a=0.01x2 N=128", "seconds": 0.095}
+{"utc": "2026-10-27T15:22:36+00:00", "what": "phaseA a=0.01x2 N=128", "seconds": 13.222}
+{"utc": "2026-10-27T15:22:36+00:00", "what": "before phaseA a=0.01x1 N=1024", "seconds": 0.177}
+{"utc": "2026-10-27T15:22:49+00:00", "what": "phaseA a=0.01x1 N=1024", "seconds": 13.23}
+{"utc": "2026-10-27T15:22:49+00:00", "what": "before phaseA a=0.01x2 N=1024", "seconds": 0.185}
+{"utc": "2026-10-27T15:23:03+00:00", "what": "phaseA a=0.01x2 N=1024", "seconds": 13.236}
+{"utc": "2026-10-27T15:23:03+00:00", "what": "before phaseA a=0.01x1 N=4096", "seconds": 0.158}
+{"utc": "2026-10-27T15:23:16+00:00", "what": "phaseA a=0.01x1 N=4096", "seconds": 13.242}
+{"utc": "2026-10-27T15:23:16+00:00", "what": "before phaseA a=0.01x2 N=4096", "seconds": 0.159}
+{"utc": "2026-10-27T15:23:29+00:00", "what": "phaseA a=0.01x2 N=4096", "seconds": 13.234}
+{"utc": "2026-10-27T15:23:29+00:00", "what": "before phaseA a=0.03x1 N=2", "seconds": 0.158}
+{"utc": "2026-10-27T15:23:43+00:00", "what": "phaseA a=0.03x1 N=2", "seconds": 13.229}
+{"utc": "2026-10-27T15:23:43+00:00", "what": "before phaseA a=0.03x2 N=2", "seconds": 0.177}
+{"utc": "2026-10-27T15:23:56+00:00", "what": "phaseA a=0.03x2 N=2", "seconds": 13.226}
+{"utc": "2026-10-27T15:23:56+00:00", "what": "before phaseA a=0.03x1 N=16", "seconds": 0.173}
+{"utc": "2026-10-27T15:24:10+00:00", "what": "phaseA a=0.03x1 N=16", "seconds": 13.226}
+{"utc": "2026-10-27T15:24:10+00:00", "what": "before phaseA a=0.03x2 N=16", "seconds": 0.269}
+{"utc": "2026-10-27T15:24:23+00:00", "what": "phaseA a=0.03x2 N=16", "seconds": 13.228}
+{"utc": "2026-10-27T15:24:23+00:00", "what": "before phaseA a=0.03x1 N=128", "seconds": 0.18}
+{"utc": "2026-10-27T15:24:36+00:00", "what": "phaseA a=0.03x1 N=128", "seconds": 13.229}
+{"utc": "2026-10-27T15:24:37+00:00", "what": "before phaseA a=0.03x2 N=128", "seconds": 0.164}
+{"utc": "2026-10-27T15:24:50+00:00", "what": "phaseA a=0.03x2 N=128", "seconds": 13.23}
+{"utc": "2026-10-27T15:24:50+00:00", "what": "before phaseA a=0.03x1 N=1024", "seconds": 0.169}
+{"utc": "2026-10-27T15:25:03+00:00", "what": "phaseA a=0.03x1 N=1024", "seconds": 13.229}
+{"utc": "2026-10-27T15:25:03+00:00", "what": "before phaseA a=0.03x2 N=1024", "seconds": 0.17}
+{"utc": "2026-10-27T15:25:17+00:00", "what": "phaseA a=0.03x2 N=1024", "seconds": 13.228}
+{"utc": "2026-10-27T15:25:17+00:00", "what": "before phaseA a=0.03x1 N=4096", "seconds": 0.172}
+{"utc": "2026-10-27T15:25:30+00:00", "what": "phaseA a=0.03x1 N=4096", "seconds": 13.235}
+{"utc": "2026-10-27T15:25:30+00:00", "what": "before phaseA a=0.03x2 N=4096", "seconds": 0.176}
+{"utc": "2026-10-27T15:25:43+00:00", "what": "phaseA a=0.03x2 N=4096", "seconds": 13.237}
+{"utc": "2026-10-27T15:25:44+00:00", "what": "before phaseA a=0.1x1 N=2", "seconds": 0.152}
+{"utc": "2026-10-27T15:25:57+00:00", "what": "phaseA a=0.1x1 N=2", "seconds": 13.226}
+{"utc": "2026-10-27T15:25:58+00:00", "what": "before phaseA a=0.1x2 N=2", "seconds": 0.777}
+{"utc": "2026-10-27T15:26:11+00:00", "what": "phaseA a=0.1x2 N=2", "seconds": 13.225}
+{"utc": "2026-10-27T15:26:11+00:00", "what": "before phaseA a=0.1x1 N=16", "seconds": 0.18}
+{"utc": "2026-10-27T15:26:24+00:00", "what": "phaseA a=0.1x1 N=16", "seconds": 13.229}
+{"utc": "2026-10-27T15:26:24+00:00", "what": "before phaseA a=0.1x2 N=16", "seconds": 0.164}
+{"utc": "2026-10-27T15:26:38+00:00", "what": "phaseA a=0.1x2 N=16", "seconds": 13.23}
+{"utc": "2026-10-27T15:26:38+00:00", "what": "before phaseA a=0.1x1 N=128", "seconds": 0.176}
+{"utc": "2026-10-27T15:26:51+00:00", "what": "phaseA a=0.1x1 N=128", "seconds": 13.229}
+{"utc": "2026-10-27T15:26:51+00:00", "what": "before phaseA a=0.1x2 N=128", "seconds": 0.179}
+{"utc": "2026-10-27T15:27:04+00:00", "what": "phaseA a=0.1x2 N=128", "seconds": 13.228}
+{"utc": "2026-10-27T15:27:05+00:00", "what": "before phaseA a=0.1x1 N=1024", "seconds": 0.164}
+{"utc": "2026-10-27T15:27:18+00:00", "what": "phaseA a=0.1x1 N=1024", "seconds": 13.227}
+{"utc": "2026-10-27T15:27:18+00:00", "what": "before phaseA a=0.1x2 N=1024", "seconds": 0.167}
+{"utc": "2026-10-27T15:27:31+00:00", "what": "phaseA a=0.1x2 N=1024", "seconds": 13.225}
+{"utc": "2026-10-27T15:27:31+00:00", "what": "before phaseA a=0.1x1 N=4096", "seconds": 0.081}
+{"utc": "2026-10-27T15:27:45+00:00", "what": "phaseA a=0.1x1 N=4096", "seconds": 13.229}
+{"utc": "2026-10-27T15:27:45+00:00", "what": "before phaseA a=0.1x2 N=4096", "seconds": 0.011}
+{"utc": "2026-10-27T15:27:58+00:00", "what": "phaseA a=0.1x2 N=4096", "seconds": 13.276}
+{"utc": "2026-10-27T15:27:58+00:00", "what": "process exit", "seconds": 0.006}
+{"utc": "2026-10-27T15:28:08+00:00", "what": "startup and model load", "seconds": 8.527}
+{"utc": "2026-10-27T15:28:08+00:00", "what": "before undriven", "seconds": 0.263}
+{"utc": "2026-10-27T15:28:22+00:00", "what": "undriven", "seconds": 13.182}
+{"utc": "2026-10-27T15:28:22+00:00", "what": "before sham", "seconds": 0.011}
+{"utc": "2026-10-27T15:28:35+00:00", "what": "sham", "seconds": 13.215}
+{"utc": "2026-10-27T15:28:35+00:00", "what": "before 1342 N=2 main", "seconds": 0.018}
+{"utc": "2026-10-27T15:28:48+00:00", "what": "1342 N=2 main", "seconds": 13.287}
+{"utc": "2026-10-27T15:28:48+00:00", "what": "before 1342 N=2 control", "seconds": 0.103}
+{"utc": "2026-10-27T15:29:02+00:00", "what": "1342 N=2 control", "seconds": 13.293}
+{"utc": "2026-10-27T15:29:02+00:00", "what": "before 1342 N=3 main", "seconds": 0.193}
+{"utc": "2026-10-27T15:29:15+00:00", "what": "1342 N=3 main", "seconds": 13.229}
+{"utc": "2026-10-27T15:29:15+00:00", "what": "before 1342 N=3 control", "seconds": 0.183}
+{"utc": "2026-10-27T15:29:28+00:00", "what": "1342 N=3 control", "seconds": 13.232}
+{"utc": "2026-10-27T15:29:29+00:00", "what": "before 1342 N=4 main", "seconds": 0.153}
+{"utc": "2026-10-27T15:29:42+00:00", "what": "1342 N=4 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:29:42+00:00", "what": "before 1342 N=4 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:29:55+00:00", "what": "1342 N=4 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:29:55+00:00", "what": "before 1342 N=6 main", "seconds": 0.178}
+{"utc": "2026-10-27T15:30:09+00:00", "what": "1342 N=6 main", "seconds": 13.231}
+{"utc": "2026-10-27T15:30:09+00:00", "what": "before 1342 N=6 control", "seconds": 0.182}
+{"utc": "2026-10-27T15:30:22+00:00", "what": "1342 N=6 control", "seconds": 13.279}
+{"utc": "2026-10-27T15:30:22+00:00", "what": "before 1342 N=8 main", "seconds": 0.113}
+{"utc": "2026-10-27T15:30:35+00:00", "what": "1342 N=8 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:30:36+00:00", "what": "before 1342 N=8 control", "seconds": 0.175}
+{"utc": "2026-10-27T15:30:49+00:00", "what": "1342 N=8 control", "seconds": 13.229}
+{"utc": "2026-10-27T15:30:49+00:00", "what": "before 1342 N=12 main", "seconds": 0.162}
+{"utc": "2026-10-27T15:31:02+00:00", "what": "1342 N=12 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:31:02+00:00", "what": "before 1342 N=12 control", "seconds": 0.083}
+{"utc": "2026-10-27T15:31:16+00:00", "what": "1342 N=12 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:31:16+00:00", "what": "before 1342 N=16 main", "seconds": 0.177}
+{"utc": "2026-10-27T15:31:29+00:00", "what": "1342 N=16 main", "seconds": 13.359}
+{"utc": "2026-10-27T15:31:29+00:00", "what": "before 1342 N=16 control", "seconds": 0.133}
+{"utc": "2026-10-27T15:31:42+00:00", "what": "1342 N=16 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:31:42+00:00", "what": "before 1342 N=24 main", "seconds": 0.084}
+{"utc": "2026-10-27T15:31:56+00:00", "what": "1342 N=24 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:31:56+00:00", "what": "before 1342 N=24 control", "seconds": 0.168}
+{"utc": "2026-10-27T15:32:09+00:00", "what": "1342 N=24 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:32:09+00:00", "what": "before 1342 N=32 main", "seconds": 0.173}
+{"utc": "2026-10-27T15:32:22+00:00", "what": "1342 N=32 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:32:23+00:00", "what": "before 1342 N=32 control", "seconds": 0.082}
+{"utc": "2026-10-27T15:32:36+00:00", "what": "1342 N=32 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:32:36+00:00", "what": "before 1342 N=48 main", "seconds": 0.177}
+{"utc": "2026-10-27T15:32:49+00:00", "what": "1342 N=48 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:32:49+00:00", "what": "before 1342 N=48 control", "seconds": 0.173}
+{"utc": "2026-10-27T15:33:03+00:00", "what": "1342 N=48 control", "seconds": 13.223}
+{"utc": "2026-10-27T15:33:03+00:00", "what": "before 1342 N=64 main", "seconds": 0.17}
+{"utc": "2026-10-27T15:33:16+00:00", "what": "1342 N=64 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:33:16+00:00", "what": "before 1342 N=64 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:33:29+00:00", "what": "1342 N=64 control", "seconds": 13.223}
+{"utc": "2026-10-27T15:33:29+00:00", "what": "before 1342 N=96 main", "seconds": 0.093}
+{"utc": "2026-10-27T15:33:43+00:00", "what": "1342 N=96 main", "seconds": 13.301}
+{"utc": "2026-10-27T15:33:43+00:00", "what": "before 1342 N=96 control", "seconds": 0.085}
+{"utc": "2026-10-27T15:33:56+00:00", "what": "1342 N=96 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:33:56+00:00", "what": "before 1342 N=128 main", "seconds": 0.082}
+{"utc": "2026-10-27T15:34:09+00:00", "what": "1342 N=128 main", "seconds": 13.311}
+{"utc": "2026-10-27T15:34:10+00:00", "what": "before 1342 N=128 control", "seconds": 0.098}
+{"utc": "2026-10-27T15:34:23+00:00", "what": "1342 N=128 control", "seconds": 13.298}
+{"utc": "2026-10-27T15:34:23+00:00", "what": "before 1342 N=192 main", "seconds": 0.085}
+{"utc": "2026-10-27T15:34:36+00:00", "what": "1342 N=192 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:34:36+00:00", "what": "before 1342 N=192 control", "seconds": 0.086}
+{"utc": "2026-10-27T15:34:50+00:00", "what": "1342 N=192 control", "seconds": 13.305}
+{"utc": "2026-10-27T15:34:50+00:00", "what": "before 1342 N=256 main", "seconds": 0.083}
+{"utc": "2026-10-27T15:35:03+00:00", "what": "1342 N=256 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:35:03+00:00", "what": "before 1342 N=256 control", "seconds": 0.179}
+{"utc": "2026-10-27T15:35:16+00:00", "what": "1342 N=256 control", "seconds": 13.229}
+{"utc": "2026-10-27T15:35:16+00:00", "what": "before 1342 N=384 main", "seconds": 0.162}
+{"utc": "2026-10-27T15:35:30+00:00", "what": "1342 N=384 main", "seconds": 13.223}
+{"utc": "2026-10-27T15:35:30+00:00", "what": "before 1342 N=384 control", "seconds": 0.194}
+{"utc": "2026-10-27T15:35:43+00:00", "what": "1342 N=384 control", "seconds": 13.228}
+{"utc": "2026-10-27T15:35:43+00:00", "what": "before 1342 N=512 main", "seconds": 0.167}
+{"utc": "2026-10-27T15:35:57+00:00", "what": "1342 N=512 main", "seconds": 13.231}
+{"utc": "2026-10-27T15:35:57+00:00", "what": "before 1342 N=512 control", "seconds": 0.158}
+{"utc": "2026-10-27T15:36:10+00:00", "what": "1342 N=512 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:36:10+00:00", "what": "before 1342 N=768 main", "seconds": 0.171}
+{"utc": "2026-10-27T15:36:23+00:00", "what": "1342 N=768 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:36:23+00:00", "what": "before 1342 N=768 control", "seconds": 0.177}
+{"utc": "2026-10-27T15:36:37+00:00", "what": "1342 N=768 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:36:37+00:00", "what": "before 1342 N=1024 main", "seconds": 0.166}
+{"utc": "2026-10-27T15:36:50+00:00", "what": "1342 N=1024 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:36:50+00:00", "what": "before 1342 N=1024 control", "seconds": 0.09}
+{"utc": "2026-10-27T15:37:03+00:00", "what": "1342 N=1024 control", "seconds": 13.306}
+{"utc": "2026-10-27T15:37:04+00:00", "what": "before 1342 N=1536 main", "seconds": 0.079}
+{"utc": "2026-10-27T15:37:17+00:00", "what": "1342 N=1536 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:37:17+00:00", "what": "before 1342 N=1536 control", "seconds": 0.171}
+{"utc": "2026-10-27T15:37:30+00:00", "what": "1342 N=1536 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:37:30+00:00", "what": "before 1342 N=2048 main", "seconds": 0.173}
+{"utc": "2026-10-27T15:37:44+00:00", "what": "1342 N=2048 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:37:44+00:00", "what": "before 1342 N=2048 control", "seconds": 0.174}
+{"utc": "2026-10-27T15:37:57+00:00", "what": "1342 N=2048 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:37:57+00:00", "what": "before 1342 N=3072 main", "seconds": 0.172}
+{"utc": "2026-10-27T15:38:10+00:00", "what": "1342 N=3072 main", "seconds": 13.234}
+{"utc": "2026-10-27T15:38:11+00:00", "what": "before 1342 N=3072 control", "seconds": 0.176}
+{"utc": "2026-10-27T15:38:24+00:00", "what": "1342 N=3072 control", "seconds": 13.231}
+{"utc": "2026-10-27T15:38:24+00:00", "what": "before 1342 N=4096 main", "seconds": 0.161}
+{"utc": "2026-10-27T15:38:37+00:00", "what": "1342 N=4096 main", "seconds": 13.235}
+{"utc": "2026-10-27T15:38:37+00:00", "what": "before 1342 N=4096 control", "seconds": 0.166}
+{"utc": "2026-10-27T15:38:51+00:00", "what": "1342 N=4096 control", "seconds": 13.233}
+{"utc": "2026-10-27T15:38:51+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T15:39:04+00:00", "what": "sham", "seconds": 13.219}
+{"utc": "2026-10-27T15:39:04+00:00", "what": "before undriven", "seconds": 0.592}
+{"utc": "2026-10-27T15:39:18+00:00", "what": "undriven", "seconds": 13.091}
+{"utc": "2026-10-27T15:39:18+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T15:39:31+00:00", "what": "sham", "seconds": 13.219}
+{"utc": "2026-10-27T15:39:31+00:00", "what": "before 2701 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T15:39:44+00:00", "what": "2701 N=2 main", "seconds": 13.234}
+{"utc": "2026-10-27T15:39:44+00:00", "what": "before 2701 N=2 control", "seconds": 0.091}
+{"utc": "2026-10-27T15:39:57+00:00", "what": "2701 N=2 control", "seconds": 13.234}
+{"utc": "2026-10-27T15:39:57+00:00", "what": "before 2701 N=3 main", "seconds": 0.17}
+{"utc": "2026-10-27T15:40:11+00:00", "what": "2701 N=3 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:40:11+00:00", "what": "before 2701 N=3 control", "seconds": 0.174}
+{"utc": "2026-10-27T15:40:24+00:00", "what": "2701 N=3 control", "seconds": 13.23}
+{"utc": "2026-10-27T15:40:24+00:00", "what": "before 2701 N=4 main", "seconds": 0.166}
+{"utc": "2026-10-27T15:40:38+00:00", "what": "2701 N=4 main", "seconds": 13.23}
+{"utc": "2026-10-27T15:40:38+00:00", "what": "before 2701 N=4 control", "seconds": 0.175}
+{"utc": "2026-10-27T15:40:51+00:00", "what": "2701 N=4 control", "seconds": 13.23}
+{"utc": "2026-10-27T15:40:51+00:00", "what": "before 2701 N=6 main", "seconds": 0.177}
+{"utc": "2026-10-27T15:41:04+00:00", "what": "2701 N=6 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:41:04+00:00", "what": "before 2701 N=6 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:41:18+00:00", "what": "2701 N=6 control", "seconds": 13.23}
+{"utc": "2026-10-27T15:41:18+00:00", "what": "before 2701 N=8 main", "seconds": 0.162}
+{"utc": "2026-10-27T15:41:31+00:00", "what": "2701 N=8 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:41:31+00:00", "what": "before 2701 N=8 control", "seconds": 0.082}
+{"utc": "2026-10-27T15:41:44+00:00", "what": "2701 N=8 control", "seconds": 13.307}
+{"utc": "2026-10-27T15:41:45+00:00", "what": "before 2701 N=12 main", "seconds": 0.086}
+{"utc": "2026-10-27T15:41:58+00:00", "what": "2701 N=12 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:41:58+00:00", "what": "before 2701 N=12 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:42:11+00:00", "what": "2701 N=12 control", "seconds": 13.231}
+{"utc": "2026-10-27T15:42:11+00:00", "what": "before 2701 N=16 main", "seconds": 0.168}
+{"utc": "2026-10-27T15:42:25+00:00", "what": "2701 N=16 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:42:25+00:00", "what": "before 2701 N=16 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:42:38+00:00", "what": "2701 N=16 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:42:38+00:00", "what": "before 2701 N=24 main", "seconds": 0.073}
+{"utc": "2026-10-27T15:42:51+00:00", "what": "2701 N=24 main", "seconds": 13.233}
+{"utc": "2026-10-27T15:42:51+00:00", "what": "before 2701 N=24 control", "seconds": 0.168}
+{"utc": "2026-10-27T15:43:05+00:00", "what": "2701 N=24 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:43:05+00:00", "what": "before 2701 N=32 main", "seconds": 0.173}
+{"utc": "2026-10-27T15:43:18+00:00", "what": "2701 N=32 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:43:18+00:00", "what": "before 2701 N=32 control", "seconds": 0.086}
+{"utc": "2026-10-27T15:43:31+00:00", "what": "2701 N=32 control", "seconds": 13.313}
+{"utc": "2026-10-27T15:43:32+00:00", "what": "before 2701 N=48 main", "seconds": 0.081}
+{"utc": "2026-10-27T15:43:45+00:00", "what": "2701 N=48 main", "seconds": 13.229}
+{"utc": "2026-10-27T15:43:45+00:00", "what": "before 2701 N=48 control", "seconds": 0.165}
+{"utc": "2026-10-27T15:43:58+00:00", "what": "2701 N=48 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:43:58+00:00", "what": "before 2701 N=64 main", "seconds": 0.074}
+{"utc": "2026-10-27T15:44:12+00:00", "what": "2701 N=64 main", "seconds": 13.23}
+{"utc": "2026-10-27T15:44:12+00:00", "what": "before 2701 N=64 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:44:25+00:00", "what": "2701 N=64 control", "seconds": 13.228}
+{"utc": "2026-10-27T15:44:25+00:00", "what": "before 2701 N=96 main", "seconds": 0.172}
+{"utc": "2026-10-27T15:44:38+00:00", "what": "2701 N=96 main", "seconds": 13.229}
+{"utc": "2026-10-27T15:44:38+00:00", "what": "before 2701 N=96 control", "seconds": 0.171}
+{"utc": "2026-10-27T15:44:52+00:00", "what": "2701 N=96 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:44:52+00:00", "what": "before 2701 N=128 main", "seconds": 0.085}
+{"utc": "2026-10-27T15:45:05+00:00", "what": "2701 N=128 main", "seconds": 13.319}
+{"utc": "2026-10-27T15:45:05+00:00", "what": "before 2701 N=128 control", "seconds": 0.169}
+{"utc": "2026-10-27T15:45:18+00:00", "what": "2701 N=128 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:45:19+00:00", "what": "before 2701 N=192 main", "seconds": 0.086}
+{"utc": "2026-10-27T15:45:32+00:00", "what": "2701 N=192 main", "seconds": 13.305}
+{"utc": "2026-10-27T15:45:32+00:00", "what": "before 2701 N=192 control", "seconds": 0.085}
+{"utc": "2026-10-27T15:45:45+00:00", "what": "2701 N=192 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:45:45+00:00", "what": "before 2701 N=256 main", "seconds": 0.172}
+{"utc": "2026-10-27T15:45:59+00:00", "what": "2701 N=256 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:45:59+00:00", "what": "before 2701 N=256 control", "seconds": 0.171}
+{"utc": "2026-10-27T15:46:12+00:00", "what": "2701 N=256 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:46:12+00:00", "what": "before 2701 N=384 main", "seconds": 0.08}
+{"utc": "2026-10-27T15:46:25+00:00", "what": "2701 N=384 main", "seconds": 13.225}
+{"utc": "2026-10-27T15:46:25+00:00", "what": "before 2701 N=384 control", "seconds": 0.171}
+{"utc": "2026-10-27T15:46:39+00:00", "what": "2701 N=384 control", "seconds": 13.237}
+{"utc": "2026-10-27T15:46:39+00:00", "what": "before 2701 N=512 main", "seconds": 0.17}
+{"utc": "2026-10-27T15:46:52+00:00", "what": "2701 N=512 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:46:52+00:00", "what": "before 2701 N=512 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:47:05+00:00", "what": "2701 N=512 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:47:06+00:00", "what": "before 2701 N=768 main", "seconds": 0.082}
+{"utc": "2026-10-27T15:47:19+00:00", "what": "2701 N=768 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:47:19+00:00", "what": "before 2701 N=768 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:47:32+00:00", "what": "2701 N=768 control", "seconds": 13.23}
+{"utc": "2026-10-27T15:47:32+00:00", "what": "before 2701 N=1024 main", "seconds": 0.076}
+{"utc": "2026-10-27T15:47:46+00:00", "what": "2701 N=1024 main", "seconds": 13.312}
+{"utc": "2026-10-27T15:47:46+00:00", "what": "before 2701 N=1024 control", "seconds": 0.081}
+{"utc": "2026-10-27T15:47:59+00:00", "what": "2701 N=1024 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:47:59+00:00", "what": "before 2701 N=1536 main", "seconds": 0.179}
+{"utc": "2026-10-27T15:48:12+00:00", "what": "2701 N=1536 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:48:12+00:00", "what": "before 2701 N=1536 control", "seconds": 0.085}
+{"utc": "2026-10-27T15:48:26+00:00", "what": "2701 N=1536 control", "seconds": 13.304}
+{"utc": "2026-10-27T15:48:26+00:00", "what": "before 2701 N=2048 main", "seconds": 0.084}
+{"utc": "2026-10-27T15:48:39+00:00", "what": "2701 N=2048 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:48:39+00:00", "what": "before 2701 N=2048 control", "seconds": 0.081}
+{"utc": "2026-10-27T15:48:52+00:00", "what": "2701 N=2048 control", "seconds": 13.227}
+{"utc": "2026-10-27T15:48:52+00:00", "what": "before 2701 N=3072 main", "seconds": 0.166}
+{"utc": "2026-10-27T15:49:06+00:00", "what": "2701 N=3072 main", "seconds": 13.233}
+{"utc": "2026-10-27T15:49:06+00:00", "what": "before 2701 N=3072 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:49:19+00:00", "what": "2701 N=3072 control", "seconds": 13.233}
+{"utc": "2026-10-27T15:49:19+00:00", "what": "before 2701 N=4096 main", "seconds": 0.167}
+{"utc": "2026-10-27T15:49:33+00:00", "what": "2701 N=4096 main", "seconds": 13.231}
+{"utc": "2026-10-27T15:49:33+00:00", "what": "before 2701 N=4096 control", "seconds": 0.169}
+{"utc": "2026-10-27T15:49:46+00:00", "what": "2701 N=4096 control", "seconds": 13.23}
+{"utc": "2026-10-27T15:49:46+00:00", "what": "before sham", "seconds": 0.009}
+{"utc": "2026-10-27T15:49:59+00:00", "what": "sham", "seconds": 13.218}
+{"utc": "2026-10-27T15:50:00+00:00", "what": "before undriven", "seconds": 0.498}
+{"utc": "2026-10-27T15:50:13+00:00", "what": "undriven", "seconds": 13.09}
+{"utc": "2026-10-27T15:50:13+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T15:50:26+00:00", "what": "sham", "seconds": 13.218}
+{"utc": "2026-10-27T15:50:26+00:00", "what": "before 1400 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T15:50:39+00:00", "what": "1400 N=2 main", "seconds": 13.222}
+{"utc": "2026-10-27T15:50:39+00:00", "what": "before 1400 N=2 control", "seconds": 0.1}
+{"utc": "2026-10-27T15:50:52+00:00", "what": "1400 N=2 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:50:53+00:00", "what": "before 1400 N=3 main", "seconds": 0.076}
+{"utc": "2026-10-27T15:51:06+00:00", "what": "1400 N=3 main", "seconds": 13.231}
+{"utc": "2026-10-27T15:51:06+00:00", "what": "before 1400 N=3 control", "seconds": 0.171}
+{"utc": "2026-10-27T15:51:19+00:00", "what": "1400 N=3 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:51:19+00:00", "what": "before 1400 N=4 main", "seconds": 0.169}
+{"utc": "2026-10-27T15:51:33+00:00", "what": "1400 N=4 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:51:33+00:00", "what": "before 1400 N=4 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:51:46+00:00", "what": "1400 N=4 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:51:46+00:00", "what": "before 1400 N=6 main", "seconds": 0.083}
+{"utc": "2026-10-27T15:51:59+00:00", "what": "1400 N=6 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:51:59+00:00", "what": "before 1400 N=6 control", "seconds": 0.066}
+{"utc": "2026-10-27T15:52:13+00:00", "what": "1400 N=6 control", "seconds": 13.312}
+{"utc": "2026-10-27T15:52:13+00:00", "what": "before 1400 N=8 main", "seconds": 0.089}
+{"utc": "2026-10-27T15:52:26+00:00", "what": "1400 N=8 main", "seconds": 13.227}
+{"utc": "2026-10-27T15:52:26+00:00", "what": "before 1400 N=8 control", "seconds": 0.016}
+{"utc": "2026-10-27T15:52:39+00:00", "what": "1400 N=8 control", "seconds": 13.274}
+{"utc": "2026-10-27T15:52:39+00:00", "what": "before 1400 N=12 main", "seconds": 0.083}
+{"utc": "2026-10-27T15:52:53+00:00", "what": "1400 N=12 main", "seconds": 13.23}
+{"utc": "2026-10-27T15:52:53+00:00", "what": "before 1400 N=12 control", "seconds": 0.169}
+{"utc": "2026-10-27T15:53:06+00:00", "what": "1400 N=12 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:53:06+00:00", "what": "before 1400 N=16 main", "seconds": 0.079}
+{"utc": "2026-10-27T15:53:19+00:00", "what": "1400 N=16 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:53:19+00:00", "what": "before 1400 N=16 control", "seconds": 0.167}
+{"utc": "2026-10-27T15:53:33+00:00", "what": "1400 N=16 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:53:33+00:00", "what": "before 1400 N=24 main", "seconds": 0.173}
+{"utc": "2026-10-27T15:53:46+00:00", "what": "1400 N=24 main", "seconds": 13.225}
+{"utc": "2026-10-27T15:53:46+00:00", "what": "before 1400 N=24 control", "seconds": 0.177}
+{"utc": "2026-10-27T15:53:59+00:00", "what": "1400 N=24 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:54:00+00:00", "what": "before 1400 N=32 main", "seconds": 0.08}
+{"utc": "2026-10-27T15:54:13+00:00", "what": "1400 N=32 main", "seconds": 13.223}
+{"utc": "2026-10-27T15:54:13+00:00", "what": "before 1400 N=32 control", "seconds": 0.08}
+{"utc": "2026-10-27T15:54:26+00:00", "what": "1400 N=32 control", "seconds": 13.304}
+{"utc": "2026-10-27T15:54:26+00:00", "what": "before 1400 N=48 main", "seconds": 0.016}
+{"utc": "2026-10-27T15:54:39+00:00", "what": "1400 N=48 main", "seconds": 13.291}
+{"utc": "2026-10-27T15:54:40+00:00", "what": "before 1400 N=48 control", "seconds": 0.087}
+{"utc": "2026-10-27T15:54:53+00:00", "what": "1400 N=48 control", "seconds": 13.221}
+{"utc": "2026-10-27T15:54:53+00:00", "what": "before 1400 N=64 main", "seconds": 0.172}
+{"utc": "2026-10-27T15:55:06+00:00", "what": "1400 N=64 main", "seconds": 13.22}
+{"utc": "2026-10-27T15:55:06+00:00", "what": "before 1400 N=64 control", "seconds": 0.08}
+{"utc": "2026-10-27T15:55:19+00:00", "what": "1400 N=64 control", "seconds": 13.222}
+{"utc": "2026-10-27T15:55:20+00:00", "what": "before 1400 N=96 main", "seconds": 0.089}
+{"utc": "2026-10-27T15:55:33+00:00", "what": "1400 N=96 main", "seconds": 13.221}
+{"utc": "2026-10-27T15:55:33+00:00", "what": "before 1400 N=96 control", "seconds": 0.169}
+{"utc": "2026-10-27T15:55:46+00:00", "what": "1400 N=96 control", "seconds": 13.22}
+{"utc": "2026-10-27T15:55:46+00:00", "what": "before 1400 N=128 main", "seconds": 0.079}
+{"utc": "2026-10-27T15:55:59+00:00", "what": "1400 N=128 main", "seconds": 13.225}
+{"utc": "2026-10-27T15:56:00+00:00", "what": "before 1400 N=128 control", "seconds": 0.087}
+{"utc": "2026-10-27T15:56:13+00:00", "what": "1400 N=128 control", "seconds": 13.3}
+{"utc": "2026-10-27T15:56:13+00:00", "what": "before 1400 N=192 main", "seconds": 0.088}
+{"utc": "2026-10-27T15:56:26+00:00", "what": "1400 N=192 main", "seconds": 13.226}
+{"utc": "2026-10-27T15:56:26+00:00", "what": "before 1400 N=192 control", "seconds": 0.081}
+{"utc": "2026-10-27T15:56:40+00:00", "what": "1400 N=192 control", "seconds": 13.224}
+{"utc": "2026-10-27T15:56:40+00:00", "what": "before 1400 N=256 main", "seconds": 0.175}
+{"utc": "2026-10-27T15:56:53+00:00", "what": "1400 N=256 main", "seconds": 13.222}
+{"utc": "2026-10-27T15:56:53+00:00", "what": "before 1400 N=256 control", "seconds": 0.172}
+{"utc": "2026-10-27T15:57:06+00:00", "what": "1400 N=256 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:57:06+00:00", "what": "before 1400 N=384 main", "seconds": 0.081}
+{"utc": "2026-10-27T15:57:20+00:00", "what": "1400 N=384 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:57:20+00:00", "what": "before 1400 N=384 control", "seconds": 0.074}
+{"utc": "2026-10-27T15:57:33+00:00", "what": "1400 N=384 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:57:33+00:00", "what": "before 1400 N=512 main", "seconds": 0.171}
+{"utc": "2026-10-27T15:57:46+00:00", "what": "1400 N=512 main", "seconds": 13.224}
+{"utc": "2026-10-27T15:57:46+00:00", "what": "before 1400 N=512 control", "seconds": 0.082}
+{"utc": "2026-10-27T15:58:00+00:00", "what": "1400 N=512 control", "seconds": 13.229}
+{"utc": "2026-10-27T15:58:00+00:00", "what": "before 1400 N=768 main", "seconds": 0.165}
+{"utc": "2026-10-27T15:58:13+00:00", "what": "1400 N=768 main", "seconds": 13.223}
+{"utc": "2026-10-27T15:58:13+00:00", "what": "before 1400 N=768 control", "seconds": 0.081}
+{"utc": "2026-10-27T15:58:26+00:00", "what": "1400 N=768 control", "seconds": 13.222}
+{"utc": "2026-10-27T15:58:26+00:00", "what": "before 1400 N=1024 main", "seconds": 0.089}
+{"utc": "2026-10-27T15:58:40+00:00", "what": "1400 N=1024 main", "seconds": 13.298}
+{"utc": "2026-10-27T15:58:40+00:00", "what": "before 1400 N=1024 control", "seconds": 0.089}
+{"utc": "2026-10-27T15:58:53+00:00", "what": "1400 N=1024 control", "seconds": 13.225}
+{"utc": "2026-10-27T15:58:53+00:00", "what": "before 1400 N=1536 main", "seconds": 0.086}
+{"utc": "2026-10-27T15:59:06+00:00", "what": "1400 N=1536 main", "seconds": 13.303}
+{"utc": "2026-10-27T15:59:06+00:00", "what": "before 1400 N=1536 control", "seconds": 0.1}
+{"utc": "2026-10-27T15:59:20+00:00", "what": "1400 N=1536 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:59:20+00:00", "what": "before 1400 N=2048 main", "seconds": 0.166}
+{"utc": "2026-10-27T15:59:33+00:00", "what": "1400 N=2048 main", "seconds": 13.228}
+{"utc": "2026-10-27T15:59:33+00:00", "what": "before 1400 N=2048 control", "seconds": 0.181}
+{"utc": "2026-10-27T15:59:47+00:00", "what": "1400 N=2048 control", "seconds": 13.226}
+{"utc": "2026-10-27T15:59:47+00:00", "what": "before 1400 N=3072 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:00:00+00:00", "what": "1400 N=3072 main", "seconds": 13.229}
+{"utc": "2026-10-27T16:00:00+00:00", "what": "before 1400 N=3072 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:00:13+00:00", "what": "1400 N=3072 control", "seconds": 13.239}
+{"utc": "2026-10-27T16:00:13+00:00", "what": "before 1400 N=4096 main", "seconds": 0.159}
+{"utc": "2026-10-27T16:00:27+00:00", "what": "1400 N=4096 main", "seconds": 13.23}
+{"utc": "2026-10-27T16:00:27+00:00", "what": "before 1400 N=4096 control", "seconds": 0.167}
+{"utc": "2026-10-27T16:00:40+00:00", "what": "1400 N=4096 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:00:40+00:00", "what": "before sham", "seconds": 0.005}
+{"utc": "2026-10-27T16:00:53+00:00", "what": "sham", "seconds": 13.216}
+{"utc": "2026-10-27T16:00:54+00:00", "what": "before undriven", "seconds": 0.829}
+{"utc": "2026-10-27T16:01:07+00:00", "what": "undriven", "seconds": 13.088}
+{"utc": "2026-10-27T16:01:07+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T16:01:20+00:00", "what": "sham", "seconds": 13.213}
+{"utc": "2026-10-27T16:01:20+00:00", "what": "before 145 N=2 main", "seconds": 0.017}
+{"utc": "2026-10-27T16:01:34+00:00", "what": "145 N=2 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:01:34+00:00", "what": "before 145 N=2 control", "seconds": 0.084}
+{"utc": "2026-10-27T16:01:47+00:00", "what": "145 N=2 control", "seconds": 13.278}
+{"utc": "2026-10-27T16:01:47+00:00", "what": "before 145 N=3 main", "seconds": 0.112}
+{"utc": "2026-10-27T16:02:00+00:00", "what": "145 N=3 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:02:01+00:00", "what": "before 145 N=3 control", "seconds": 0.177}
+{"utc": "2026-10-27T16:02:14+00:00", "what": "145 N=3 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:02:14+00:00", "what": "before 145 N=4 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:02:27+00:00", "what": "145 N=4 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:02:27+00:00", "what": "before 145 N=4 control", "seconds": 0.171}
+{"utc": "2026-10-27T16:02:40+00:00", "what": "145 N=4 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:02:41+00:00", "what": "before 145 N=6 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:02:54+00:00", "what": "145 N=6 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:02:54+00:00", "what": "before 145 N=6 control", "seconds": 0.176}
+{"utc": "2026-10-27T16:03:07+00:00", "what": "145 N=6 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:03:07+00:00", "what": "before 145 N=8 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:03:21+00:00", "what": "145 N=8 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:03:21+00:00", "what": "before 145 N=8 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:03:34+00:00", "what": "145 N=8 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:03:34+00:00", "what": "before 145 N=12 main", "seconds": 0.176}
+{"utc": "2026-10-27T16:03:47+00:00", "what": "145 N=12 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:03:47+00:00", "what": "before 145 N=12 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:04:01+00:00", "what": "145 N=12 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:04:01+00:00", "what": "before 145 N=16 main", "seconds": 0.174}
+{"utc": "2026-10-27T16:04:14+00:00", "what": "145 N=16 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:04:14+00:00", "what": "before 145 N=16 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:04:27+00:00", "what": "145 N=16 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:04:28+00:00", "what": "before 145 N=24 main", "seconds": 0.176}
+{"utc": "2026-10-27T16:04:41+00:00", "what": "145 N=24 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:04:41+00:00", "what": "before 145 N=24 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:04:54+00:00", "what": "145 N=24 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:04:54+00:00", "what": "before 145 N=32 main", "seconds": 0.178}
+{"utc": "2026-10-27T16:05:08+00:00", "what": "145 N=32 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:05:08+00:00", "what": "before 145 N=32 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:05:21+00:00", "what": "145 N=32 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:05:21+00:00", "what": "before 145 N=48 main", "seconds": 0.088}
+{"utc": "2026-10-27T16:05:34+00:00", "what": "145 N=48 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:05:34+00:00", "what": "before 145 N=48 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:05:48+00:00", "what": "145 N=48 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:05:48+00:00", "what": "before 145 N=64 main", "seconds": 0.085}
+{"utc": "2026-10-27T16:06:01+00:00", "what": "145 N=64 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:06:01+00:00", "what": "before 145 N=64 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:06:14+00:00", "what": "145 N=64 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:06:14+00:00", "what": "before 145 N=96 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:06:28+00:00", "what": "145 N=96 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:06:28+00:00", "what": "before 145 N=96 control", "seconds": 0.084}
+{"utc": "2026-10-27T16:06:41+00:00", "what": "145 N=96 control", "seconds": 13.304}
+{"utc": "2026-10-27T16:06:41+00:00", "what": "before 145 N=128 main", "seconds": 0.084}
+{"utc": "2026-10-27T16:06:54+00:00", "what": "145 N=128 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:06:54+00:00", "what": "before 145 N=128 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:07:08+00:00", "what": "145 N=128 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:07:08+00:00", "what": "before 145 N=192 main", "seconds": 0.169}
+{"utc": "2026-10-27T16:07:21+00:00", "what": "145 N=192 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:07:21+00:00", "what": "before 145 N=192 control", "seconds": 0.085}
+{"utc": "2026-10-27T16:07:34+00:00", "what": "145 N=192 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:07:35+00:00", "what": "before 145 N=256 main", "seconds": 0.168}
+{"utc": "2026-10-27T16:07:48+00:00", "what": "145 N=256 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:07:48+00:00", "what": "before 145 N=256 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:08:01+00:00", "what": "145 N=256 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:08:01+00:00", "what": "before 145 N=384 main", "seconds": 0.09}
+{"utc": "2026-10-27T16:08:14+00:00", "what": "145 N=384 main", "seconds": 13.305}
+{"utc": "2026-10-27T16:08:15+00:00", "what": "before 145 N=384 control", "seconds": 0.09}
+{"utc": "2026-10-27T16:08:28+00:00", "what": "145 N=384 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:08:28+00:00", "what": "before 145 N=512 main", "seconds": 0.162}
+{"utc": "2026-10-27T16:08:41+00:00", "what": "145 N=512 main", "seconds": 13.229}
+{"utc": "2026-10-27T16:08:41+00:00", "what": "before 145 N=512 control", "seconds": 0.171}
+{"utc": "2026-10-27T16:08:55+00:00", "what": "145 N=512 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:08:55+00:00", "what": "before 145 N=768 main", "seconds": 0.088}
+{"utc": "2026-10-27T16:09:08+00:00", "what": "145 N=768 main", "seconds": 13.302}
+{"utc": "2026-10-27T16:09:08+00:00", "what": "before 145 N=768 control", "seconds": 0.016}
+{"utc": "2026-10-27T16:09:21+00:00", "what": "145 N=768 control", "seconds": 13.285}
+{"utc": "2026-10-27T16:09:21+00:00", "what": "before 145 N=1024 main", "seconds": 0.084}
+{"utc": "2026-10-27T16:09:35+00:00", "what": "145 N=1024 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:09:35+00:00", "what": "before 145 N=1024 control", "seconds": 0.085}
+{"utc": "2026-10-27T16:09:48+00:00", "what": "145 N=1024 control", "seconds": 13.303}
+{"utc": "2026-10-27T16:09:48+00:00", "what": "before 145 N=1536 main", "seconds": 0.084}
+{"utc": "2026-10-27T16:10:01+00:00", "what": "145 N=1536 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:10:01+00:00", "what": "before 145 N=1536 control", "seconds": 0.085}
+{"utc": "2026-10-27T16:10:15+00:00", "what": "145 N=1536 control", "seconds": 13.304}
+{"utc": "2026-10-27T16:10:15+00:00", "what": "before 145 N=2048 main", "seconds": 0.083}
+{"utc": "2026-10-27T16:10:28+00:00", "what": "145 N=2048 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:10:28+00:00", "what": "before 145 N=2048 control", "seconds": 0.086}
+{"utc": "2026-10-27T16:10:41+00:00", "what": "145 N=2048 control", "seconds": 13.312}
+{"utc": "2026-10-27T16:10:41+00:00", "what": "before 145 N=3072 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:10:55+00:00", "what": "145 N=3072 main", "seconds": 13.232}
+{"utc": "2026-10-27T16:10:55+00:00", "what": "before 145 N=3072 control", "seconds": 0.163}
+{"utc": "2026-10-27T16:11:08+00:00", "what": "145 N=3072 control", "seconds": 13.237}
+{"utc": "2026-10-27T16:11:08+00:00", "what": "before 145 N=4096 main", "seconds": 0.161}
+{"utc": "2026-10-27T16:11:22+00:00", "what": "145 N=4096 main", "seconds": 13.235}
+{"utc": "2026-10-27T16:11:22+00:00", "what": "before 145 N=4096 control", "seconds": 0.167}
+{"utc": "2026-10-27T16:11:35+00:00", "what": "145 N=4096 control", "seconds": 13.233}
+{"utc": "2026-10-27T16:11:35+00:00", "what": "before sham", "seconds": 0.006}
+{"utc": "2026-10-27T16:11:48+00:00", "what": "sham", "seconds": 13.218}
+{"utc": "2026-10-27T16:11:49+00:00", "what": "before undriven", "seconds": 1.239}
+{"utc": "2026-10-27T16:12:02+00:00", "what": "undriven", "seconds": 13.086}
+{"utc": "2026-10-27T16:12:02+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T16:12:16+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T16:12:16+00:00", "what": "before 1184 N=2 main", "seconds": 0.017}
+{"utc": "2026-10-27T16:12:29+00:00", "what": "1184 N=2 main", "seconds": 13.23}
+{"utc": "2026-10-27T16:12:29+00:00", "what": "before 1184 N=2 control", "seconds": 0.161}
+{"utc": "2026-10-27T16:12:42+00:00", "what": "1184 N=2 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:12:42+00:00", "what": "before 1184 N=3 main", "seconds": 0.184}
+{"utc": "2026-10-27T16:12:56+00:00", "what": "1184 N=3 main", "seconds": 13.303}
+{"utc": "2026-10-27T16:12:56+00:00", "what": "before 1184 N=3 control", "seconds": 0.183}
+{"utc": "2026-10-27T16:13:09+00:00", "what": "1184 N=3 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:13:09+00:00", "what": "before 1184 N=4 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:13:23+00:00", "what": "1184 N=4 main", "seconds": 13.232}
+{"utc": "2026-10-27T16:13:23+00:00", "what": "before 1184 N=4 control", "seconds": 0.165}
+{"utc": "2026-10-27T16:13:36+00:00", "what": "1184 N=4 control", "seconds": 13.23}
+{"utc": "2026-10-27T16:13:36+00:00", "what": "before 1184 N=6 main", "seconds": 0.17}
+{"utc": "2026-10-27T16:13:49+00:00", "what": "1184 N=6 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:13:50+00:00", "what": "before 1184 N=6 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:14:03+00:00", "what": "1184 N=6 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:14:03+00:00", "what": "before 1184 N=8 main", "seconds": 0.175}
+{"utc": "2026-10-27T16:14:16+00:00", "what": "1184 N=8 main", "seconds": 13.234}
+{"utc": "2026-10-27T16:14:16+00:00", "what": "before 1184 N=8 control", "seconds": 0.169}
+{"utc": "2026-10-27T16:14:30+00:00", "what": "1184 N=8 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:14:30+00:00", "what": "before 1184 N=12 main", "seconds": 0.179}
+{"utc": "2026-10-27T16:14:43+00:00", "what": "1184 N=12 main", "seconds": 13.289}
+{"utc": "2026-10-27T16:14:43+00:00", "what": "before 1184 N=12 control", "seconds": 0.088}
+{"utc": "2026-10-27T16:14:56+00:00", "what": "1184 N=12 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:14:57+00:00", "what": "before 1184 N=16 main", "seconds": 0.277}
+{"utc": "2026-10-27T16:15:10+00:00", "what": "1184 N=16 main", "seconds": 13.231}
+{"utc": "2026-10-27T16:15:10+00:00", "what": "before 1184 N=16 control", "seconds": 0.169}
+{"utc": "2026-10-27T16:15:23+00:00", "what": "1184 N=16 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:15:23+00:00", "what": "before 1184 N=24 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:15:37+00:00", "what": "1184 N=24 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:15:37+00:00", "what": "before 1184 N=24 control", "seconds": 0.166}
+{"utc": "2026-10-27T16:15:50+00:00", "what": "1184 N=24 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:15:50+00:00", "what": "before 1184 N=32 main", "seconds": 0.185}
+{"utc": "2026-10-27T16:16:03+00:00", "what": "1184 N=32 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:16:04+00:00", "what": "before 1184 N=32 control", "seconds": 0.174}
+{"utc": "2026-10-27T16:16:17+00:00", "what": "1184 N=32 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:16:17+00:00", "what": "before 1184 N=48 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:16:30+00:00", "what": "1184 N=48 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:16:30+00:00", "what": "before 1184 N=48 control", "seconds": 0.173}
+{"utc": "2026-10-27T16:16:44+00:00", "what": "1184 N=48 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:16:44+00:00", "what": "before 1184 N=64 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:16:57+00:00", "what": "1184 N=64 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:16:57+00:00", "what": "before 1184 N=64 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:17:10+00:00", "what": "1184 N=64 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:17:10+00:00", "what": "before 1184 N=96 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:17:24+00:00", "what": "1184 N=96 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:17:24+00:00", "what": "before 1184 N=96 control", "seconds": 0.174}
+{"utc": "2026-10-27T16:17:37+00:00", "what": "1184 N=96 control", "seconds": 13.23}
+{"utc": "2026-10-27T16:17:37+00:00", "what": "before 1184 N=128 main", "seconds": 0.173}
+{"utc": "2026-10-27T16:17:50+00:00", "what": "1184 N=128 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:17:51+00:00", "what": "before 1184 N=128 control", "seconds": 0.165}
+{"utc": "2026-10-27T16:18:04+00:00", "what": "1184 N=128 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:18:04+00:00", "what": "before 1184 N=192 main", "seconds": 0.167}
+{"utc": "2026-10-27T16:18:17+00:00", "what": "1184 N=192 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:18:17+00:00", "what": "before 1184 N=192 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:18:31+00:00", "what": "1184 N=192 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:18:31+00:00", "what": "before 1184 N=256 main", "seconds": 0.175}
+{"utc": "2026-10-27T16:18:44+00:00", "what": "1184 N=256 main", "seconds": 13.229}
+{"utc": "2026-10-27T16:18:44+00:00", "what": "before 1184 N=256 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:18:57+00:00", "what": "1184 N=256 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:18:58+00:00", "what": "before 1184 N=384 main", "seconds": 0.17}
+{"utc": "2026-10-27T16:19:11+00:00", "what": "1184 N=384 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:19:11+00:00", "what": "before 1184 N=384 control", "seconds": 0.168}
+{"utc": "2026-10-27T16:19:24+00:00", "what": "1184 N=384 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:19:24+00:00", "what": "before 1184 N=512 main", "seconds": 0.175}
+{"utc": "2026-10-27T16:19:38+00:00", "what": "1184 N=512 main", "seconds": 13.229}
+{"utc": "2026-10-27T16:19:38+00:00", "what": "before 1184 N=512 control", "seconds": 0.168}
+{"utc": "2026-10-27T16:19:51+00:00", "what": "1184 N=512 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:19:51+00:00", "what": "before 1184 N=768 main", "seconds": 0.179}
+{"utc": "2026-10-27T16:20:04+00:00", "what": "1184 N=768 main", "seconds": 13.234}
+{"utc": "2026-10-27T16:20:05+00:00", "what": "before 1184 N=768 control", "seconds": 0.162}
+{"utc": "2026-10-27T16:20:18+00:00", "what": "1184 N=768 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:20:18+00:00", "what": "before 1184 N=1024 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:20:31+00:00", "what": "1184 N=1024 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:20:31+00:00", "what": "before 1184 N=1024 control", "seconds": 0.176}
+{"utc": "2026-10-27T16:20:45+00:00", "what": "1184 N=1024 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:20:45+00:00", "what": "before 1184 N=1536 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:20:58+00:00", "what": "1184 N=1536 main", "seconds": 13.23}
+{"utc": "2026-10-27T16:20:58+00:00", "what": "before 1184 N=1536 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:21:11+00:00", "what": "1184 N=1536 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:21:12+00:00", "what": "before 1184 N=2048 main", "seconds": 0.163}
+{"utc": "2026-10-27T16:21:25+00:00", "what": "1184 N=2048 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:21:25+00:00", "what": "before 1184 N=2048 control", "seconds": 0.171}
+{"utc": "2026-10-27T16:21:38+00:00", "what": "1184 N=2048 control", "seconds": 13.23}
+{"utc": "2026-10-27T16:21:38+00:00", "what": "before 1184 N=3072 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:21:52+00:00", "what": "1184 N=3072 main", "seconds": 13.239}
+{"utc": "2026-10-27T16:21:52+00:00", "what": "before 1184 N=3072 control", "seconds": 0.16}
+{"utc": "2026-10-27T16:22:05+00:00", "what": "1184 N=3072 control", "seconds": 13.241}
+{"utc": "2026-10-27T16:22:05+00:00", "what": "before 1184 N=4096 main", "seconds": 0.159}
+{"utc": "2026-10-27T16:22:18+00:00", "what": "1184 N=4096 main", "seconds": 13.245}
+{"utc": "2026-10-27T16:22:18+00:00", "what": "before 1184 N=4096 control", "seconds": 0.148}
+{"utc": "2026-10-27T16:22:32+00:00", "what": "1184 N=4096 control", "seconds": 13.241}
+{"utc": "2026-10-27T16:22:32+00:00", "what": "before sham", "seconds": 0.005}
+{"utc": "2026-10-27T16:22:45+00:00", "what": "sham", "seconds": 13.228}
+{"utc": "2026-10-27T16:22:45+00:00", "what": "before undriven", "seconds": 0.504}
+{"utc": "2026-10-27T16:22:59+00:00", "what": "undriven", "seconds": 13.096}
+{"utc": "2026-10-27T16:22:59+00:00", "what": "before sham", "seconds": 0.002}
+{"utc": "2026-10-27T16:23:12+00:00", "what": "sham", "seconds": 13.223}
+{"utc": "2026-10-27T16:23:12+00:00", "what": "before 1260 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T16:23:25+00:00", "what": "1260 N=2 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:23:25+00:00", "what": "before 1260 N=2 control", "seconds": 0.162}
+{"utc": "2026-10-27T16:23:38+00:00", "what": "1260 N=2 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:23:39+00:00", "what": "before 1260 N=3 main", "seconds": 0.181}
+{"utc": "2026-10-27T16:23:52+00:00", "what": "1260 N=3 main", "seconds": 13.234}
+{"utc": "2026-10-27T16:23:52+00:00", "what": "before 1260 N=3 control", "seconds": 0.16}
+{"utc": "2026-10-27T16:24:05+00:00", "what": "1260 N=3 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:24:05+00:00", "what": "before 1260 N=4 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:24:19+00:00", "what": "1260 N=4 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:24:19+00:00", "what": "before 1260 N=4 control", "seconds": 0.166}
+{"utc": "2026-10-27T16:24:32+00:00", "what": "1260 N=4 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:24:32+00:00", "what": "before 1260 N=6 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:24:45+00:00", "what": "1260 N=6 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:24:45+00:00", "what": "before 1260 N=6 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:24:59+00:00", "what": "1260 N=6 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:24:59+00:00", "what": "before 1260 N=8 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:25:12+00:00", "what": "1260 N=8 main", "seconds": 13.303}
+{"utc": "2026-10-27T16:25:12+00:00", "what": "before 1260 N=8 control", "seconds": 0.091}
+{"utc": "2026-10-27T16:25:25+00:00", "what": "1260 N=8 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:25:25+00:00", "what": "before 1260 N=12 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:25:39+00:00", "what": "1260 N=12 main", "seconds": 13.23}
+{"utc": "2026-10-27T16:25:39+00:00", "what": "before 1260 N=12 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:25:52+00:00", "what": "1260 N=12 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:25:52+00:00", "what": "before 1260 N=16 main", "seconds": 0.173}
+{"utc": "2026-10-27T16:26:05+00:00", "what": "1260 N=16 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:26:06+00:00", "what": "before 1260 N=16 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:26:19+00:00", "what": "1260 N=16 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:26:19+00:00", "what": "before 1260 N=24 main", "seconds": 0.175}
+{"utc": "2026-10-27T16:26:32+00:00", "what": "1260 N=24 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:26:32+00:00", "what": "before 1260 N=24 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:26:46+00:00", "what": "1260 N=24 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:26:46+00:00", "what": "before 1260 N=32 main", "seconds": 0.173}
+{"utc": "2026-10-27T16:26:59+00:00", "what": "1260 N=32 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:26:59+00:00", "what": "before 1260 N=32 control", "seconds": 0.176}
+{"utc": "2026-10-27T16:27:12+00:00", "what": "1260 N=32 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:27:12+00:00", "what": "before 1260 N=48 main", "seconds": 0.079}
+{"utc": "2026-10-27T16:27:26+00:00", "what": "1260 N=48 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:27:26+00:00", "what": "before 1260 N=48 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:27:39+00:00", "what": "1260 N=48 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:27:39+00:00", "what": "before 1260 N=64 main", "seconds": 0.167}
+{"utc": "2026-10-27T16:27:52+00:00", "what": "1260 N=64 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:27:53+00:00", "what": "before 1260 N=64 control", "seconds": 0.177}
+{"utc": "2026-10-27T16:28:06+00:00", "what": "1260 N=64 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:28:06+00:00", "what": "before 1260 N=96 main", "seconds": 0.089}
+{"utc": "2026-10-27T16:28:19+00:00", "what": "1260 N=96 main", "seconds": 13.272}
+{"utc": "2026-10-27T16:28:19+00:00", "what": "before 1260 N=96 control", "seconds": 0.117}
+{"utc": "2026-10-27T16:28:32+00:00", "what": "1260 N=96 control", "seconds": 13.218}
+{"utc": "2026-10-27T16:28:33+00:00", "what": "before 1260 N=128 main", "seconds": 0.083}
+{"utc": "2026-10-27T16:28:46+00:00", "what": "1260 N=128 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:28:46+00:00", "what": "before 1260 N=128 control", "seconds": 0.177}
+{"utc": "2026-10-27T16:28:59+00:00", "what": "1260 N=128 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:28:59+00:00", "what": "before 1260 N=192 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:29:12+00:00", "what": "1260 N=192 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:29:13+00:00", "what": "before 1260 N=192 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:29:26+00:00", "what": "1260 N=192 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:29:26+00:00", "what": "before 1260 N=256 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:29:39+00:00", "what": "1260 N=256 main", "seconds": 13.28}
+{"utc": "2026-10-27T16:29:39+00:00", "what": "before 1260 N=256 control", "seconds": 0.122}
+{"utc": "2026-10-27T16:29:53+00:00", "what": "1260 N=256 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:29:53+00:00", "what": "before 1260 N=384 main", "seconds": 0.169}
+{"utc": "2026-10-27T16:30:06+00:00", "what": "1260 N=384 main", "seconds": 13.231}
+{"utc": "2026-10-27T16:30:06+00:00", "what": "before 1260 N=384 control", "seconds": 0.168}
+{"utc": "2026-10-27T16:30:19+00:00", "what": "1260 N=384 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:30:19+00:00", "what": "before 1260 N=512 main", "seconds": 0.085}
+{"utc": "2026-10-27T16:30:33+00:00", "what": "1260 N=512 main", "seconds": 13.305}
+{"utc": "2026-10-27T16:30:33+00:00", "what": "before 1260 N=512 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:30:46+00:00", "what": "1260 N=512 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:30:46+00:00", "what": "before 1260 N=768 main", "seconds": 0.017}
+{"utc": "2026-10-27T16:30:59+00:00", "what": "1260 N=768 main", "seconds": 13.275}
+{"utc": "2026-10-27T16:30:59+00:00", "what": "before 1260 N=768 control", "seconds": 0.084}
+{"utc": "2026-10-27T16:31:13+00:00", "what": "1260 N=768 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:31:13+00:00", "what": "before 1260 N=1024 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:31:26+00:00", "what": "1260 N=1024 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:31:26+00:00", "what": "before 1260 N=1024 control", "seconds": 0.168}
+{"utc": "2026-10-27T16:31:39+00:00", "what": "1260 N=1024 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:31:39+00:00", "what": "before 1260 N=1536 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:31:53+00:00", "what": "1260 N=1536 main", "seconds": 13.307}
+{"utc": "2026-10-27T16:31:53+00:00", "what": "before 1260 N=1536 control", "seconds": 0.095}
+{"utc": "2026-10-27T16:32:06+00:00", "what": "1260 N=1536 control", "seconds": 13.301}
+{"utc": "2026-10-27T16:32:06+00:00", "what": "before 1260 N=2048 main", "seconds": 0.084}
+{"utc": "2026-10-27T16:32:19+00:00", "what": "1260 N=2048 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:32:20+00:00", "what": "before 1260 N=2048 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:32:33+00:00", "what": "1260 N=2048 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:32:33+00:00", "what": "before 1260 N=3072 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:32:46+00:00", "what": "1260 N=3072 main", "seconds": 13.232}
+{"utc": "2026-10-27T16:32:46+00:00", "what": "before 1260 N=3072 control", "seconds": 0.068}
+{"utc": "2026-10-27T16:32:59+00:00", "what": "1260 N=3072 control", "seconds": 13.315}
+{"utc": "2026-10-27T16:33:00+00:00", "what": "before 1260 N=4096 main", "seconds": 0.096}
+{"utc": "2026-10-27T16:33:13+00:00", "what": "1260 N=4096 main", "seconds": 13.233}
+{"utc": "2026-10-27T16:33:13+00:00", "what": "before 1260 N=4096 control", "seconds": 0.153}
+{"utc": "2026-10-27T16:33:26+00:00", "what": "1260 N=4096 control", "seconds": 13.231}
+{"utc": "2026-10-27T16:33:26+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T16:33:39+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T16:33:40+00:00", "what": "before undriven", "seconds": 0.343}
+{"utc": "2026-10-27T16:33:53+00:00", "what": "undriven", "seconds": 13.087}
+{"utc": "2026-10-27T16:33:53+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T16:34:06+00:00", "what": "sham", "seconds": 13.223}
+{"utc": "2026-10-27T16:34:06+00:00", "what": "before 768 N=2 main", "seconds": 0.017}
+{"utc": "2026-10-27T16:34:19+00:00", "what": "768 N=2 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:34:19+00:00", "what": "before 768 N=2 control", "seconds": 0.148}
+{"utc": "2026-10-27T16:34:33+00:00", "what": "768 N=2 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:34:33+00:00", "what": "before 768 N=3 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:34:46+00:00", "what": "768 N=3 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:34:46+00:00", "what": "before 768 N=3 control", "seconds": 0.084}
+{"utc": "2026-10-27T16:34:59+00:00", "what": "768 N=3 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:34:59+00:00", "what": "before 768 N=4 main", "seconds": 0.168}
+{"utc": "2026-10-27T16:35:13+00:00", "what": "768 N=4 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:35:13+00:00", "what": "before 768 N=4 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:35:26+00:00", "what": "768 N=4 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:35:26+00:00", "what": "before 768 N=6 main", "seconds": 0.075}
+{"utc": "2026-10-27T16:35:39+00:00", "what": "768 N=6 main", "seconds": 13.228}
+{"utc": "2026-10-27T16:35:39+00:00", "what": "before 768 N=6 control", "seconds": 0.069}
+{"utc": "2026-10-27T16:35:53+00:00", "what": "768 N=6 control", "seconds": 13.299}
+{"utc": "2026-10-27T16:35:53+00:00", "what": "before 768 N=8 main", "seconds": 0.1}
+{"utc": "2026-10-27T16:36:06+00:00", "what": "768 N=8 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:36:06+00:00", "what": "before 768 N=8 control", "seconds": 0.09}
+{"utc": "2026-10-27T16:36:19+00:00", "what": "768 N=8 control", "seconds": 13.311}
+{"utc": "2026-10-27T16:36:20+00:00", "what": "before 768 N=12 main", "seconds": 0.172}
+{"utc": "2026-10-27T16:36:33+00:00", "what": "768 N=12 main", "seconds": 13.236}
+{"utc": "2026-10-27T16:36:33+00:00", "what": "before 768 N=12 control", "seconds": 0.164}
+{"utc": "2026-10-27T16:36:46+00:00", "what": "768 N=12 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:36:46+00:00", "what": "before 768 N=16 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:37:00+00:00", "what": "768 N=16 main", "seconds": 13.316}
+{"utc": "2026-10-27T16:37:00+00:00", "what": "before 768 N=16 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:37:13+00:00", "what": "768 N=16 control", "seconds": 13.233}
+{"utc": "2026-10-27T16:37:13+00:00", "what": "before 768 N=24 main", "seconds": 0.166}
+{"utc": "2026-10-27T16:37:26+00:00", "what": "768 N=24 main", "seconds": 13.23}
+{"utc": "2026-10-27T16:37:27+00:00", "what": "before 768 N=24 control", "seconds": 0.167}
+{"utc": "2026-10-27T16:37:40+00:00", "what": "768 N=24 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:37:40+00:00", "what": "before 768 N=32 main", "seconds": 0.088}
+{"utc": "2026-10-27T16:37:53+00:00", "what": "768 N=32 main", "seconds": 13.304}
+{"utc": "2026-10-27T16:37:53+00:00", "what": "before 768 N=32 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:38:06+00:00", "what": "768 N=32 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:38:07+00:00", "what": "before 768 N=48 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:38:20+00:00", "what": "768 N=48 main", "seconds": 13.304}
+{"utc": "2026-10-27T16:38:20+00:00", "what": "before 768 N=48 control", "seconds": 0.097}
+{"utc": "2026-10-27T16:38:33+00:00", "what": "768 N=48 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:38:33+00:00", "what": "before 768 N=64 main", "seconds": 0.159}
+{"utc": "2026-10-27T16:38:47+00:00", "what": "768 N=64 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:38:47+00:00", "what": "before 768 N=64 control", "seconds": 0.173}
+{"utc": "2026-10-27T16:39:00+00:00", "what": "768 N=64 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:39:00+00:00", "what": "before 768 N=96 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:39:13+00:00", "what": "768 N=96 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:39:14+00:00", "what": "before 768 N=96 control", "seconds": 0.177}
+{"utc": "2026-10-27T16:39:27+00:00", "what": "768 N=96 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:39:27+00:00", "what": "before 768 N=128 main", "seconds": 0.17}
+{"utc": "2026-10-27T16:39:40+00:00", "what": "768 N=128 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:39:40+00:00", "what": "before 768 N=128 control", "seconds": 0.176}
+{"utc": "2026-10-27T16:39:54+00:00", "what": "768 N=128 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:39:54+00:00", "what": "before 768 N=192 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:40:07+00:00", "what": "768 N=192 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:40:07+00:00", "what": "before 768 N=192 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:40:20+00:00", "what": "768 N=192 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:40:20+00:00", "what": "before 768 N=256 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:40:34+00:00", "what": "768 N=256 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:40:34+00:00", "what": "before 768 N=256 control", "seconds": 0.173}
+{"utc": "2026-10-27T16:40:47+00:00", "what": "768 N=256 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:40:47+00:00", "what": "before 768 N=384 main", "seconds": 0.166}
+{"utc": "2026-10-27T16:41:00+00:00", "what": "768 N=384 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:41:01+00:00", "what": "before 768 N=384 control", "seconds": 0.173}
+{"utc": "2026-10-27T16:41:14+00:00", "what": "768 N=384 control", "seconds": 13.231}
+{"utc": "2026-10-27T16:41:14+00:00", "what": "before 768 N=512 main", "seconds": 0.169}
+{"utc": "2026-10-27T16:41:27+00:00", "what": "768 N=512 main", "seconds": 13.242}
+{"utc": "2026-10-27T16:41:27+00:00", "what": "before 768 N=512 control", "seconds": 0.166}
+{"utc": "2026-10-27T16:41:41+00:00", "what": "768 N=512 control", "seconds": 13.231}
+{"utc": "2026-10-27T16:41:41+00:00", "what": "before 768 N=768 main", "seconds": 0.162}
+{"utc": "2026-10-27T16:41:54+00:00", "what": "768 N=768 main", "seconds": 13.236}
+{"utc": "2026-10-27T16:41:54+00:00", "what": "before 768 N=768 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:42:07+00:00", "what": "768 N=768 control", "seconds": 13.232}
+{"utc": "2026-10-27T16:42:08+00:00", "what": "before 768 N=1024 main", "seconds": 0.156}
+{"utc": "2026-10-27T16:42:21+00:00", "what": "768 N=1024 main", "seconds": 13.233}
+{"utc": "2026-10-27T16:42:21+00:00", "what": "before 768 N=1024 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:42:34+00:00", "what": "768 N=1024 control", "seconds": 13.228}
+{"utc": "2026-10-27T16:42:34+00:00", "what": "before 768 N=1536 main", "seconds": 0.171}
+{"utc": "2026-10-27T16:42:48+00:00", "what": "768 N=1536 main", "seconds": 13.227}
+{"utc": "2026-10-27T16:42:48+00:00", "what": "before 768 N=1536 control", "seconds": 0.172}
+{"utc": "2026-10-27T16:43:01+00:00", "what": "768 N=1536 control", "seconds": 13.227}
+{"utc": "2026-10-27T16:43:01+00:00", "what": "before 768 N=2048 main", "seconds": 0.173}
+{"utc": "2026-10-27T16:43:14+00:00", "what": "768 N=2048 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:43:15+00:00", "what": "before 768 N=2048 control", "seconds": 0.174}
+{"utc": "2026-10-27T16:43:28+00:00", "what": "768 N=2048 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:43:28+00:00", "what": "before 768 N=3072 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:43:41+00:00", "what": "768 N=3072 main", "seconds": 13.232}
+{"utc": "2026-10-27T16:43:41+00:00", "what": "before 768 N=3072 control", "seconds": 0.16}
+{"utc": "2026-10-27T16:43:55+00:00", "what": "768 N=3072 control", "seconds": 13.233}
+{"utc": "2026-10-27T16:43:55+00:00", "what": "before 768 N=4096 main", "seconds": 0.174}
+{"utc": "2026-10-27T16:44:08+00:00", "what": "768 N=4096 main", "seconds": 13.232}
+{"utc": "2026-10-27T16:44:08+00:00", "what": "before 768 N=4096 control", "seconds": 0.161}
+{"utc": "2026-10-27T16:44:21+00:00", "what": "768 N=4096 control", "seconds": 13.234}
+{"utc": "2026-10-27T16:44:21+00:00", "what": "before sham", "seconds": 0.007}
+{"utc": "2026-10-27T16:44:35+00:00", "what": "sham", "seconds": 13.216}
+{"utc": "2026-10-27T16:44:35+00:00", "what": "before undriven", "seconds": 0.518}
+{"utc": "2026-10-27T16:44:48+00:00", "what": "undriven", "seconds": 13.086}
+{"utc": "2026-10-27T16:44:48+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T16:45:01+00:00", "what": "sham", "seconds": 13.215}
+{"utc": "2026-10-27T16:45:01+00:00", "what": "before 345 N=2 main", "seconds": 0.019}
+{"utc": "2026-10-27T16:45:15+00:00", "what": "345 N=2 main", "seconds": 13.231}
+{"utc": "2026-10-27T16:45:15+00:00", "what": "before 345 N=2 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:45:28+00:00", "what": "345 N=2 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:45:28+00:00", "what": "before 345 N=3 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:45:41+00:00", "what": "345 N=3 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:45:42+00:00", "what": "before 345 N=3 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:45:55+00:00", "what": "345 N=3 control", "seconds": 13.226}
+{"utc": "2026-10-27T16:45:55+00:00", "what": "before 345 N=4 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:46:08+00:00", "what": "345 N=4 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:46:08+00:00", "what": "before 345 N=4 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:46:21+00:00", "what": "345 N=4 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:46:22+00:00", "what": "before 345 N=6 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:46:35+00:00", "what": "345 N=6 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:46:35+00:00", "what": "before 345 N=6 control", "seconds": 0.085}
+{"utc": "2026-10-27T16:46:48+00:00", "what": "345 N=6 control", "seconds": 13.309}
+{"utc": "2026-10-27T16:46:48+00:00", "what": "before 345 N=8 main", "seconds": 0.083}
+{"utc": "2026-10-27T16:47:01+00:00", "what": "345 N=8 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:47:02+00:00", "what": "before 345 N=8 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:47:15+00:00", "what": "345 N=8 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:47:15+00:00", "what": "before 345 N=12 main", "seconds": 0.172}
+{"utc": "2026-10-27T16:47:28+00:00", "what": "345 N=12 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:47:28+00:00", "what": "before 345 N=12 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:47:41+00:00", "what": "345 N=12 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:47:42+00:00", "what": "before 345 N=16 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:47:55+00:00", "what": "345 N=16 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:47:55+00:00", "what": "before 345 N=16 control", "seconds": 0.171}
+{"utc": "2026-10-27T16:48:08+00:00", "what": "345 N=16 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:48:08+00:00", "what": "before 345 N=24 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:48:21+00:00", "what": "345 N=24 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:48:22+00:00", "what": "before 345 N=24 control", "seconds": 0.174}
+{"utc": "2026-10-27T16:48:35+00:00", "what": "345 N=24 control", "seconds": 13.221}
+{"utc": "2026-10-27T16:48:35+00:00", "what": "before 345 N=32 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:48:48+00:00", "what": "345 N=32 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:48:48+00:00", "what": "before 345 N=32 control", "seconds": 0.089}
+{"utc": "2026-10-27T16:49:02+00:00", "what": "345 N=32 control", "seconds": 13.3}
+{"utc": "2026-10-27T16:49:02+00:00", "what": "before 345 N=48 main", "seconds": 0.088}
+{"utc": "2026-10-27T16:49:15+00:00", "what": "345 N=48 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:49:15+00:00", "what": "before 345 N=48 control", "seconds": 0.083}
+{"utc": "2026-10-27T16:49:28+00:00", "what": "345 N=48 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:49:28+00:00", "what": "before 345 N=64 main", "seconds": 0.084}
+{"utc": "2026-10-27T16:49:42+00:00", "what": "345 N=64 main", "seconds": 13.301}
+{"utc": "2026-10-27T16:49:42+00:00", "what": "before 345 N=64 control", "seconds": 0.087}
+{"utc": "2026-10-27T16:49:55+00:00", "what": "345 N=64 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:49:55+00:00", "what": "before 345 N=96 main", "seconds": 0.177}
+{"utc": "2026-10-27T16:50:08+00:00", "what": "345 N=96 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:50:08+00:00", "what": "before 345 N=96 control", "seconds": 0.086}
+{"utc": "2026-10-27T16:50:22+00:00", "what": "345 N=96 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:50:22+00:00", "what": "before 345 N=128 main", "seconds": 0.17}
+{"utc": "2026-10-27T16:50:35+00:00", "what": "345 N=128 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:50:35+00:00", "what": "before 345 N=128 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:50:48+00:00", "what": "345 N=128 control", "seconds": 13.225}
+{"utc": "2026-10-27T16:50:48+00:00", "what": "before 345 N=192 main", "seconds": 0.167}
+{"utc": "2026-10-27T16:51:02+00:00", "what": "345 N=192 main", "seconds": 13.223}
+{"utc": "2026-10-27T16:51:02+00:00", "what": "before 345 N=192 control", "seconds": 0.089}
+{"utc": "2026-10-27T16:51:15+00:00", "what": "345 N=192 control", "seconds": 13.304}
+{"utc": "2026-10-27T16:51:15+00:00", "what": "before 345 N=256 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:51:28+00:00", "what": "345 N=256 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:51:29+00:00", "what": "before 345 N=256 control", "seconds": 0.174}
+{"utc": "2026-10-27T16:51:42+00:00", "what": "345 N=256 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:51:42+00:00", "what": "before 345 N=384 main", "seconds": 0.091}
+{"utc": "2026-10-27T16:51:55+00:00", "what": "345 N=384 main", "seconds": 13.298}
+{"utc": "2026-10-27T16:51:55+00:00", "what": "before 345 N=384 control", "seconds": 0.087}
+{"utc": "2026-10-27T16:52:08+00:00", "what": "345 N=384 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:52:09+00:00", "what": "before 345 N=512 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:52:22+00:00", "what": "345 N=512 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:52:22+00:00", "what": "before 345 N=512 control", "seconds": 0.173}
+{"utc": "2026-10-27T16:52:35+00:00", "what": "345 N=512 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:52:35+00:00", "what": "before 345 N=768 main", "seconds": 0.079}
+{"utc": "2026-10-27T16:52:48+00:00", "what": "345 N=768 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:52:49+00:00", "what": "before 345 N=768 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:53:02+00:00", "what": "345 N=768 control", "seconds": 13.223}
+{"utc": "2026-10-27T16:53:02+00:00", "what": "before 345 N=1024 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:53:15+00:00", "what": "345 N=1024 main", "seconds": 13.224}
+{"utc": "2026-10-27T16:53:15+00:00", "what": "before 345 N=1024 control", "seconds": 0.17}
+{"utc": "2026-10-27T16:53:28+00:00", "what": "345 N=1024 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:53:29+00:00", "what": "before 345 N=1536 main", "seconds": 0.175}
+{"utc": "2026-10-27T16:53:42+00:00", "what": "345 N=1536 main", "seconds": 13.226}
+{"utc": "2026-10-27T16:53:42+00:00", "what": "before 345 N=1536 control", "seconds": 0.175}
+{"utc": "2026-10-27T16:53:55+00:00", "what": "345 N=1536 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:53:55+00:00", "what": "before 345 N=2048 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:54:09+00:00", "what": "345 N=2048 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:54:09+00:00", "what": "before 345 N=2048 control", "seconds": 0.079}
+{"utc": "2026-10-27T16:54:22+00:00", "what": "345 N=2048 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:54:22+00:00", "what": "before 345 N=3072 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:54:35+00:00", "what": "345 N=3072 main", "seconds": 13.311}
+{"utc": "2026-10-27T16:54:35+00:00", "what": "before 345 N=3072 control", "seconds": 0.096}
+{"utc": "2026-10-27T16:54:49+00:00", "what": "345 N=3072 control", "seconds": 13.302}
+{"utc": "2026-10-27T16:54:49+00:00", "what": "before 345 N=4096 main", "seconds": 0.083}
+{"utc": "2026-10-27T16:55:02+00:00", "what": "345 N=4096 main", "seconds": 13.229}
+{"utc": "2026-10-27T16:55:02+00:00", "what": "before 345 N=4096 control", "seconds": 0.171}
+{"utc": "2026-10-27T16:55:15+00:00", "what": "345 N=4096 control", "seconds": 13.229}
+{"utc": "2026-10-27T16:55:15+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T16:55:29+00:00", "what": "sham", "seconds": 13.212}
+{"utc": "2026-10-27T16:55:29+00:00", "what": "before undriven", "seconds": 0.246}
+{"utc": "2026-10-27T16:55:42+00:00", "what": "undriven", "seconds": 13.085}
+{"utc": "2026-10-27T16:55:42+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T16:55:55+00:00", "what": "sham", "seconds": 13.214}
+{"utc": "2026-10-27T16:55:55+00:00", "what": "before 84 N=2 main", "seconds": 0.017}
+{"utc": "2026-10-27T16:56:08+00:00", "what": "84 N=2 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:56:09+00:00", "what": "before 84 N=2 control", "seconds": 0.169}
+{"utc": "2026-10-27T16:56:22+00:00", "what": "84 N=2 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:56:22+00:00", "what": "before 84 N=3 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:56:35+00:00", "what": "84 N=3 main", "seconds": 13.225}
+{"utc": "2026-10-27T16:56:35+00:00", "what": "before 84 N=3 control", "seconds": 0.08}
+{"utc": "2026-10-27T16:56:48+00:00", "what": "84 N=3 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:56:48+00:00", "what": "before 84 N=4 main", "seconds": 0.081}
+{"utc": "2026-10-27T16:57:02+00:00", "what": "84 N=4 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:57:02+00:00", "what": "before 84 N=4 control", "seconds": 0.176}
+{"utc": "2026-10-27T16:57:15+00:00", "what": "84 N=4 control", "seconds": 13.22}
+{"utc": "2026-10-27T16:57:15+00:00", "what": "before 84 N=6 main", "seconds": 0.082}
+{"utc": "2026-10-27T16:57:28+00:00", "what": "84 N=6 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:57:28+00:00", "what": "before 84 N=6 control", "seconds": 0.085}
+{"utc": "2026-10-27T16:57:42+00:00", "what": "84 N=6 control", "seconds": 13.3}
+{"utc": "2026-10-27T16:57:42+00:00", "what": "before 84 N=8 main", "seconds": 0.088}
+{"utc": "2026-10-27T16:57:55+00:00", "what": "84 N=8 main", "seconds": 13.222}
+{"utc": "2026-10-27T16:57:55+00:00", "what": "before 84 N=8 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:58:08+00:00", "what": "84 N=8 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:58:08+00:00", "what": "before 84 N=12 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:58:22+00:00", "what": "84 N=12 main", "seconds": 13.301}
+{"utc": "2026-10-27T16:58:22+00:00", "what": "before 84 N=12 control", "seconds": 0.088}
+{"utc": "2026-10-27T16:58:35+00:00", "what": "84 N=12 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:58:35+00:00", "what": "before 84 N=16 main", "seconds": 0.08}
+{"utc": "2026-10-27T16:58:48+00:00", "what": "84 N=16 main", "seconds": 13.221}
+{"utc": "2026-10-27T16:58:48+00:00", "what": "before 84 N=16 control", "seconds": 0.081}
+{"utc": "2026-10-27T16:59:02+00:00", "what": "84 N=16 control", "seconds": 13.222}
+{"utc": "2026-10-27T16:59:02+00:00", "what": "before 84 N=24 main", "seconds": 0.086}
+{"utc": "2026-10-27T16:59:15+00:00", "what": "84 N=24 main", "seconds": 13.293}
+{"utc": "2026-10-27T16:59:15+00:00", "what": "before 84 N=24 control", "seconds": 0.11}
+{"utc": "2026-10-27T16:59:28+00:00", "what": "84 N=24 control", "seconds": 13.298}
+{"utc": "2026-10-27T16:59:29+00:00", "what": "before 84 N=32 main", "seconds": 0.102}
+{"utc": "2026-10-27T16:59:42+00:00", "what": "84 N=32 main", "seconds": 13.3}
+{"utc": "2026-10-27T16:59:42+00:00", "what": "before 84 N=32 control", "seconds": 0.084}
+{"utc": "2026-10-27T16:59:55+00:00", "what": "84 N=32 control", "seconds": 13.224}
+{"utc": "2026-10-27T16:59:55+00:00", "what": "before 84 N=48 main", "seconds": 0.083}
+{"utc": "2026-10-27T17:00:09+00:00", "what": "84 N=48 main", "seconds": 13.239}
+{"utc": "2026-10-27T17:00:09+00:00", "what": "before 84 N=48 control", "seconds": 0.163}
+{"utc": "2026-10-27T17:00:22+00:00", "what": "84 N=48 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:00:22+00:00", "what": "before 84 N=64 main", "seconds": 0.168}
+{"utc": "2026-10-27T17:00:35+00:00", "what": "84 N=64 main", "seconds": 13.221}
+{"utc": "2026-10-27T17:00:35+00:00", "what": "before 84 N=64 control", "seconds": 0.086}
+{"utc": "2026-10-27T17:00:49+00:00", "what": "84 N=64 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:00:49+00:00", "what": "before 84 N=96 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:01:02+00:00", "what": "84 N=96 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:01:02+00:00", "what": "before 84 N=96 control", "seconds": 0.087}
+{"utc": "2026-10-27T17:01:15+00:00", "what": "84 N=96 control", "seconds": 13.302}
+{"utc": "2026-10-27T17:01:15+00:00", "what": "before 84 N=128 main", "seconds": 0.094}
+{"utc": "2026-10-27T17:01:29+00:00", "what": "84 N=128 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:01:29+00:00", "what": "before 84 N=128 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:01:42+00:00", "what": "84 N=128 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:01:42+00:00", "what": "before 84 N=192 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:01:55+00:00", "what": "84 N=192 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:01:55+00:00", "what": "before 84 N=192 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:02:09+00:00", "what": "84 N=192 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:02:09+00:00", "what": "before 84 N=256 main", "seconds": 0.172}
+{"utc": "2026-10-27T17:02:22+00:00", "what": "84 N=256 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:02:22+00:00", "what": "before 84 N=256 control", "seconds": 0.09}
+{"utc": "2026-10-27T17:02:35+00:00", "what": "84 N=256 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:02:36+00:00", "what": "before 84 N=384 main", "seconds": 0.165}
+{"utc": "2026-10-27T17:02:49+00:00", "what": "84 N=384 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:02:49+00:00", "what": "before 84 N=384 control", "seconds": 0.081}
+{"utc": "2026-10-27T17:03:02+00:00", "what": "84 N=384 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:03:02+00:00", "what": "before 84 N=512 main", "seconds": 0.09}
+{"utc": "2026-10-27T17:03:15+00:00", "what": "84 N=512 main", "seconds": 13.299}
+{"utc": "2026-10-27T17:03:16+00:00", "what": "before 84 N=512 control", "seconds": 0.085}
+{"utc": "2026-10-27T17:03:29+00:00", "what": "84 N=512 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:03:29+00:00", "what": "before 84 N=768 main", "seconds": 0.084}
+{"utc": "2026-10-27T17:03:42+00:00", "what": "84 N=768 main", "seconds": 13.233}
+{"utc": "2026-10-27T17:03:42+00:00", "what": "before 84 N=768 control", "seconds": 0.158}
+{"utc": "2026-10-27T17:03:55+00:00", "what": "84 N=768 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:03:56+00:00", "what": "before 84 N=1024 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:04:09+00:00", "what": "84 N=1024 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:04:09+00:00", "what": "before 84 N=1024 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:04:22+00:00", "what": "84 N=1024 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:04:22+00:00", "what": "before 84 N=1536 main", "seconds": 0.082}
+{"utc": "2026-10-27T17:04:35+00:00", "what": "84 N=1536 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:04:36+00:00", "what": "before 84 N=1536 control", "seconds": 0.173}
+{"utc": "2026-10-27T17:04:49+00:00", "what": "84 N=1536 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:04:49+00:00", "what": "before 84 N=2048 main", "seconds": 0.174}
+{"utc": "2026-10-27T17:05:02+00:00", "what": "84 N=2048 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:05:02+00:00", "what": "before 84 N=2048 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:05:16+00:00", "what": "84 N=2048 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:05:16+00:00", "what": "before 84 N=3072 main", "seconds": 0.082}
+{"utc": "2026-10-27T17:05:29+00:00", "what": "84 N=3072 main", "seconds": 13.314}
+{"utc": "2026-10-27T17:05:29+00:00", "what": "before 84 N=3072 control", "seconds": 0.177}
+{"utc": "2026-10-27T17:05:42+00:00", "what": "84 N=3072 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:05:43+00:00", "what": "before 84 N=4096 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:05:56+00:00", "what": "84 N=4096 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:05:56+00:00", "what": "before 84 N=4096 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:06:09+00:00", "what": "84 N=4096 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:06:09+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:06:23+00:00", "what": "sham", "seconds": 13.216}
+{"utc": "2026-10-27T17:06:23+00:00", "what": "before undriven", "seconds": 0.272}
+{"utc": "2026-10-27T17:06:36+00:00", "what": "undriven", "seconds": 13.087}
+{"utc": "2026-10-27T17:06:36+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:06:49+00:00", "what": "sham", "seconds": 13.211}
+{"utc": "2026-10-27T17:06:49+00:00", "what": "before 25344 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T17:07:02+00:00", "what": "25344 N=2 main", "seconds": 13.221}
+{"utc": "2026-10-27T17:07:02+00:00", "what": "before 25344 N=2 control", "seconds": 0.146}
+{"utc": "2026-10-27T17:07:16+00:00", "what": "25344 N=2 control", "seconds": 13.218}
+{"utc": "2026-10-27T17:07:16+00:00", "what": "before 25344 N=3 main", "seconds": 0.089}
+{"utc": "2026-10-27T17:07:29+00:00", "what": "25344 N=3 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:07:29+00:00", "what": "before 25344 N=3 control", "seconds": 0.177}
+{"utc": "2026-10-27T17:07:42+00:00", "what": "25344 N=3 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:07:43+00:00", "what": "before 25344 N=4 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:07:56+00:00", "what": "25344 N=4 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:07:56+00:00", "what": "before 25344 N=4 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:08:09+00:00", "what": "25344 N=4 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:08:09+00:00", "what": "before 25344 N=6 main", "seconds": 0.176}
+{"utc": "2026-10-27T17:08:23+00:00", "what": "25344 N=6 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:08:23+00:00", "what": "before 25344 N=6 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:08:36+00:00", "what": "25344 N=6 control", "seconds": 13.221}
+{"utc": "2026-10-27T17:08:36+00:00", "what": "before 25344 N=8 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:08:49+00:00", "what": "25344 N=8 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:08:49+00:00", "what": "before 25344 N=8 control", "seconds": 0.09}
+{"utc": "2026-10-27T17:09:03+00:00", "what": "25344 N=8 control", "seconds": 13.299}
+{"utc": "2026-10-27T17:09:03+00:00", "what": "before 25344 N=12 main", "seconds": 0.089}
+{"utc": "2026-10-27T17:09:16+00:00", "what": "25344 N=12 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:09:16+00:00", "what": "before 25344 N=12 control", "seconds": 0.174}
+{"utc": "2026-10-27T17:09:29+00:00", "what": "25344 N=12 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:09:29+00:00", "what": "before 25344 N=16 main", "seconds": 0.093}
+{"utc": "2026-10-27T17:09:43+00:00", "what": "25344 N=16 main", "seconds": 13.299}
+{"utc": "2026-10-27T17:09:43+00:00", "what": "before 25344 N=16 control", "seconds": 0.086}
+{"utc": "2026-10-27T17:09:56+00:00", "what": "25344 N=16 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:09:56+00:00", "what": "before 25344 N=24 main", "seconds": 0.175}
+{"utc": "2026-10-27T17:10:09+00:00", "what": "25344 N=24 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:10:09+00:00", "what": "before 25344 N=24 control", "seconds": 0.083}
+{"utc": "2026-10-27T17:10:23+00:00", "what": "25344 N=24 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:10:23+00:00", "what": "before 25344 N=32 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:10:36+00:00", "what": "25344 N=32 main", "seconds": 13.305}
+{"utc": "2026-10-27T17:10:36+00:00", "what": "before 25344 N=32 control", "seconds": 0.093}
+{"utc": "2026-10-27T17:10:49+00:00", "what": "25344 N=32 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:10:50+00:00", "what": "before 25344 N=48 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:11:03+00:00", "what": "25344 N=48 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:11:03+00:00", "what": "before 25344 N=48 control", "seconds": 0.091}
+{"utc": "2026-10-27T17:11:16+00:00", "what": "25344 N=48 control", "seconds": 13.303}
+{"utc": "2026-10-27T17:11:16+00:00", "what": "before 25344 N=64 main", "seconds": 0.085}
+{"utc": "2026-10-27T17:11:29+00:00", "what": "25344 N=64 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:11:30+00:00", "what": "before 25344 N=64 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:11:43+00:00", "what": "25344 N=64 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:11:43+00:00", "what": "before 25344 N=96 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:11:56+00:00", "what": "25344 N=96 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:11:56+00:00", "what": "before 25344 N=96 control", "seconds": 0.179}
+{"utc": "2026-10-27T17:12:10+00:00", "what": "25344 N=96 control", "seconds": 13.228}
+{"utc": "2026-10-27T17:12:10+00:00", "what": "before 25344 N=128 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:12:23+00:00", "what": "25344 N=128 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:12:23+00:00", "what": "before 25344 N=128 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:12:36+00:00", "what": "25344 N=128 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:12:37+00:00", "what": "before 25344 N=192 main", "seconds": 0.09}
+{"utc": "2026-10-27T17:12:50+00:00", "what": "25344 N=192 main", "seconds": 13.3}
+{"utc": "2026-10-27T17:12:50+00:00", "what": "before 25344 N=192 control", "seconds": 0.084}
+{"utc": "2026-10-27T17:13:03+00:00", "what": "25344 N=192 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:13:03+00:00", "what": "before 25344 N=256 main", "seconds": 0.079}
+{"utc": "2026-10-27T17:13:16+00:00", "what": "25344 N=256 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:13:17+00:00", "what": "before 25344 N=256 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:13:30+00:00", "what": "25344 N=256 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:13:30+00:00", "what": "before 25344 N=384 main", "seconds": 0.087}
+{"utc": "2026-10-27T17:13:43+00:00", "what": "25344 N=384 main", "seconds": 13.303}
+{"utc": "2026-10-27T17:13:43+00:00", "what": "before 25344 N=384 control", "seconds": 0.086}
+{"utc": "2026-10-27T17:13:57+00:00", "what": "25344 N=384 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:13:57+00:00", "what": "before 25344 N=512 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:14:10+00:00", "what": "25344 N=512 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:14:10+00:00", "what": "before 25344 N=512 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:14:23+00:00", "what": "25344 N=512 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:14:23+00:00", "what": "before 25344 N=768 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:14:37+00:00", "what": "25344 N=768 main", "seconds": 13.221}
+{"utc": "2026-10-27T17:14:37+00:00", "what": "before 25344 N=768 control", "seconds": 0.086}
+{"utc": "2026-10-27T17:14:50+00:00", "what": "25344 N=768 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:14:50+00:00", "what": "before 25344 N=1024 main", "seconds": 0.168}
+{"utc": "2026-10-27T17:15:03+00:00", "what": "25344 N=1024 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:15:03+00:00", "what": "before 25344 N=1024 control", "seconds": 0.175}
+{"utc": "2026-10-27T17:15:17+00:00", "what": "25344 N=1024 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:15:17+00:00", "what": "before 25344 N=1536 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:15:30+00:00", "what": "25344 N=1536 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:15:30+00:00", "what": "before 25344 N=1536 control", "seconds": 0.176}
+{"utc": "2026-10-27T17:15:43+00:00", "what": "25344 N=1536 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:15:44+00:00", "what": "before 25344 N=2048 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:15:57+00:00", "what": "25344 N=2048 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:15:57+00:00", "what": "before 25344 N=2048 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:16:10+00:00", "what": "25344 N=2048 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:16:10+00:00", "what": "before 25344 N=3072 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:16:24+00:00", "what": "25344 N=3072 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:16:24+00:00", "what": "before 25344 N=3072 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:16:37+00:00", "what": "25344 N=3072 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:16:37+00:00", "what": "before 25344 N=4096 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:16:50+00:00", "what": "25344 N=4096 main", "seconds": 13.309}
+{"utc": "2026-10-27T17:16:50+00:00", "what": "before 25344 N=4096 control", "seconds": 0.097}
+{"utc": "2026-10-27T17:17:04+00:00", "what": "25344 N=4096 control", "seconds": 13.305}
+{"utc": "2026-10-27T17:17:04+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:17:17+00:00", "what": "sham", "seconds": 13.214}
+{"utc": "2026-10-27T17:17:18+00:00", "what": "before undriven", "seconds": 0.52}
+{"utc": "2026-10-27T17:17:31+00:00", "what": "undriven", "seconds": 13.086}
+{"utc": "2026-10-27T17:17:31+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T17:17:44+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T17:17:44+00:00", "what": "before 37106 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T17:17:57+00:00", "what": "37106 N=2 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:17:57+00:00", "what": "before 37106 N=2 control", "seconds": 0.098}
+{"utc": "2026-10-27T17:18:10+00:00", "what": "37106 N=2 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:18:10+00:00", "what": "before 37106 N=3 main", "seconds": 0.086}
+{"utc": "2026-10-27T17:18:24+00:00", "what": "37106 N=3 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:18:24+00:00", "what": "before 37106 N=3 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:18:37+00:00", "what": "37106 N=3 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:18:37+00:00", "what": "before 37106 N=4 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:18:50+00:00", "what": "37106 N=4 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:18:51+00:00", "what": "before 37106 N=4 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:19:04+00:00", "what": "37106 N=4 control", "seconds": 13.228}
+{"utc": "2026-10-27T17:19:04+00:00", "what": "before 37106 N=6 main", "seconds": 0.172}
+{"utc": "2026-10-27T17:19:17+00:00", "what": "37106 N=6 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:19:17+00:00", "what": "before 37106 N=6 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:19:31+00:00", "what": "37106 N=6 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:19:31+00:00", "what": "before 37106 N=8 main", "seconds": 0.167}
+{"utc": "2026-10-27T17:19:44+00:00", "what": "37106 N=8 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:19:44+00:00", "what": "before 37106 N=8 control", "seconds": 0.089}
+{"utc": "2026-10-27T17:19:57+00:00", "what": "37106 N=8 control", "seconds": 13.302}
+{"utc": "2026-10-27T17:19:57+00:00", "what": "before 37106 N=12 main", "seconds": 0.084}
+{"utc": "2026-10-27T17:20:11+00:00", "what": "37106 N=12 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:20:11+00:00", "what": "before 37106 N=12 control", "seconds": 0.174}
+{"utc": "2026-10-27T17:20:24+00:00", "what": "37106 N=12 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:20:24+00:00", "what": "before 37106 N=16 main", "seconds": 0.174}
+{"utc": "2026-10-27T17:20:37+00:00", "what": "37106 N=16 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:20:38+00:00", "what": "before 37106 N=16 control", "seconds": 0.089}
+{"utc": "2026-10-27T17:20:51+00:00", "what": "37106 N=16 control", "seconds": 13.303}
+{"utc": "2026-10-27T17:20:51+00:00", "what": "before 37106 N=24 main", "seconds": 0.085}
+{"utc": "2026-10-27T17:21:04+00:00", "what": "37106 N=24 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:21:04+00:00", "what": "before 37106 N=24 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:21:17+00:00", "what": "37106 N=24 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:21:18+00:00", "what": "before 37106 N=32 main", "seconds": 0.168}
+{"utc": "2026-10-27T17:21:31+00:00", "what": "37106 N=32 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:21:31+00:00", "what": "before 37106 N=32 control", "seconds": 0.087}
+{"utc": "2026-10-27T17:21:44+00:00", "what": "37106 N=32 control", "seconds": 13.304}
+{"utc": "2026-10-27T17:21:44+00:00", "what": "before 37106 N=48 main", "seconds": 0.101}
+{"utc": "2026-10-27T17:21:58+00:00", "what": "37106 N=48 main", "seconds": 13.305}
+{"utc": "2026-10-27T17:21:58+00:00", "what": "before 37106 N=48 control", "seconds": 0.178}
+{"utc": "2026-10-27T17:22:11+00:00", "what": "37106 N=48 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:22:11+00:00", "what": "before 37106 N=64 main", "seconds": 0.084}
+{"utc": "2026-10-27T17:22:24+00:00", "what": "37106 N=64 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:22:25+00:00", "what": "before 37106 N=64 control", "seconds": 0.165}
+{"utc": "2026-10-27T17:22:38+00:00", "what": "37106 N=64 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:22:38+00:00", "what": "before 37106 N=96 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:22:51+00:00", "what": "37106 N=96 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:22:51+00:00", "what": "before 37106 N=96 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:23:04+00:00", "what": "37106 N=96 control", "seconds": 13.228}
+{"utc": "2026-10-27T17:23:05+00:00", "what": "before 37106 N=128 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:23:18+00:00", "what": "37106 N=128 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:23:18+00:00", "what": "before 37106 N=128 control", "seconds": 0.174}
+{"utc": "2026-10-27T17:23:31+00:00", "what": "37106 N=128 control", "seconds": 13.232}
+{"utc": "2026-10-27T17:23:31+00:00", "what": "before 37106 N=192 main", "seconds": 0.161}
+{"utc": "2026-10-27T17:23:45+00:00", "what": "37106 N=192 main", "seconds": 13.232}
+{"utc": "2026-10-27T17:23:45+00:00", "what": "before 37106 N=192 control", "seconds": 0.175}
+{"utc": "2026-10-27T17:23:58+00:00", "what": "37106 N=192 control", "seconds": 13.232}
+{"utc": "2026-10-27T17:23:58+00:00", "what": "before 37106 N=256 main", "seconds": 0.166}
+{"utc": "2026-10-27T17:24:12+00:00", "what": "37106 N=256 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:24:12+00:00", "what": "before 37106 N=256 control", "seconds": 0.168}
+{"utc": "2026-10-27T17:24:25+00:00", "what": "37106 N=256 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:24:25+00:00", "what": "before 37106 N=384 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:24:38+00:00", "what": "37106 N=384 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:24:38+00:00", "what": "before 37106 N=384 control", "seconds": 0.175}
+{"utc": "2026-10-27T17:24:52+00:00", "what": "37106 N=384 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:24:52+00:00", "what": "before 37106 N=512 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:25:05+00:00", "what": "37106 N=512 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:25:05+00:00", "what": "before 37106 N=512 control", "seconds": 0.176}
+{"utc": "2026-10-27T17:25:18+00:00", "what": "37106 N=512 control", "seconds": 13.221}
+{"utc": "2026-10-27T17:25:19+00:00", "what": "before 37106 N=768 main", "seconds": 0.176}
+{"utc": "2026-10-27T17:25:32+00:00", "what": "37106 N=768 main", "seconds": 13.22}
+{"utc": "2026-10-27T17:25:32+00:00", "what": "before 37106 N=768 control", "seconds": 0.084}
+{"utc": "2026-10-27T17:25:45+00:00", "what": "37106 N=768 control", "seconds": 13.22}
+{"utc": "2026-10-27T17:25:45+00:00", "what": "before 37106 N=1024 main", "seconds": 0.175}
+{"utc": "2026-10-27T17:25:59+00:00", "what": "37106 N=1024 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:25:59+00:00", "what": "before 37106 N=1024 control", "seconds": 0.175}
+{"utc": "2026-10-27T17:26:12+00:00", "what": "37106 N=1024 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:26:12+00:00", "what": "before 37106 N=1536 main", "seconds": 0.174}
+{"utc": "2026-10-27T17:26:25+00:00", "what": "37106 N=1536 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:26:25+00:00", "what": "before 37106 N=1536 control", "seconds": 0.177}
+{"utc": "2026-10-27T17:26:39+00:00", "what": "37106 N=1536 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:26:39+00:00", "what": "before 37106 N=2048 main", "seconds": 0.179}
+{"utc": "2026-10-27T17:26:52+00:00", "what": "37106 N=2048 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:26:52+00:00", "what": "before 37106 N=2048 control", "seconds": 0.173}
+{"utc": "2026-10-27T17:27:06+00:00", "what": "37106 N=2048 control", "seconds": 13.228}
+{"utc": "2026-10-27T17:27:06+00:00", "what": "before 37106 N=3072 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:27:19+00:00", "what": "37106 N=3072 main", "seconds": 13.234}
+{"utc": "2026-10-27T17:27:19+00:00", "what": "before 37106 N=3072 control", "seconds": 0.16}
+{"utc": "2026-10-27T17:27:32+00:00", "what": "37106 N=3072 control", "seconds": 13.233}
+{"utc": "2026-10-27T17:27:32+00:00", "what": "before 37106 N=4096 main", "seconds": 0.162}
+{"utc": "2026-10-27T17:27:46+00:00", "what": "37106 N=4096 main", "seconds": 13.234}
+{"utc": "2026-10-27T17:27:46+00:00", "what": "before 37106 N=4096 control", "seconds": 0.163}
+{"utc": "2026-10-27T17:27:59+00:00", "what": "37106 N=4096 control", "seconds": 13.233}
+{"utc": "2026-10-27T17:27:59+00:00", "what": "before sham", "seconds": 0.008}
+{"utc": "2026-10-27T17:28:12+00:00", "what": "sham", "seconds": 13.219}
+{"utc": "2026-10-27T17:28:13+00:00", "what": "before undriven", "seconds": 0.244}
+{"utc": "2026-10-27T17:28:26+00:00", "what": "undriven", "seconds": 13.085}
+{"utc": "2026-10-27T17:28:26+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:28:39+00:00", "what": "sham", "seconds": 13.214}
+{"utc": "2026-10-27T17:28:39+00:00", "what": "before 74 N=2 main", "seconds": 0.015}
+{"utc": "2026-10-27T17:28:52+00:00", "what": "74 N=2 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:28:52+00:00", "what": "before 74 N=2 control", "seconds": 0.167}
+{"utc": "2026-10-27T17:29:06+00:00", "what": "74 N=2 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:29:06+00:00", "what": "before 74 N=3 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:29:19+00:00", "what": "74 N=3 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:29:19+00:00", "what": "before 74 N=3 control", "seconds": 0.175}
+{"utc": "2026-10-27T17:29:32+00:00", "what": "74 N=3 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:29:32+00:00", "what": "before 74 N=4 main", "seconds": 0.174}
+{"utc": "2026-10-27T17:29:46+00:00", "what": "74 N=4 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:29:46+00:00", "what": "before 74 N=4 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:29:59+00:00", "what": "74 N=4 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:29:59+00:00", "what": "before 74 N=6 main", "seconds": 0.087}
+{"utc": "2026-10-27T17:30:12+00:00", "what": "74 N=6 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:30:13+00:00", "what": "before 74 N=6 control", "seconds": 0.161}
+{"utc": "2026-10-27T17:30:26+00:00", "what": "74 N=6 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:30:26+00:00", "what": "before 74 N=8 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:30:39+00:00", "what": "74 N=8 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:30:39+00:00", "what": "before 74 N=8 control", "seconds": 0.173}
+{"utc": "2026-10-27T17:30:52+00:00", "what": "74 N=8 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:30:53+00:00", "what": "before 74 N=12 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:31:06+00:00", "what": "74 N=12 main", "seconds": 13.309}
+{"utc": "2026-10-27T17:31:06+00:00", "what": "before 74 N=12 control", "seconds": 0.083}
+{"utc": "2026-10-27T17:31:19+00:00", "what": "74 N=12 control", "seconds": 13.228}
+{"utc": "2026-10-27T17:31:19+00:00", "what": "before 74 N=16 main", "seconds": 0.085}
+{"utc": "2026-10-27T17:31:33+00:00", "what": "74 N=16 main", "seconds": 13.305}
+{"utc": "2026-10-27T17:31:33+00:00", "what": "before 74 N=16 control", "seconds": 0.082}
+{"utc": "2026-10-27T17:31:46+00:00", "what": "74 N=16 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:31:46+00:00", "what": "before 74 N=24 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:31:59+00:00", "what": "74 N=24 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:31:59+00:00", "what": "before 74 N=24 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:32:13+00:00", "what": "74 N=24 control", "seconds": 13.31}
+{"utc": "2026-10-27T17:32:13+00:00", "what": "before 74 N=32 main", "seconds": 0.099}
+{"utc": "2026-10-27T17:32:26+00:00", "what": "74 N=32 main", "seconds": 13.296}
+{"utc": "2026-10-27T17:32:26+00:00", "what": "before 74 N=32 control", "seconds": 0.089}
+{"utc": "2026-10-27T17:32:39+00:00", "what": "74 N=32 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:32:39+00:00", "what": "before 74 N=48 main", "seconds": 0.082}
+{"utc": "2026-10-27T17:32:53+00:00", "what": "74 N=48 main", "seconds": 13.222}
+{"utc": "2026-10-27T17:32:53+00:00", "what": "before 74 N=48 control", "seconds": 0.081}
+{"utc": "2026-10-27T17:33:06+00:00", "what": "74 N=48 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:33:06+00:00", "what": "before 74 N=64 main", "seconds": 0.162}
+{"utc": "2026-10-27T17:33:19+00:00", "what": "74 N=64 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:33:19+00:00", "what": "before 74 N=64 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:33:33+00:00", "what": "74 N=64 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:33:33+00:00", "what": "before 74 N=96 main", "seconds": 0.172}
+{"utc": "2026-10-27T17:33:46+00:00", "what": "74 N=96 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:33:46+00:00", "what": "before 74 N=96 control", "seconds": 0.081}
+{"utc": "2026-10-27T17:33:59+00:00", "what": "74 N=96 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:33:59+00:00", "what": "before 74 N=128 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:34:13+00:00", "what": "74 N=128 main", "seconds": 13.296}
+{"utc": "2026-10-27T17:34:13+00:00", "what": "before 74 N=128 control", "seconds": 0.097}
+{"utc": "2026-10-27T17:34:26+00:00", "what": "74 N=128 control", "seconds": 13.222}
+{"utc": "2026-10-27T17:34:26+00:00", "what": "before 74 N=192 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:34:39+00:00", "what": "74 N=192 main", "seconds": 13.221}
+{"utc": "2026-10-27T17:34:39+00:00", "what": "before 74 N=192 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:34:53+00:00", "what": "74 N=192 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:34:53+00:00", "what": "before 74 N=256 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:35:06+00:00", "what": "74 N=256 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:35:06+00:00", "what": "before 74 N=256 control", "seconds": 0.079}
+{"utc": "2026-10-27T17:35:19+00:00", "what": "74 N=256 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:35:19+00:00", "what": "before 74 N=384 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:35:33+00:00", "what": "74 N=384 main", "seconds": 13.308}
+{"utc": "2026-10-27T17:35:33+00:00", "what": "before 74 N=384 control", "seconds": 0.084}
+{"utc": "2026-10-27T17:35:46+00:00", "what": "74 N=384 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:35:46+00:00", "what": "before 74 N=512 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:35:59+00:00", "what": "74 N=512 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:36:00+00:00", "what": "before 74 N=512 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:36:13+00:00", "what": "74 N=512 control", "seconds": 13.22}
+{"utc": "2026-10-27T17:36:13+00:00", "what": "before 74 N=768 main", "seconds": 0.082}
+{"utc": "2026-10-27T17:36:26+00:00", "what": "74 N=768 main", "seconds": 13.219}
+{"utc": "2026-10-27T17:36:26+00:00", "what": "before 74 N=768 control", "seconds": 0.089}
+{"utc": "2026-10-27T17:36:39+00:00", "what": "74 N=768 control", "seconds": 13.22}
+{"utc": "2026-10-27T17:36:40+00:00", "what": "before 74 N=1024 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:36:53+00:00", "what": "74 N=1024 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:36:53+00:00", "what": "before 74 N=1024 control", "seconds": 0.176}
+{"utc": "2026-10-27T17:37:06+00:00", "what": "74 N=1024 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:37:06+00:00", "what": "before 74 N=1536 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:37:19+00:00", "what": "74 N=1536 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:37:20+00:00", "what": "before 74 N=1536 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:37:33+00:00", "what": "74 N=1536 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:37:33+00:00", "what": "before 74 N=2048 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:37:46+00:00", "what": "74 N=2048 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:37:46+00:00", "what": "before 74 N=2048 control", "seconds": 0.177}
+{"utc": "2026-10-27T17:38:00+00:00", "what": "74 N=2048 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:38:00+00:00", "what": "before 74 N=3072 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:38:13+00:00", "what": "74 N=3072 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:38:13+00:00", "what": "before 74 N=3072 control", "seconds": 0.168}
+{"utc": "2026-10-27T17:38:26+00:00", "what": "74 N=3072 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:38:27+00:00", "what": "before 74 N=4096 main", "seconds": 0.172}
+{"utc": "2026-10-27T17:38:40+00:00", "what": "74 N=4096 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:38:40+00:00", "what": "before 74 N=4096 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:38:53+00:00", "what": "74 N=4096 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:38:53+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:39:06+00:00", "what": "sham", "seconds": 13.22}
+{"utc": "2026-10-27T17:39:07+00:00", "what": "before undriven", "seconds": 0.237}
+{"utc": "2026-10-27T17:39:20+00:00", "what": "undriven", "seconds": 13.088}
+{"utc": "2026-10-27T17:39:20+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T17:39:33+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T17:39:33+00:00", "what": "before 120 N=2 main", "seconds": 0.013}
+{"utc": "2026-10-27T17:39:46+00:00", "what": "120 N=2 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:39:46+00:00", "what": "before 120 N=2 control", "seconds": 0.164}
+{"utc": "2026-10-27T17:40:00+00:00", "what": "120 N=2 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:40:00+00:00", "what": "before 120 N=3 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:40:13+00:00", "what": "120 N=3 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:40:13+00:00", "what": "before 120 N=3 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:40:26+00:00", "what": "120 N=3 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:40:26+00:00", "what": "before 120 N=4 main", "seconds": 0.017}
+{"utc": "2026-10-27T17:40:40+00:00", "what": "120 N=4 main", "seconds": 13.275}
+{"utc": "2026-10-27T17:40:40+00:00", "what": "before 120 N=4 control", "seconds": 0.085}
+{"utc": "2026-10-27T17:40:53+00:00", "what": "120 N=4 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:40:53+00:00", "what": "before 120 N=6 main", "seconds": 0.173}
+{"utc": "2026-10-27T17:41:06+00:00", "what": "120 N=6 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:41:06+00:00", "what": "before 120 N=6 control", "seconds": 0.088}
+{"utc": "2026-10-27T17:41:20+00:00", "what": "120 N=6 control", "seconds": 13.307}
+{"utc": "2026-10-27T17:41:20+00:00", "what": "before 120 N=8 main", "seconds": 0.091}
+{"utc": "2026-10-27T17:41:33+00:00", "what": "120 N=8 main", "seconds": 13.232}
+{"utc": "2026-10-27T17:41:33+00:00", "what": "before 120 N=8 control", "seconds": 0.158}
+{"utc": "2026-10-27T17:41:46+00:00", "what": "120 N=8 control", "seconds": 13.232}
+{"utc": "2026-10-27T17:41:47+00:00", "what": "before 120 N=12 main", "seconds": 0.18}
+{"utc": "2026-10-27T17:42:00+00:00", "what": "120 N=12 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:42:00+00:00", "what": "before 120 N=12 control", "seconds": 0.157}
+{"utc": "2026-10-27T17:42:13+00:00", "what": "120 N=12 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:42:13+00:00", "what": "before 120 N=16 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:42:27+00:00", "what": "120 N=16 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:42:27+00:00", "what": "before 120 N=16 control", "seconds": 0.084}
+{"utc": "2026-10-27T17:42:40+00:00", "what": "120 N=16 control", "seconds": 13.312}
+{"utc": "2026-10-27T17:42:40+00:00", "what": "before 120 N=24 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:42:53+00:00", "what": "120 N=24 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:42:53+00:00", "what": "before 120 N=24 control", "seconds": 0.168}
+{"utc": "2026-10-27T17:43:07+00:00", "what": "120 N=24 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:43:07+00:00", "what": "before 120 N=32 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:43:20+00:00", "what": "120 N=32 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:43:20+00:00", "what": "before 120 N=32 control", "seconds": 0.165}
+{"utc": "2026-10-27T17:43:33+00:00", "what": "120 N=32 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:43:33+00:00", "what": "before 120 N=48 main", "seconds": 0.078}
+{"utc": "2026-10-27T17:43:47+00:00", "what": "120 N=48 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:43:47+00:00", "what": "before 120 N=48 control", "seconds": 0.168}
+{"utc": "2026-10-27T17:44:00+00:00", "what": "120 N=48 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:44:00+00:00", "what": "before 120 N=64 main", "seconds": 0.084}
+{"utc": "2026-10-27T17:44:13+00:00", "what": "120 N=64 main", "seconds": 13.301}
+{"utc": "2026-10-27T17:44:14+00:00", "what": "before 120 N=64 control", "seconds": 0.087}
+{"utc": "2026-10-27T17:44:27+00:00", "what": "120 N=64 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:44:27+00:00", "what": "before 120 N=96 main", "seconds": 0.175}
+{"utc": "2026-10-27T17:44:40+00:00", "what": "120 N=96 main", "seconds": 13.223}
+{"utc": "2026-10-27T17:44:40+00:00", "what": "before 120 N=96 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:44:54+00:00", "what": "120 N=96 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:44:54+00:00", "what": "before 120 N=128 main", "seconds": 0.073}
+{"utc": "2026-10-27T17:45:07+00:00", "what": "120 N=128 main", "seconds": 13.236}
+{"utc": "2026-10-27T17:45:07+00:00", "what": "before 120 N=128 control", "seconds": 0.069}
+{"utc": "2026-10-27T17:45:20+00:00", "what": "120 N=128 control", "seconds": 13.324}
+{"utc": "2026-10-27T17:45:20+00:00", "what": "before 120 N=192 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:45:34+00:00", "what": "120 N=192 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:45:34+00:00", "what": "before 120 N=192 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:45:47+00:00", "what": "120 N=192 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:45:47+00:00", "what": "before 120 N=256 main", "seconds": 0.077}
+{"utc": "2026-10-27T17:46:00+00:00", "what": "120 N=256 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:46:00+00:00", "what": "before 120 N=256 control", "seconds": 0.072}
+{"utc": "2026-10-27T17:46:14+00:00", "what": "120 N=256 control", "seconds": 13.235}
+{"utc": "2026-10-27T17:46:14+00:00", "what": "before 120 N=384 main", "seconds": 0.016}
+{"utc": "2026-10-27T17:46:27+00:00", "what": "120 N=384 main", "seconds": 13.264}
+{"utc": "2026-10-27T17:46:27+00:00", "what": "before 120 N=384 control", "seconds": 0.082}
+{"utc": "2026-10-27T17:46:40+00:00", "what": "120 N=384 control", "seconds": 13.227}
+{"utc": "2026-10-27T17:46:40+00:00", "what": "before 120 N=512 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:46:54+00:00", "what": "120 N=512 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:46:54+00:00", "what": "before 120 N=512 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:47:07+00:00", "what": "120 N=512 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:47:07+00:00", "what": "before 120 N=768 main", "seconds": 0.168}
+{"utc": "2026-10-27T17:47:20+00:00", "what": "120 N=768 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:47:21+00:00", "what": "before 120 N=768 control", "seconds": 0.174}
+{"utc": "2026-10-27T17:47:34+00:00", "what": "120 N=768 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:47:34+00:00", "what": "before 120 N=1024 main", "seconds": 0.081}
+{"utc": "2026-10-27T17:47:47+00:00", "what": "120 N=1024 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:47:47+00:00", "what": "before 120 N=1024 control", "seconds": 0.167}
+{"utc": "2026-10-27T17:48:00+00:00", "what": "120 N=1024 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:48:01+00:00", "what": "before 120 N=1536 main", "seconds": 0.18}
+{"utc": "2026-10-27T17:48:14+00:00", "what": "120 N=1536 main", "seconds": 13.224}
+{"utc": "2026-10-27T17:48:14+00:00", "what": "before 120 N=1536 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:48:27+00:00", "what": "120 N=1536 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:48:27+00:00", "what": "before 120 N=2048 main", "seconds": 0.173}
+{"utc": "2026-10-27T17:48:41+00:00", "what": "120 N=2048 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:48:41+00:00", "what": "before 120 N=2048 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:48:54+00:00", "what": "120 N=2048 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:48:54+00:00", "what": "before 120 N=3072 main", "seconds": 0.176}
+{"utc": "2026-10-27T17:49:07+00:00", "what": "120 N=3072 main", "seconds": 13.232}
+{"utc": "2026-10-27T17:49:08+00:00", "what": "before 120 N=3072 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:49:21+00:00", "what": "120 N=3072 control", "seconds": 13.237}
+{"utc": "2026-10-27T17:49:21+00:00", "what": "before 120 N=4096 main", "seconds": 0.163}
+{"utc": "2026-10-27T17:49:34+00:00", "what": "120 N=4096 main", "seconds": 13.234}
+{"utc": "2026-10-27T17:49:34+00:00", "what": "before 120 N=4096 control", "seconds": 0.069}
+{"utc": "2026-10-27T17:49:48+00:00", "what": "120 N=4096 control", "seconds": 13.316}
+{"utc": "2026-10-27T17:49:48+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:50:01+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T17:50:01+00:00", "what": "before undriven", "seconds": 0.257}
+{"utc": "2026-10-27T17:50:14+00:00", "what": "undriven", "seconds": 13.093}
+{"utc": "2026-10-27T17:50:14+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T17:50:27+00:00", "what": "sham", "seconds": 13.225}
+{"utc": "2026-10-27T17:50:27+00:00", "what": "before 174 N=2 main", "seconds": 0.014}
+{"utc": "2026-10-27T17:50:41+00:00", "what": "174 N=2 main", "seconds": 13.235}
+{"utc": "2026-10-27T17:50:41+00:00", "what": "before 174 N=2 control", "seconds": 0.133}
+{"utc": "2026-10-27T17:50:54+00:00", "what": "174 N=2 control", "seconds": 13.233}
+{"utc": "2026-10-27T17:50:54+00:00", "what": "before 174 N=3 main", "seconds": 0.167}
+{"utc": "2026-10-27T17:51:07+00:00", "what": "174 N=3 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:51:08+00:00", "what": "before 174 N=3 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:51:21+00:00", "what": "174 N=3 control", "seconds": 13.232}
+{"utc": "2026-10-27T17:51:21+00:00", "what": "before 174 N=4 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:51:34+00:00", "what": "174 N=4 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:51:34+00:00", "what": "before 174 N=4 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:51:48+00:00", "what": "174 N=4 control", "seconds": 13.232}
+{"utc": "2026-10-27T17:51:48+00:00", "what": "before 174 N=6 main", "seconds": 0.07}
+{"utc": "2026-10-27T17:52:01+00:00", "what": "174 N=6 main", "seconds": 13.312}
+{"utc": "2026-10-27T17:52:01+00:00", "what": "before 174 N=6 control", "seconds": 0.093}
+{"utc": "2026-10-27T17:52:14+00:00", "what": "174 N=6 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:52:15+00:00", "what": "before 174 N=8 main", "seconds": 0.163}
+{"utc": "2026-10-27T17:52:28+00:00", "what": "174 N=8 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:52:28+00:00", "what": "before 174 N=8 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:52:41+00:00", "what": "174 N=8 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:52:41+00:00", "what": "before 174 N=12 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:52:55+00:00", "what": "174 N=12 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:52:55+00:00", "what": "before 174 N=12 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:53:08+00:00", "what": "174 N=12 control", "seconds": 13.311}
+{"utc": "2026-10-27T17:53:08+00:00", "what": "before 174 N=16 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:53:21+00:00", "what": "174 N=16 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:53:21+00:00", "what": "before 174 N=16 control", "seconds": 0.176}
+{"utc": "2026-10-27T17:53:35+00:00", "what": "174 N=16 control", "seconds": 13.23}
+{"utc": "2026-10-27T17:53:35+00:00", "what": "before 174 N=24 main", "seconds": 0.165}
+{"utc": "2026-10-27T17:53:48+00:00", "what": "174 N=24 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:53:48+00:00", "what": "before 174 N=24 control", "seconds": 0.082}
+{"utc": "2026-10-27T17:54:01+00:00", "what": "174 N=24 control", "seconds": 13.308}
+{"utc": "2026-10-27T17:54:02+00:00", "what": "before 174 N=32 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:54:15+00:00", "what": "174 N=32 main", "seconds": 13.226}
+{"utc": "2026-10-27T17:54:15+00:00", "what": "before 174 N=32 control", "seconds": 0.08}
+{"utc": "2026-10-27T17:54:28+00:00", "what": "174 N=32 control", "seconds": 13.224}
+{"utc": "2026-10-27T17:54:28+00:00", "what": "before 174 N=48 main", "seconds": 0.171}
+{"utc": "2026-10-27T17:54:41+00:00", "what": "174 N=48 main", "seconds": 13.227}
+{"utc": "2026-10-27T17:54:42+00:00", "what": "before 174 N=48 control", "seconds": 0.172}
+{"utc": "2026-10-27T17:54:55+00:00", "what": "174 N=48 control", "seconds": 13.226}
+{"utc": "2026-10-27T17:54:55+00:00", "what": "before 174 N=64 main", "seconds": 0.08}
+{"utc": "2026-10-27T17:55:08+00:00", "what": "174 N=64 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:55:08+00:00", "what": "before 174 N=64 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:55:22+00:00", "what": "174 N=64 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:55:22+00:00", "what": "before 174 N=96 main", "seconds": 0.165}
+{"utc": "2026-10-27T17:55:35+00:00", "what": "174 N=96 main", "seconds": 13.228}
+{"utc": "2026-10-27T17:55:35+00:00", "what": "before 174 N=96 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:55:48+00:00", "what": "174 N=96 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:55:49+00:00", "what": "before 174 N=128 main", "seconds": 0.17}
+{"utc": "2026-10-27T17:56:02+00:00", "what": "174 N=128 main", "seconds": 13.232}
+{"utc": "2026-10-27T17:56:02+00:00", "what": "before 174 N=128 control", "seconds": 0.169}
+{"utc": "2026-10-27T17:56:15+00:00", "what": "174 N=128 control", "seconds": 13.233}
+{"utc": "2026-10-27T17:56:15+00:00", "what": "before 174 N=192 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:56:29+00:00", "what": "174 N=192 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:56:29+00:00", "what": "before 174 N=192 control", "seconds": 0.166}
+{"utc": "2026-10-27T17:56:42+00:00", "what": "174 N=192 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:56:42+00:00", "what": "before 174 N=256 main", "seconds": 0.161}
+{"utc": "2026-10-27T17:56:55+00:00", "what": "174 N=256 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:56:56+00:00", "what": "before 174 N=256 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:57:09+00:00", "what": "174 N=256 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:57:09+00:00", "what": "before 174 N=384 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:57:22+00:00", "what": "174 N=384 main", "seconds": 13.231}
+{"utc": "2026-10-27T17:57:22+00:00", "what": "before 174 N=384 control", "seconds": 0.18}
+{"utc": "2026-10-27T17:57:36+00:00", "what": "174 N=384 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:57:36+00:00", "what": "before 174 N=512 main", "seconds": 0.165}
+{"utc": "2026-10-27T17:57:49+00:00", "what": "174 N=512 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:57:49+00:00", "what": "before 174 N=512 control", "seconds": 0.165}
+{"utc": "2026-10-27T17:58:02+00:00", "what": "174 N=512 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:58:03+00:00", "what": "before 174 N=768 main", "seconds": 0.168}
+{"utc": "2026-10-27T17:58:16+00:00", "what": "174 N=768 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:58:16+00:00", "what": "before 174 N=768 control", "seconds": 0.17}
+{"utc": "2026-10-27T17:58:29+00:00", "what": "174 N=768 control", "seconds": 13.223}
+{"utc": "2026-10-27T17:58:29+00:00", "what": "before 174 N=1024 main", "seconds": 0.178}
+{"utc": "2026-10-27T17:58:43+00:00", "what": "174 N=1024 main", "seconds": 13.225}
+{"utc": "2026-10-27T17:58:43+00:00", "what": "before 174 N=1024 control", "seconds": 0.173}
+{"utc": "2026-10-27T17:58:56+00:00", "what": "174 N=1024 control", "seconds": 13.225}
+{"utc": "2026-10-27T17:58:56+00:00", "what": "before 174 N=1536 main", "seconds": 0.079}
+{"utc": "2026-10-27T17:59:09+00:00", "what": "174 N=1536 main", "seconds": 13.23}
+{"utc": "2026-10-27T17:59:09+00:00", "what": "before 174 N=1536 control", "seconds": 0.167}
+{"utc": "2026-10-27T17:59:23+00:00", "what": "174 N=1536 control", "seconds": 13.231}
+{"utc": "2026-10-27T17:59:23+00:00", "what": "before 174 N=2048 main", "seconds": 0.169}
+{"utc": "2026-10-27T17:59:36+00:00", "what": "174 N=2048 main", "seconds": 13.229}
+{"utc": "2026-10-27T17:59:36+00:00", "what": "before 174 N=2048 control", "seconds": 0.171}
+{"utc": "2026-10-27T17:59:49+00:00", "what": "174 N=2048 control", "seconds": 13.229}
+{"utc": "2026-10-27T17:59:50+00:00", "what": "before 174 N=3072 main", "seconds": 0.171}
+{"utc": "2026-10-27T18:00:03+00:00", "what": "174 N=3072 main", "seconds": 13.244}
+{"utc": "2026-10-27T18:00:03+00:00", "what": "before 174 N=3072 control", "seconds": 0.163}
+{"utc": "2026-10-27T18:00:16+00:00", "what": "174 N=3072 control", "seconds": 13.236}
+{"utc": "2026-10-27T18:00:16+00:00", "what": "before 174 N=4096 main", "seconds": 0.158}
+{"utc": "2026-10-27T18:00:30+00:00", "what": "174 N=4096 main", "seconds": 13.236}
+{"utc": "2026-10-27T18:00:30+00:00", "what": "before 174 N=4096 control", "seconds": 0.163}
+{"utc": "2026-10-27T18:00:43+00:00", "what": "174 N=4096 control", "seconds": 13.235}
+{"utc": "2026-10-27T18:00:43+00:00", "what": "before sham", "seconds": 0.004}
+{"utc": "2026-10-27T18:00:56+00:00", "what": "sham", "seconds": 13.217}
+{"utc": "2026-10-27T18:00:57+00:00", "what": "before undriven", "seconds": 0.392}
+{"utc": "2026-10-27T18:01:10+00:00", "what": "undriven", "seconds": 13.082}
+{"utc": "2026-10-27T18:01:10+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T18:01:23+00:00", "what": "sham", "seconds": 13.213}
+{"utc": "2026-10-27T18:01:23+00:00", "what": "before 940 N=2 main", "seconds": 0.017}
+{"utc": "2026-10-27T18:01:36+00:00", "what": "940 N=2 main", "seconds": 13.218}
+{"utc": "2026-10-27T18:01:36+00:00", "what": "before 940 N=2 control", "seconds": 0.118}
+{"utc": "2026-10-27T18:01:50+00:00", "what": "940 N=2 control", "seconds": 13.216}
+{"utc": "2026-10-27T18:01:50+00:00", "what": "before 940 N=3 main", "seconds": 0.084}
+{"utc": "2026-10-27T18:02:03+00:00", "what": "940 N=3 main", "seconds": 13.22}
+{"utc": "2026-10-27T18:02:03+00:00", "what": "before 940 N=3 control", "seconds": 0.082}
+{"utc": "2026-10-27T18:02:16+00:00", "what": "940 N=3 control", "seconds": 13.221}
+{"utc": "2026-10-27T18:02:16+00:00", "what": "before 940 N=4 main", "seconds": 0.08}
+{"utc": "2026-10-27T18:02:29+00:00", "what": "940 N=4 main", "seconds": 13.223}
+{"utc": "2026-10-27T18:02:30+00:00", "what": "before 940 N=4 control", "seconds": 0.172}
+{"utc": "2026-10-27T18:02:43+00:00", "what": "940 N=4 control", "seconds": 13.222}
+{"utc": "2026-10-27T18:02:43+00:00", "what": "before 940 N=6 main", "seconds": 0.081}
+{"utc": "2026-10-27T18:02:56+00:00", "what": "940 N=6 main", "seconds": 13.226}
+{"utc": "2026-10-27T18:02:56+00:00", "what": "before 940 N=6 control", "seconds": 0.084}
+{"utc": "2026-10-27T18:03:10+00:00", "what": "940 N=6 control", "seconds": 13.307}
+{"utc": "2026-10-27T18:03:10+00:00", "what": "before 940 N=8 main", "seconds": 0.082}
+{"utc": "2026-10-27T18:03:23+00:00", "what": "940 N=8 main", "seconds": 13.229}
+{"utc": "2026-10-27T18:03:23+00:00", "what": "before 940 N=8 control", "seconds": 0.17}
+{"utc": "2026-10-27T18:03:36+00:00", "what": "940 N=8 control", "seconds": 13.227}
+{"utc": "2026-10-27T18:03:36+00:00", "what": "before 940 N=12 main", "seconds": 0.08}
+{"utc": "2026-10-27T18:03:50+00:00", "what": "940 N=12 main", "seconds": 13.301}
+{"utc": "2026-10-27T18:03:50+00:00", "what": "before 940 N=12 control", "seconds": 0.091}
+{"utc": "2026-10-27T18:04:03+00:00", "what": "940 N=12 control", "seconds": 13.225}
+{"utc": "2026-10-27T18:04:03+00:00", "what": "before 940 N=16 main", "seconds": 0.079}
+{"utc": "2026-10-27T18:04:16+00:00", "what": "940 N=16 main", "seconds": 13.225}
+{"utc": "2026-10-27T18:04:16+00:00", "what": "before 940 N=16 control", "seconds": 0.173}
+{"utc": "2026-10-27T18:04:30+00:00", "what": "940 N=16 control", "seconds": 13.227}
+{"utc": "2026-10-27T18:04:30+00:00", "what": "before 940 N=24 main", "seconds": 0.183}
+{"utc": "2026-10-27T18:04:43+00:00", "what": "940 N=24 main", "seconds": 13.226}
+{"utc": "2026-10-27T18:04:43+00:00", "what": "before 940 N=24 control", "seconds": 0.17}
+{"utc": "2026-10-27T18:04:57+00:00", "what": "940 N=24 control", "seconds": 13.231}
+{"utc": "2026-10-27T18:04:57+00:00", "what": "before 940 N=32 main", "seconds": 0.172}
+{"utc": "2026-10-27T18:05:10+00:00", "what": "940 N=32 main", "seconds": 13.232}
+{"utc": "2026-10-27T18:05:10+00:00", "what": "before 940 N=32 control", "seconds": 0.165}
+{"utc": "2026-10-27T18:05:23+00:00", "what": "940 N=32 control", "seconds": 13.234}
+{"utc": "2026-10-27T18:05:23+00:00", "what": "before 940 N=48 main", "seconds": 0.158}
+{"utc": "2026-10-27T18:05:37+00:00", "what": "940 N=48 main", "seconds": 13.234}
+{"utc": "2026-10-27T18:05:37+00:00", "what": "before 940 N=48 control", "seconds": 0.167}
+{"utc": "2026-10-27T18:05:50+00:00", "what": "940 N=48 control", "seconds": 13.233}
+{"utc": "2026-10-27T18:05:50+00:00", "what": "before 940 N=64 main", "seconds": 0.17}
+{"utc": "2026-10-27T18:06:04+00:00", "what": "940 N=64 main", "seconds": 13.229}
+{"utc": "2026-10-27T18:06:04+00:00", "what": "before 940 N=64 control", "seconds": 0.173}
+{"utc": "2026-10-27T18:06:17+00:00", "what": "940 N=64 control", "seconds": 13.231}
+{"utc": "2026-10-27T18:06:17+00:00", "what": "before 940 N=96 main", "seconds": 0.166}
+{"utc": "2026-10-27T18:06:30+00:00", "what": "940 N=96 main", "seconds": 13.23}
+{"utc": "2026-10-27T18:06:30+00:00", "what": "before 940 N=96 control", "seconds": 0.175}
+{"utc": "2026-10-27T18:06:44+00:00", "what": "940 N=96 control", "seconds": 13.229}
+{"utc": "2026-10-27T18:06:44+00:00", "what": "before 940 N=128 main", "seconds": 0.174}
+{"utc": "2026-10-27T18:06:57+00:00", "what": "940 N=128 main", "seconds": 13.228}
+{"utc": "2026-10-27T18:06:57+00:00", "what": "before 940 N=128 control", "seconds": 0.162}
+{"utc": "2026-10-27T18:07:10+00:00", "what": "940 N=128 control", "seconds": 13.228}
+{"utc": "2026-10-27T18:07:11+00:00", "what": "before 940 N=192 main", "seconds": 0.172}
+{"utc": "2026-10-27T18:07:24+00:00", "what": "940 N=192 main", "seconds": 13.23}
+{"utc": "2026-10-27T18:07:24+00:00", "what": "before 940 N=192 control", "seconds": 0.171}
+{"utc": "2026-10-27T18:07:37+00:00", "what": "940 N=192 control", "seconds": 13.23}
+{"utc": "2026-10-27T18:07:37+00:00", "what": "before 940 N=256 main", "seconds": 0.169}
+{"utc": "2026-10-27T18:07:51+00:00", "what": "940 N=256 main", "seconds": 13.233}
+{"utc": "2026-10-27T18:07:51+00:00", "what": "before 940 N=256 control", "seconds": 0.175}
+{"utc": "2026-10-27T18:08:04+00:00", "what": "940 N=256 control", "seconds": 13.232}
+{"utc": "2026-10-27T18:08:04+00:00", "what": "before 940 N=384 main", "seconds": 0.161}
+{"utc": "2026-10-27T18:08:17+00:00", "what": "940 N=384 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:08:18+00:00", "what": "before 940 N=384 control", "seconds": 0.168}
+{"utc": "2026-10-27T18:08:31+00:00", "what": "940 N=384 control", "seconds": 13.23}
+{"utc": "2026-10-27T18:08:31+00:00", "what": "before 940 N=512 main", "seconds": 0.17}
+{"utc": "2026-10-27T18:08:44+00:00", "what": "940 N=512 main", "seconds": 13.23}
+{"utc": "2026-10-27T18:08:44+00:00", "what": "before 940 N=512 control", "seconds": 0.17}
+{"utc": "2026-10-27T18:08:58+00:00", "what": "940 N=512 control", "seconds": 13.23}
+{"utc": "2026-10-27T18:08:58+00:00", "what": "before 940 N=768 main", "seconds": 0.176}
+{"utc": "2026-10-27T18:09:11+00:00", "what": "940 N=768 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:09:11+00:00", "what": "before 940 N=768 control", "seconds": 0.163}
+{"utc": "2026-10-27T18:09:24+00:00", "what": "940 N=768 control", "seconds": 13.231}
+{"utc": "2026-10-27T18:09:25+00:00", "what": "before 940 N=1024 main", "seconds": 0.169}
+{"utc": "2026-10-27T18:09:38+00:00", "what": "940 N=1024 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:09:38+00:00", "what": "before 940 N=1024 control", "seconds": 0.169}
+{"utc": "2026-10-27T18:09:51+00:00", "what": "940 N=1024 control", "seconds": 13.231}
+{"utc": "2026-10-27T18:09:51+00:00", "what": "before 940 N=1536 main", "seconds": 0.17}
+{"utc": "2026-10-27T18:10:05+00:00", "what": "940 N=1536 main", "seconds": 13.23}
+{"utc": "2026-10-27T18:10:05+00:00", "what": "before 940 N=1536 control", "seconds": 0.17}
+{"utc": "2026-10-27T18:10:18+00:00", "what": "940 N=1536 control", "seconds": 13.231}
+{"utc": "2026-10-27T18:10:18+00:00", "what": "before 940 N=2048 main", "seconds": 0.169}
+{"utc": "2026-10-27T18:10:31+00:00", "what": "940 N=2048 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:10:32+00:00", "what": "before 940 N=2048 control", "seconds": 0.17}
+{"utc": "2026-10-27T18:10:45+00:00", "what": "940 N=2048 control", "seconds": 13.23}
+{"utc": "2026-10-27T18:10:45+00:00", "what": "before 940 N=3072 main", "seconds": 0.17}
+{"utc": "2026-10-27T18:10:58+00:00", "what": "940 N=3072 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:10:58+00:00", "what": "before 940 N=3072 control", "seconds": 0.169}
+{"utc": "2026-10-27T18:11:12+00:00", "what": "940 N=3072 control", "seconds": 13.23}
+{"utc": "2026-10-27T18:11:12+00:00", "what": "before 940 N=4096 main", "seconds": 0.169}
+{"utc": "2026-10-27T18:11:25+00:00", "what": "940 N=4096 main", "seconds": 13.231}
+{"utc": "2026-10-27T18:11:25+00:00", "what": "before 940 N=4096 control", "seconds": 0.174}
+{"utc": "2026-10-27T18:11:39+00:00", "what": "940 N=4096 control", "seconds": 13.239}
+{"utc": "2026-10-27T18:11:39+00:00", "what": "before sham", "seconds": 0.003}
+{"utc": "2026-10-27T18:11:52+00:00", "what": "sham", "seconds": 13.215}
+{"utc": "2026-10-27T18:11:52+00:00", "what": "process exit", "seconds": 0.096}

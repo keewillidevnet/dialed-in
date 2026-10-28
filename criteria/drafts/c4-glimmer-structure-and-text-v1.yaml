@@ -1,0 +1,238 @@
+# C4: structure and text. v1
+# DRAFT. Follows C1 v5 (run c1v5-20261027T152040Z: outcome T, low-pass tilt), C2 (sha256
+# 021ee5756f1beb724e320076043ff777bf7917c9857338f6aa2cac68a96cedff; outcome K0) and C3 (sha256
+# 9cb0919523729fae4f45855ae501c07a5c609a5f97b1bf4034d61355e3fbfe4d; run c3v1-20261028T014250Z: outcome K0).
+# Scaling activations (whole layer types in C2, chosen heads in C3) moved the tilt by at most about 9
+# percent. C4 asks two different questions:
+#   1. Structure: the local layers have two built-in frequency settings, the 2,048-token sliding window
+#      and the RoPE base. Does changing them move the tilt, and how much does it cost in perplexity?
+#   2. Text: natural text has its own slow structure. Does the tilt survive when the book is replaced
+#      by its own tokens shuffled, or by one token repeated? If so, it belongs to the model.
+# Drive, window, operator, noise bins, validity, tilt and run rules are C1 v5's, C2's and C3's.
+# Every value is a proposal until Keenan seals this file with scripts/seal.sh.
+
+id: c4-glimmer-structure-and-text-v1
+version: 1
+drafted: 2026-10-28
+follows: c3-glimmer-head-dial-v1 (sealed, run complete, outcome K0)
+status: draft
+
+questions:
+  structure: Does changing the local layers' sliding window (1024, 2048, 4096 tokens) or RoPE base (0.5x, 1x, 2x) change the tilt of the frequency response by at least a quarter, consistently across books, and at what perplexity cost?
+  text: Does the tilt survive shuffled-token and constant-token inputs?
+  predictions: >
+    Window: a longer window steepens the low-pass tilt (direction "+"). RoPE: a larger base, which rotates
+    positions more slowly, steepens it (direction "+"). Text: the tilt survives both controls (outcome A).
+    Either direction counts for the levers; the predictions are reported, not gated.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  start: first token of the main text, after the Project Gutenberg header is stripped
+  special_tokens: none (no BOS); input = first 32,768 token ids of the stripped text
+  prompt_sets:                      # one set; C4 compares conditions within the same books
+    A: {1342: Pride and Prejudice, 2701: Moby Dick, 1400: Great Expectations, 145: Middlemarch, 1184: The Count of Monte Cristo}
+  token_counts_checked: 2026-10-26, shortest 94,774 tokens (Treasure Island), all at least 33,792
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+  reuse: set A with the same first 32,768 tokens as C1 v5, so condition BASE repeats C1 v5's main drive at C4's periods; C3 never tested set A, and C4 tests no head selection
+
+conditions:
+  BASE: {window: 2048, rope_factor: 1.0, text: book}
+  W1024: {window: 1024, rope_factor: 1.0, text: book}
+  W4096: {window: 4096, rope_factor: 1.0, text: book}
+  R0.5: {window: 2048, rope_factor: 0.5, text: book}
+  R2.0: {window: 2048, rope_factor: 2.0, text: book}
+  SHUF: {window: 2048, rope_factor: 1.0, text: shuffled}
+  CONST: {window: 2048, rope_factor: 1.0, text: constant}
+  order_per_book: BASE, W1024, W4096, R0.5, R2.0, SHUF, CONST; each gets its own undriven pass (with perplexity) and sham
+  window_setting: >
+    The text model's config.sliding_window, which the model reads when it builds the sliding-window mask on every
+    forward pass, and each of the 39 local layers' own self_attn.sliding_window copy, both set to the window. The
+    global layers are untouched.
+  rope_setting: >
+    The text model's rotary embedding inv_freq recomputed as 1 / (base ** (arange(0, dim, 2) / dim)) with base =
+    500000 x rope_factor; at 1x the original tensor is copied back exactly. Only the local layers use RoPE (the
+    global layers have none), so only they are affected. At load the run stops if the config's RoPE base is not
+    500000, or if the loaded inv_freq differs from 1 / (500000 ** (arange(0, dim, 2) / dim)) by more than 1e-6 relative.
+  setup_checks: >
+    At the start of Phase A, before any drive. (1) Window: for each window 1024, 2048 and 4096, on the first
+    4,096 tokens of book 1342, change the token at position 100 and record whether layer 0's head outputs change
+    at positions 1,600 and 3,100. A causal window W reaches 1,500 tokens ahead only if W > 1500, and 3,000 only
+    if W > 3000. (2) RoPE: for factors 0.5 and 2.0, on the first 2,048 tokens of book 1342, layer 0's head outputs
+    must differ from 1x, and returning to 1x must reproduce them bit for bit. (3) Perplexity path: on the same
+    2,048 tokens, C4's logits (below) must match the full model's own logits to within 0.5 percent of the largest
+    absolute logit (both paths run the same operations, so they should agree to a bfloat16 step); the softcap
+    and multiplier must be set in the text config and equal the full model's text_config, or the run stops at load. If any check fails, phaseA.json is written with the results and C4 is not run, outcome U.
+  text_controls: >
+    shuffled: the book's first 32,768 tokens in the order numpy default_rng(0).permutation(32768) gives;
+    constant: the book's most frequent token among those 32,768 (ties to the lowest id) at every position.
+  perplexity: >
+    On every undriven pass, exp of the mean next-token loss over predictions of tokens 8,193 to 32,767. Logits
+    follow MuseGlimmerForConditionalGeneration.forward: the text model's final-normed last hidden state, the output
+    head in bfloat16, times the config's output_multiplier, then T x tanh(x / T) with T = final_logit_softcapping;
+    then float32 log-softmax in chunks of 1,024 positions. For each changed condition, the ratio to BASE per book,
+    and its median over books.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every token t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from that condition's own undriven pass (layers 0 and 1 are local, so the window and RoPE settings can change it)
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1342, after the setup checks, under every condition: one undriven pass, then A and 2A at N = 2 and
+    4096 (one sham before the first condition). A condition passes if the 2A/A response ratio is within 10 percent
+    of 2 at both N and the whole-model SNR at A, N = 4096 is at least 3. If any fails, stop: C4 is not run, outcome U.
+  controls:
+    sham: zero wave, under every condition of every book, plus a closing sham per book; every head-output value must have the same bits as that condition's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: condition BASE runs the same computation as C1 v5 on set A at the shared periods; the maximum relative difference of per-head target magnitudes from C1 v5's raw files is reported, expected 0, not a gate
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), layers 2 to 51 as in C1 v5
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: tokens [8192, 32768), W = 24576. Every period N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 tokens are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4); at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all 1,600 measured heads of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    Per condition, a period counts for a set only if the median over the set's five books of
+    the whole-model SNR is at least 3. Invalid periods are excluded from that set's tilt for
+    that condition and listed in the output.
+  curves:
+    per_book: mean gain over all heads in layers 2 to 51 (whole), per N
+    per_set: the mean over its five books of each book's curve, per N
+    per_condition: every curve is computed separately for each knob condition
+
+tilt:
+  definition: the least-squares slope of ln(set-mean whole-model gain) against ln(N) (metrics_c2.tilt, sealed with C2), fit per family over the periods valid under every condition of the family; a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  families: {window: [BASE, W1024, W4096], rope: [BASE, R0.5, R2.0], text: [BASE, SHUF, CONST]}
+  family_note: each lever and the text question is fit over its own three conditions, so a period invalid under one lever does not remove it from another; BASE's tilt can therefore differ slightly between families
+  book_tilts: each book's tilt per condition from its own curve, over the periods valid in that book under every condition of the family (same 5-period minimum)
+
+pass_criteria:
+  levers:
+    applies_to: {window: [W1024, BASE, W4096], rope: [R0.5, BASE, R2.0]}
+    outcome_U: any of the lever's three tilts undefined
+    order: '"+" if tilt(low) < tilt(BASE) < tilt(high); "-" if the reverse; otherwise none'
+    effect: 'the absolute value of tilt(high) - tilt(low) is at least 0.25 x the absolute value of tilt(BASE)'
+    consistency: at least 4 of the 5 books have tilt(high) - tilt(low) with the same sign as the set's; a book whose tilt is undefined at either end counts as disagreeing
+    damage: the median over books of perplexity(condition) / perplexity(BASE) is above 1.10 at either end
+    outcome_D1_dial: an order, the effect and consistency, without damage
+    outcome_D2_dial_with_damage: an order, the effect and consistency, with damage
+    outcome_D0_no_dial: every tilt defined and D1 and D2 do not hold
+  text:
+    outcome_U: a text-family tilt undefined, or tilt(BASE) not positive
+    outcome_A_architectural: tilt(SHUF) and tilt(CONST) are each at least 0.5 x tilt(BASE)
+    outcome_X_text_shaped: tilt(SHUF) or tilt(CONST) is at most 0.25 x tilt(BASE), including zero or negative
+    outcome_M_mixed: none of the above
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is labeled PARTIAL and never reported as C4
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts. Report 95 percent percentile intervals of tilt(W4096) - tilt(W1024),
+    tilt(R2.0) - tilt(R0.5), tilt(SHUF) / tilt(BASE) and tilt(CONST) / tilt(BASE).
+
+decisions:
+  D1: the lever is a dial; it is the demo's knob, shown with its perplexity cost
+  D2: the lever moves the curve but harms the model; the demo shows it as a stress test, not a dial
+  D0: the lever does not move the tilt enough; reported as is
+  A: the tilt belongs to the model; the C1 result is stated as architectural
+  X: the tilt is shaped by the text; every earlier result is restated as a property of model plus text
+  M: mixed; reported with both ratios
+  U: inconclusive; reported as is
+  no_rescue: other window sizes, RoPE factors, text controls, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in
+    results/ledger/). Each run writes STARTED.json before any GPU work. A new run is
+    refused if any earlier run under the seal is complete or was stopped by rule in Phase A
+    (a failed setup check, or not linear or underpowered under some condition), and otherwise needs a written reason (an
+    infrastructure failure: crash, failed sham, preflight failure). Only the newest run
+    may continue to Phase B, and Phase B needs that run's STARTED.json. Every book attempt
+    writes an ATTEMPT record first; a book with an earlier attempt or failure record may be
+    retried only with a written reason, stamped on that book. All earlier runs and records
+    are kept and listed in the summary. The pre-seal smoke run on the pod runs the same setup checks, so a setup
+    failure should surface before the seal. The analysis refuses to run if more than one run
+    under the seal is complete, requires phaseA.json, and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 4                  # wall-clock hours of every run process under this seal, from start to exit, including model loads
+  ledger: results/ledger/c4v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  preflight: each phase refuses to start if hours used plus its projected need exceed the cap; every pass also checks the cap first
+  estimate: Phase A 36 passes (1 sham, then per condition 1 undriven and 4 driven) plus short setup-check passes (6 at 4,096 tokens, 6 at 2,048, 2 at 2,048 for the logits); Phase B 5 books x 64 passes (per condition 1 undriven, 1 sham and 7 driven, plus 1 closing sham) = 320 passes; 356 passes at about 13.4 s is about 1.33 hours, plus perplexity on 42 undriven passes (7 in Phase A, 35 in Phase B) and loads, about 1.45 hours
+  cost: about $4 at about $2.50 per pod hour for counted time
+  peak_gpu_memory: about C1 v5's 74.3 GiB plus about 3 GiB for the kept final hidden state and one logits chunk (bfloat16 head output, float32 copy and log-softmax) during perplexity
+  pre_seal_smoke: SMOKE_RESULT
+
+analysis:
+  runner: src/dialedin/run_c4.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/metrics_c4.py: cd328c030ef8b62a13fb5b67b559dea9f9e1e7f5fffe20daafe34c75af168130
+    src/dialedin/run_c4.py: 9f375be1832e777ee067b2a46d969a0ad0bc78e86c126d441a8df4904ffecddc
+    src/dialedin/analyze_c4.py: 1d890acf8ed54f698b25216d04f67cb0a57a826adb949e25c0c0b3630d68633d
+
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the window, RoPE and perplexity-path checks; one book_<set>_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per condition the amplitude reference, perplexity, token-id hash and sham count; a record of seal, code, platform and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c4_summary.json and c4_curves.png, citing every raw file used

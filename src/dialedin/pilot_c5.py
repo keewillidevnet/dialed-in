@@ -25,6 +25,7 @@ os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 import argparse
+import copy
 import json
 import math
 import time
@@ -390,7 +391,12 @@ def main():
     ap.add_argument("--spec", default="criteria/sealed/c4-glimmer-structure-and-text-v1.yaml")
     ap.add_argument("--out", default="/workspace/env/pilot_c5.json")
     ap.add_argument("--steps", type=int, default=150)
-    ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--lr", type=float, default=3e-4)
+    ap.add_argument("--clip", type=float, default=1.0, help="gradient norm cap per step")
+    ap.add_argument("--kl-budget", type=float, default=0.02, help="KL above this gets the extra penalty")
+    ap.add_argument("--beta-excess", type=float, default=100.0, help="penalty per nat of KL above the budget")
+    ap.add_argument("--kl-rollback", type=float, default=0.5,
+                    help="if a step's KL exceeds this, restore the last good snapshot and halve the learning rate")
     ap.add_argument("--rank", type=int, default=8)
     ap.add_argument("--targets", choices=list(FAMILIES), default="all", help="which module family the adapter may touch")
     ap.add_argument("--layers", type=int, nargs="+", default=[2, 3, 4, 5])
@@ -517,11 +523,12 @@ def main():
             mem["peak_forward"] = torch.cuda.max_memory_allocated() / 2**30
             if verbose:
                 print(f"   memory (GiB): {', '.join(f'{k} {v:.1f}' for k, v in mem.items())}", flush=True)
-            loss = tilt_loss + args.beta * kl
+            loss = tilt_loss + args.beta * kl + args.beta_excess * torch.relu(kl - args.kl_budget)
             opt.zero_grad(set_to_none=True)
             loss.backward()
-        gn = float(torch.sqrt(sum((p.grad.float() ** 2).sum() for p in params if p.grad is not None)))
-        opt.step()
+        gn = float(torch.nn.utils.clip_grad_norm_(params, args.clip))       # norm before clipping
+        if math.isfinite(gn):
+            opt.step()
         rig.proj, rig.B = {}, None
         row = {"step": step, "tokens": T, "periods": per, "scale": sc, "base_tilt": base_tilt, "target": target,
                "tilt": float(tilt), "tilt_loss": float(tilt_loss),
@@ -530,6 +537,34 @@ def main():
         print(f"   step {step:>3} ({T} tok): N {per} scale {sc:.2f} tilt {row['tilt']:.4f} base {base_tilt:.4f} "
               f"target {target:.4f}  kl {row['kl']:.2e}  "
               f"grad {gn:.2e}  {row['seconds']:.1f} s  peak {row['peak_gib']:.1f} GiB", flush=True)
+        return row
+
+    snap = {"params": [p.detach().clone() for p in params], "opt": None, "step": -1}
+    events = []
+
+    def guarded(step, ids, periods, verbose):
+        """One step, then the safety net: a healthy step may refresh the snapshot (every 10 steps); a step whose
+        KL exceeds the rollback level, or whose gradient is not finite, restores it and halves the learning rate."""
+        row = train_step(step, ids, periods, verbose)
+        bad = row["kl"] > args.kl_rollback or not math.isfinite(row["grad_norm"])
+        if bad:
+            lr_now = opt.param_groups[0]["lr"]              # loading the snapshot would bring back its older lr
+            with torch.no_grad():
+                for p, q in zip(params, snap["params"]):
+                    p.copy_(q)
+            if snap["opt"] is not None:
+                opt.load_state_dict(snap["opt"])
+            for gp in opt.param_groups:
+                gp["lr"] = lr_now * 0.5
+            events.append({"step": step, "kl": row["kl"], "restored_to_step": snap["step"],
+                           "new_lr": opt.param_groups[0]["lr"]})
+            print(f"== rollback at step {step}: KL {row['kl']:.2f}; restored step {snap['step']}, "
+                  f"lr now {opt.param_groups[0]['lr']:.2e}", flush=True)
+        elif row["kl"] <= args.kl_budget * 2 and step % 10 == 0:
+            snap["params"] = [p.detach().clone() for p in params]
+            snap["opt"] = copy.deepcopy(opt.state_dict())
+            snap["step"] = step
+        row["rolled_back"] = bad
         return row
 
     import gc
@@ -544,7 +579,7 @@ def main():
         print(f"== base gains at {tokens} tokens (training text, {len(BASE_SEEDS)} directions): "
               f"{', '.join(f'{n}: {g:.3f}' for n, g in base_gain.items())}", flush=True)
         try:
-            steps.append(train_step(0, ids, periods, verbose=True))
+            steps.append(guarded(0, ids, periods, verbose=True))
             chosen = (tokens, ids, periods)
             attempts.append({"tokens": tokens, "ok": True})
             break
@@ -559,10 +594,19 @@ def main():
     if chosen:
         tokens, ids, periods = chosen
         for step in range(1, args.steps):
-            steps.append(train_step(step, ids, periods, verbose=False))
+            steps.append(guarded(step, ids, periods, verbose=False))
     report["train"] = steps
+    report["rollbacks"] = events
     configure(8192)
     report["start_tilt"] = tilt0
+
+    if chosen:
+        os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+        adapter_path = os.path.splitext(args.out)[0] + ".adapter.pt"
+        torch.save({"family": args.targets, "layers": args.layers, "rank": args.rank, "alpha": 2.0 * args.rank,
+                    "modules": names, "A": [p.detach().cpu() for p in params[0::2]],
+                    "B": [p.detach().cpu() for p in params[1::2]]}, adapter_path)
+        report["adapter_file"] = adapter_path
 
     # 6. dose response on held-out text and directions (always at 8,192 tokens)
     undo()

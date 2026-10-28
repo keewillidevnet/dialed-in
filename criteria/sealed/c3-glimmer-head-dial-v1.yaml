@@ -1,0 +1,232 @@
+# C3: is there a dial in Glimmer's heads? v1
+# DRAFT. Follows the sealed C1 v5 (run c1v5-20261027T152040Z: outcome T, low-pass tilt) and the sealed
+# C2 (criteria/sealed/c2-glimmer-knob-tilt-v1.yaml, sha256 021ee5756f1beb724e320076043ff777bf7917c9857338f6aa2cac68a96cedff;
+# run c2v1-20261027T201901Z: outcome K0, direction +). C2 found that scaling whole layer types barely
+# moves the tilt, and that local layers move it more than global ones.
+# An exploratory head scan (src/dialedin/headscan.py) of C1 v5's set A data only found the slow
+# response concentrated in early local layers (layers 2, 4 and 5 hold nearly all of the top 20 heads;
+# 32 heads carry 20 percent of the summed low-frequency gain). It did not look at sets B or C.
+# Review found those heads are mostly large rather than unusually slow (removing them from the
+# average moves the tilt only from 0.133 to 0.129). So C3's control is size-matched: 32 other heads
+# from the same early layers with the nearest broadband size. C3 scales the selected heads and
+# measures the tilt only in layers 6 to 51, downstream of every scaled head, on sets B and C only.
+# Drive, window, operator, noise bins, validity, tilt and run rules are C1 v5's and C2's, unchanged.
+# The per-layer cap of 16 was added after a dry run showed that, uncapped, 21 of the 32 selected
+# heads sat in layer 2, which forced 10 control heads into layer 4 (layer gap 20) and would have
+# ruled out any specificity claim. That dry run used only set-A sizes, never sets B or C.
+# Every value is a proposal until Keenan seals this file with scripts/seal.sh.
+
+id: c3-glimmer-head-dial-v1
+version: 1
+drafted: 2026-10-28
+follows: c2-glimmer-knob-tilt-v1 (sealed, run complete, outcome K0 direction +)
+status: draft
+
+questions:
+  C3: Does scaling the 32 early heads with the largest slow response change the tilt of the frequency response measured downstream of them, much more than scaling 32 size-matched heads from the same layers?
+  prediction: Turning the selected heads up steepens the low-pass tilt downstream (direction "+"). This is a weak prediction; the scan shows these heads are large more than they are unusually low-pass.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  start: first token of the main text, after the Project Gutenberg header is stripped
+  special_tokens: none (no BOS); input = first 32,768 token ids of the stripped text
+  prompt_sets:                      # held-out test sets only; set A chose the heads
+    B: {1260: Jane Eyre, 768: Wuthering Heights, 345: Dracula, 84: Frankenstein, 25344: The Scarlet Letter}
+    C: {37106: Little Women, 74: The Adventures of Tom Sawyer, 120: Treasure Island, 174: The Picture of Dorian Gray, 940: The Last of the Mohicans}
+  token_counts_checked: 2026-10-26, shortest 94,774 tokens (Treasure Island), all at least 33,792
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+  reuse: C3 uses sets B and C with the same first 32,768 tokens as C1 v5, so condition S1.0 repeats C1 v5's main drive at C3's periods and layers; set A is not used, because it chose the heads. All 15 text hashes stay listed so the loader checks the whole manifest.
+
+heads:
+  selection:
+    file: results/derived/headscan-setA-v2-c1v5-20261027T152040Z/headscan.json
+    sha256: f5bebcca198b288a62bf771b04a062c58701fe6f1b33a77a92855b478743c04b
+    rule: among heads in layers 2, 3, 4 and 5 (pre-committed before the full top 32 was seen, so measurement can start at layer 6), taking at most 16 heads from any one layer so every selected head can have a same-layer control, the first 32 entries of by_low_gain (heads ranked by mean gain at N >= 1024 over set A's five books, from C1 v5's raw data); the runner refuses to start if the file's hash differs, its set is not A, or its version is not 2
+  control: >
+    Size-matched and layer-stratified, without replacement: for each selected head, largest
+    broadband size first (set-A mean gain at N = 2 and 4), take its own layer if that layer still
+    has an unselected, unused head, otherwise the nearest other local layer among 2, 4 and 5 (ties
+    to the lower layer); in that layer take the head whose size is nearest on a log scale (ties to
+    the lower head). Layer 3 is global and supplies control heads only for selected layer-3 heads.
+    Conditions R0.0 and R2.0 scale these.
+  control_size_ratio: 0.7233496660581747     # summed control size over summed selected size, from the scan; the runner checks it
+  composition: {selected: {"2": 16, "3": 0, "4": 10, "5": 6}, control: {"2": 16, "3": 0, "4": 10, "5": 6}}              # heads per layer 2, 3, 4, 5 for selected and control, from the scan; the runner checks it
+  measured_layers: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+  knob_point: each chosen head's 128-dim slice of the self_attn.o_proj input (its gated output), multiplied by g; at g = 1 the hook returns nothing and the model is unchanged bit for bit
+  conditions: [S1.0, S0.0, S0.5, S1.5, S2.0, R0.0, R2.0]       # S = selected heads at g, R = size-matched control heads at g; exactly one group differs from 1
+  order_per_book: conditions in the order listed; each gets its own undriven pass and sham
+  note: every scaled head sits after layer 1, so the drive and its amplitude reference are the same under every condition; the runner checks this and stops if the reference changes. No measured head is ever scaled, so a change in the measured tilt is a change in what flows downstream, not an arithmetic effect of the scaled heads' own outputs.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: see heads.measured_layers (only layers downstream of every scaled head)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every token t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from the book's own undriven pass
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]   # 7 periods spanning C1 v5's grid; all divide the window
+  phase_A: >
+    On book 1342 (set A; Phase A never enters the C3 tilts), under S1.0, S0.0, S2.0, R0.0 and
+    R2.0: one undriven pass, then A and 2A at N = 2 and 4096 (one sham before the first
+    condition). A condition passes if the 2A/A response ratio (whole-model mean target
+    magnitude) is within 10 percent of 2 at both N and the whole-model SNR at A, N = 4096 is at
+    least 3. If any condition fails, stop: C3 is not run, outcome U.
+  controls:
+    sham: zero wave, under every condition of every book, plus a closing sham per book; every head-output value must have the same bits as that condition's undriven pass (int16 view), or the run stops and the book is not written
+    control_heads: conditions R0.0 and R2.0 test whether scaling 32 heads of similar size in the same layers changes the tilt as much; the claim is specificity to the selected heads, not to large early heads in general
+    reproduction: condition S1.0 runs the same computation as C1 v5 at the shared periods and layers; the maximum relative difference of per-head target magnitudes from C1 v5's raw files is reported, not a gate
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), only in the measured layers (see heads.measured_layers)
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: tokens [8192, 32768), W = 24576. Every period N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 tokens are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4); at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all heads of the measured layers of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    Per condition, a period counts for a set only if the median over the set's five books of
+    the whole-model SNR is at least 3. Invalid periods are excluded from that set's tilt for
+    that condition and listed in the output.
+  curves:
+    per_book: mean gain over all heads in the measured layers (whole), over their local-layer heads (local), and over their global-layer heads (global), per N
+    per_set: the mean over its five books of each book's curve, per N
+    per_condition: every curve is computed separately for each knob condition
+
+tilt:
+  definition: per set and condition, the least-squares slope of ln(set-mean gain over the measured layers' heads) against ln(N) over the periods valid under all seven conditions in that set; needs at least 5 of the 7 periods and positive gains, otherwise undefined (metrics_c2.tilt, sealed with C2)
+  meaning: the exponent of a power-law fit; positive means gain rises with N (low-pass tilt)
+
+pass_criteria:
+  C3:
+    order: U is checked first, then K1, K2, K0
+    outcome_U_inconclusive: any tilt undefined in either set and any condition, or Phase A stopped C3
+    direction: >
+      "+" if on both sets the tilt rises strictly through S0.0, S0.5, S1.0, S1.5, S2.0; "-" if it
+      falls strictly on both sets; otherwise no direction.
+    effect: on both sets |tilt(S2.0) - tilt(S0.0)| is at least 0.25 x |tilt(S1.0)|
+    specificity: >
+      On both sets |tilt(S2.0) - tilt(S0.0)| is at least 2 x |tilt(R2.0) - tilt(R0.0)| / min(r, 1),
+      where r is the sealed control_size_ratio, so a smaller control must be beaten by a
+      proportionally larger margin; and r is at least 0.5 and the layer gap (sum over layers 2 to 5
+      of the difference in selected and control head counts, from the sealed composition; each head
+      moved to another layer counts twice, so 8 allows at most 4 moved heads) is at most 8. Otherwise a difference could come from size or layer rather than head identity, and
+      a K1 pattern is reported as K2.
+    outcome_K1_dial_found: a direction, the effect and specificity
+    outcome_K2_dial_not_specific: a direction and the effect, but not specificity
+    outcome_K0_no_dial: every tilt defined and K1 and K2 do not hold
+    prediction_held: reported for K1 and K2, true if the direction is "+"
+  incomplete_run: if any of the 10 books lacks a valid record, there is no outcome; a partial look is labeled PARTIAL and never reported as C3
+
+uncertainty:
+  bootstrap: >
+    Within each set, resample its five books with replacement 1,000 times (numpy
+    default_rng([0, i]) for the i-th set in sorted order); recompute validity, the set curves
+    and the tilts. Report 95 percent percentile intervals of tilt(S2.0) - tilt(S0.0) and of
+    tilt(R2.0) - tilt(R0.0).
+
+diagnostics_not_gates:
+  book_tilts: each book's tilt per condition, from its own curve, over the periods valid in that book under all conditions
+  book_signs: of the books with every tilt defined, how many have tilt(S2.0) > tilt(S0.0), and the same for R
+  group_tilts: tilts of the local-head and global-head mean curves per set and condition
+  reproduction: S1.0 against C1 v5 raw files at the measured layers; expected to be exactly 0; reported as "not found" if the files are missing
+  slice_norms: per book, the median per-token norm of each knob head's slice of the o_proj input on the S1.0 undriven pass, summed over selected and over control heads; their median ratio is reported beside the sealed size ratio
+
+decisions:
+  K1: a dial exists in specific heads; it is the demo's center, shown with the size-matched control
+  K2: the selected heads tune the tilt, but so do size-matched heads in the same layers (or the control was too small to judge); the demo shows tuning by early heads, not by specific heads
+  K0: no dial found among these heads; the demo shows the C1 curve and the search (C2, C3) as results
+  U: inconclusive; reported as is; any follow-up is a new sealed version
+  no_rescue: other head counts, rankings, layers, knob values, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in
+    results/ledger/). Each run writes STARTED.json before any GPU work. A new run is
+    refused if any earlier run under the seal is complete or was stopped by rule in Phase A
+    (not linear or underpowered under some condition), and otherwise needs a written reason (an
+    infrastructure failure: crash, failed sham, preflight failure). Only the newest run
+    may continue to Phase B, and Phase B needs that run's STARTED.json. Every book attempt
+    writes an ATTEMPT record first; a book with an earlier attempt or failure record may be
+    retried only with a written reason, stamped on that book. All earlier runs and records
+    are kept and listed in the summary. The analysis refuses to run if more than one run
+    under the seal is complete, requires phaseA.json, and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 4                  # wall-clock hours of every run process under this seal, from start to exit, including model loads
+  ledger: results/ledger/c3v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  preflight: each phase refuses to start if hours used plus its projected need exceed the cap; every pass also checks the cap first
+  estimate: Phase A 26 passes (1 sham, then per condition 1 undriven and 4 driven); Phase B 10 books x 64 passes (per condition 1 undriven, 1 sham and 7 driven, plus 1 closing sham) = 640 passes; 666 passes at about 13.4 s is about 2.48 hours plus about 0.05 for loads
+  cost: about $6.50 at about $2.50 per pod hour for counted time; pod time between processes is billed separately
+  peak_gpu_memory: at most C1 v5's 74.3 GiB (fewer measured layers store fewer undriven head outputs); the head knob clones one layer input briefly
+  pre_seal_smoke: measured 2026-10-28 with src/dialedin/smoke_c3.py at commit c32c6ea, real C3 Session, book 1342, conditions S1.0, S0.0, S2.0, R0.0 and R2.0, before the per-layer cap (same hooks, a different head list); 13.07 to 13.46 s per pass, peak 73.3 GiB, every sham and the closing sham 0 differing values, amplitude reference unchanged, outputs finite, slice-norm probe ran on 64 heads. After the cap, at commit cc6e16c, --heads-only gave selected and control 16, 0, 10 and 6 heads in layers 2, 3, 4 and 5 (layer gap 0) and control size ratio 0.7233; 666 passes at 13.4 s is about 2.48 hours plus about 0.05 for loads
+
+analysis:
+  runner: src/dialedin/run_c3.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/headknob.py: 6379a7c4ce8031efff5c9b180cf99baf21771af0a8a094605e2526652da651aa
+    src/dialedin/metrics_c3.py: d8d625daf04bea0ac263c311ec5637d5993440ef3229a2327a4f5b140b1368de
+    src/dialedin/run_c3.py: 46c19ad1081fa098cdeb7539735ca48b8d551fd267cd747d82017e20d0f7d507
+    src/dialedin/analyze_c3.py: f591d69c359e66d74fd75cfc1a8fbf92f6e5f8967b57fbcaf1476007a79633d2
+
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json; one book_<set>_<id>.json per book with, per condition and period, per-head target magnitude and noise floor for the measured layers, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; sham counts per condition; a record of seal, code, platform, selected and control heads, text and token hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c3_summary.json and c3_curves.png, citing every raw file used

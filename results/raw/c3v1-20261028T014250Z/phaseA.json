@@ -1,0 +1,504 @@
+{
+  "phase": "A",
+  "finished_utc": "2026-10-28T01:50:08+00:00",
+  "wall_seconds_per_pass": 13.322186690110426,
+  "book": 1342,
+  "a": 0.1,
+  "median_norm": 64.93833923339844,
+  "stopped": null,
+  "outcome_if_stopped": null,
+  "sham_differences": 0,
+  "rows": [
+    {
+      "condition": "S1.0",
+      "median_norm": 64.93833923339844,
+      "by_N": {
+        "2": {
+          "response_a": 31.6776491858713,
+          "response_2a": 62.55174130760133,
+          "ratio": 1.9746333113474952,
+          "within_10pct": true,
+          "snr_at_a": 12.898158198309021
+        },
+        "4096": {
+          "response_a": 44.902251644869864,
+          "response_2a": 88.74034851271173,
+          "ratio": 1.976300636648595,
+          "within_10pct": true,
+          "snr_at_a": 6.1477202328348515
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S0.0",
+      "median_norm": 64.93833923339844,
+      "by_N": {
+        "2": {
+          "response_a": 31.17978243748455,
+          "response_2a": 61.551105516760245,
+          "ratio": 1.9740710391475689,
+          "within_10pct": true,
+          "snr_at_a": 12.516315341726102
+        },
+        "4096": {
+          "response_a": 47.29898468842325,
+          "response_2a": 89.65090081630194,
+          "ratio": 1.895408567580619,
+          "within_10pct": true,
+          "snr_at_a": 3.937726068821328
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S2.0",
+      "median_norm": 64.93833923339844,
+      "by_N": {
+        "2": {
+          "response_a": 33.591044536103375,
+          "response_2a": 66.1634579344612,
+          "ratio": 1.96967551465538,
+          "within_10pct": true,
+          "snr_at_a": 13.593185989872183
+        },
+        "4096": {
+          "response_a": 51.72604012052002,
+          "response_2a": 97.57426042401272,
+          "ratio": 1.8863663291577668,
+          "within_10pct": true,
+          "snr_at_a": 4.13113726439514
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "R0.0",
+      "median_norm": 64.93833923339844,
+      "by_N": {
+        "2": {
+          "response_a": 32.64455840210228,
+          "response_2a": 64.34929859962152,
+          "ratio": 1.9712105707479104,
+          "within_10pct": true,
+          "snr_at_a": 12.514236207887388
+        },
+        "4096": {
+          "response_a": 50.968023225503124,
+          "response_2a": 99.12023948213977,
+          "ratio": 1.9447534593129459,
+          "within_10pct": true,
+          "snr_at_a": 4.648315913813052
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "R2.0",
+      "median_norm": 64.93833923339844,
+      "by_N": {
+        "2": {
+          "response_a": 31.26752055298699,
+          "response_2a": 61.417497889098264,
+          "ratio": 1.9642586557196984,
+          "within_10pct": true,
+          "snr_at_a": 13.799982193338732
+        },
+        "4096": {
+          "response_a": 44.58629771921298,
+          "response_2a": 87.31209116753028,
+          "ratio": 1.9582718376257118,
+          "within_10pct": true,
+          "snr_at_a": 5.63710569665723
+        }
+      },
+      "linear": true,
+      "powered": true
+    }
+  ],
+  "chosen_a": 0.1,
+  "seconds_per_pass_last": 13.30439805984497,
+  "record": {
+    "knob": {
+      "selected_heads": [
+        [
+          2,
+          10
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          16
+        ],
+        [
+          2,
+          17
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          5,
+          30
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          22
+        ],
+        [
+          4,
+          27
+        ],
+        [
+          4,
+          21
+        ],
+        [
+          2,
+          12
+        ],
+        [
+          2,
+          26
+        ],
+        [
+          2,
+          30
+        ],
+        [
+          4,
+          31
+        ],
+        [
+          2,
+          25
+        ],
+        [
+          5,
+          10
+        ],
+        [
+          2,
+          27
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          4,
+          22
+        ],
+        [
+          4,
+          23
+        ],
+        [
+          2,
+          9
+        ],
+        [
+          4,
+          29
+        ],
+        [
+          4,
+          30
+        ],
+        [
+          5,
+          14
+        ],
+        [
+          5,
+          17
+        ],
+        [
+          4,
+          26
+        ],
+        [
+          5,
+          11
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          4,
+          17
+        ],
+        [
+          4,
+          28
+        ]
+      ],
+      "control_heads": [
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          2,
+          11
+        ],
+        [
+          2,
+          13
+        ],
+        [
+          2,
+          14
+        ],
+        [
+          2,
+          15
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          2,
+          21
+        ],
+        [
+          2,
+          23
+        ],
+        [
+          2,
+          24
+        ],
+        [
+          2,
+          28
+        ],
+        [
+          2,
+          29
+        ],
+        [
+          2,
+          31
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          4,
+          10
+        ],
+        [
+          4,
+          11
+        ],
+        [
+          4,
+          12
+        ],
+        [
+          4,
+          16
+        ],
+        [
+          4,
+          20
+        ],
+        [
+          4,
+          24
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          20
+        ],
+        [
+          5,
+          27
+        ],
+        [
+          5,
+          28
+        ]
+      ],
+      "control_size_ratio": 0.7233496660581747,
+      "layer_gap": 0,
+      "conditions": [
+        "S1.0",
+        "S0.0",
+        "S0.5",
+        "S1.5",
+        "S2.0",
+        "R0.0",
+        "R2.0"
+      ],
+      "point": "each chosen head's 128-dim slice of the self_attn.o_proj input, multiplied by g"
+    },
+    "sealed_file": "criteria/sealed/c3-glimmer-head-dial-v1.yaml",
+    "seal_sha256": "9cb0919523729fae4f45855ae501c07a5c609a5f97b1bf4034d61355e3fbfe4d",
+    "code_sha256": {
+      "src/dialedin/metrics.py": "be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113",
+      "src/dialedin/hooks.py": "f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd",
+      "src/dialedin/glimmer.py": "b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c",
+      "src/dialedin/wave.py": "2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5",
+      "src/dialedin/analyze_c1v5.py": "43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f",
+      "src/dialedin/metrics_c2.py": "44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac",
+      "src/dialedin/headknob.py": "6379a7c4ce8031efff5c9b180cf99baf21771af0a8a094605e2526652da651aa",
+      "src/dialedin/metrics_c3.py": "d8d625daf04bea0ac263c311ec5637d5993440ef3229a2327a4f5b140b1368de",
+      "src/dialedin/run_c3.py": "46c19ad1081fa098cdeb7539735ca48b8d551fd267cd747d82017e20d0f7d507",
+      "src/dialedin/analyze_c3.py": "f591d69c359e66d74fd75cfc1a8fbf92f6e5f8967b57fbcaf1476007a79633d2"
+    },
+    "platform": {
+      "dtype": "bfloat16",
+      "attention": "sdpa",
+      "revision": "cec94fcfd6512f2cfe708138c32533b346ea4f69",
+      "transformers": "5.21.0",
+      "torch": "2.8.0+cu128",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "global_layers": [
+        3,
+        7,
+        11,
+        15,
+        19,
+        23,
+        27,
+        31,
+        35,
+        39,
+        43,
+        47,
+        51
+      ],
+      "batch_size": 1,
+      "deterministic": true,
+      "tf32": false
+    },
+    "gutenberg_id": 1342,
+    "text_sha256": "cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138",
+    "token_ids_sha256": "278b3e5731ecff7f2deb94669f6f6f6c24d61dbf293d195f92d1bf3ba9e9aff1",
+    "tokenizer": "TokenizersBackend",
+    "direction_seed": 0,
+    "direction_sha256": "7f7b3201448c4c105df27346222373740699340e00be64a2e550770a1965d894",
+    "drive": {
+      "form": "amplitude * cos(2 pi t / N + phase) at every token t",
+      "phase_main": 0.0
+    },
+    "window": [
+      8192,
+      32768
+    ],
+    "T": 32768,
+    "layers_measured": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ]
+  }
+}

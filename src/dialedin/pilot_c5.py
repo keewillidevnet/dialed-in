@@ -38,7 +38,8 @@ W = T - T1
 PERIODS = (2, 4, 16, 64, 256, 1024, 2048)
 TRAIN_START, EVAL_START, BOOK = 98304, 131072, 2701
 EVAL_SEEDS = (1, 2)
-TONE_A = 0.1                                   # total amplitude budget, as a fraction of the median residual norm
+TONE_A = 0.1                                   # amplitude of each tone, as a fraction of the median residual norm
+                                               # (C1 v5's sealed a; linear to 2a for a single tone)
 KL_CHUNK = 1024
 
 
@@ -108,9 +109,8 @@ def basis(periods, device):
     return torch.stack(rows).float().to(device)                 # [6P, W]
 
 
-def tones(periods, amp_total, rng):
-    """One amplitude per tone (amp_total / sqrt(P)) and a phase (0 for N = 2, whose bin is Nyquist; else random)."""
-    a = amp_total / math.sqrt(len(periods))
+def tones(periods, a, rng):
+    """Amplitude a for every tone, and a phase per tone (0 for N = 2, whose bin is Nyquist; else random)."""
     phases = [0.0 if n == 2 else float(rng.uniform(0, 2 * math.pi)) for n in periods]
     t = np.arange(T, dtype=np.float64)
     w = sum(a * np.cos(2 * np.pi * t / n + p) for n, p in zip(periods, phases))
@@ -124,8 +124,12 @@ def input_mags(w, periods, B):
 
 
 class Rig:
-    """Hooks on the decoder: drive at the layer 1 output (batch element 1 only), lock-in projections at every
-    measured layer's o_proj input, and the median residual norm at layer 1 (batch element 0)."""
+    """Hooks on the decoder, batch 1: drive at the layer 1 output (when delta is set), lock-in projections at every
+    measured layer's o_proj input (when B is set), and the median residual norm at layer 1.
+
+    The drive hook runs in layer 1's __call__, outside its checkpointed forward, so a recompute in backward never
+    re-runs it: each pass's activations are recomputed from the checkpointed inputs it actually saw. The probe hooks
+    do re-run on recompute and overwrite proj, which is harmless: callers copy proj right after each pass."""
 
     def __init__(self, layers, measured, heads=32):
         self.layers, self.measured, self.heads = layers, list(measured), heads
@@ -133,32 +137,35 @@ class Rig:
         self.B = None
         self.proj = {}
         self.median_norm = None
+        self.enabled = True
         self.handles = [layers[1].register_forward_hook(self._drive)]
         for i in self.measured:
             self.handles.append(layers[i].self_attn.o_proj.register_forward_pre_hook(self._probe(i)))
 
     def _drive(self, module, args, output):
+        if not self.enabled:
+            return None
         hidden = output[0] if isinstance(output, tuple) else output
+        assert hidden.shape[0] == 1
         self.median_norm = float(hidden[0].detach().float().norm(dim=-1).median())
         if self.delta is None:
             return None
-        new = hidden.clone()
-        new[1] = (hidden[1].float() + self.delta).to(hidden.dtype)
+        new = (hidden.float() + self.delta[None]).to(hidden.dtype)
         return (new,) + tuple(output[1:]) if isinstance(output, tuple) else new
 
     def _probe(self, i):
         def hook(module, args):
-            if self.B is not None:
-                x = args[0][:, T1:].float()                                     # [2, W, 4096]
-                self.proj[i] = torch.einsum("rw,bwd->brd", self.B, x)           # [2, 6P, 4096]
+            if self.enabled and self.B is not None:
+                self.proj[i] = self.B @ args[0][0, T1:].float()                  # [6P, 4096]
         return hook
 
-    def curves(self, periods, in_mag):
-        """Mean gain over heads, per period; and the mean noise magnitude at the side bins (same units)."""
+    def curves(self, p0, p1, periods, in_mag):
+        """From undriven (p0) and driven (p1) projections: mean gain over heads, per period, and the mean noise
+        magnitude at the side bins (same units)."""
         P = len(periods)
         g, nz = [], []
         for i in self.measured:
-            d = (self.proj[i][1] - self.proj[i][0]).reshape(P, 3, 2, self.heads, -1)
+            d = (p1[i] - p0[i]).reshape(P, 3, 2, self.heads, -1)
             mag = d.pow(2).sum(dim=(2, 4)).sqrt()                               # [P, 3, heads]
             g.append(mag[:, 0]); nz.append(mag[:, 1:].mean(dim=1))
         g = torch.stack(g, 1).reshape(P, -1).mean(1) / in_mag.to(g[0].device).float()
@@ -183,18 +190,26 @@ def direction(seed, dim, device):
     return (d / d.norm()).to(device)
 
 
+def one_pass(decoder, rig, ids, delta):
+    rig.delta, rig.proj = delta, {}
+    try:
+        out = decoder(input_ids=ids, use_cache=False)
+    finally:
+        rig.delta = None
+    return out, dict(rig.proj)
+
+
 def run_pass(decoder, rig, ids, periods, w, d, keep_hidden=False):
-    """One batch-of-2 pass: element 0 undriven, element 1 driven by w along d. Returns (gains, noise, hidden0)."""
+    """An undriven pass, then a pass driven by w along d. Returns (gains, noise, undriven last hidden state)."""
     rig.B = basis(periods, ids.device)
-    rig.delta = torch.as_tensor(w, dtype=torch.float32, device=ids.device)[:, None] * d[None, :]
-    out = decoder(input_ids=ids.repeat(2, 1), use_cache=False)
-    g, nz = rig.curves(periods, input_mags(w, periods, rig.B))
-    h = out.last_hidden_state[0] if keep_hidden else None
+    out0, p0 = one_pass(decoder, rig, ids, None)
+    delta = torch.as_tensor(w, dtype=torch.float32, device=ids.device)[:, None] * d[None, :]
+    _, p1 = one_pass(decoder, rig, ids, delta)
+    # rig.B stays set: a checkpoint recompute in backward must run the same probe ops as the forward did.
+    # Callers clear it after backward.
+    g, nz = rig.curves(p0, p1, periods, input_mags(w, periods, basis(periods, "cpu")))
+    h = out0.last_hidden_state[0] if keep_hidden else None
     return g, nz, h
-
-
-def scaled_tones(rig_norm, periods, rng):
-    return tones(periods, TONE_A * rig_norm, rng)
 
 
 # ---------------------------------------------------------------- KL
@@ -245,17 +260,29 @@ def checkpoint_layers(layers):
 
 # ---------------------------------------------------------------- pilot
 def evaluate(decoder, rig, ids, seeds, scales, norm, dim):
-    """No grad. Tilt over all 7 periods, per held-out direction and adapter scale."""
+    """No grad. One tone per driven pass at the sealed amplitude (0.1 x the median norm), all 7 periods, one shared
+    undriven pass, per held-out direction and adapter scale. Tilt over the 7 periods."""
     rows = []
+    B = basis(PERIODS, ids.device)
+    Bc = basis(PERIODS, "cpu")
     with torch.no_grad():
         for sd in seeds:
             d = direction(sd, dim, ids.device)
-            w, _ = scaled_tones(norm, PERIODS, np.random.default_rng(sd))
+            rng = np.random.default_rng(sd)
+            ws = [tones([n], TONE_A * norm, rng)[0] for n in PERIODS]
             for sc in scales:
                 LoRALinear.scale = sc
-                g, nz, _ = run_pass(decoder, rig, ids, PERIODS, w, d)
-                rows.append({"seed": sd, "scale": sc, "tilt": float(slope(PERIODS, g)),
-                             "gains": g.tolist(), "snr": (g / nz).tolist()})
+                rig.B = B
+                _, p0 = one_pass(decoder, rig, ids, None)
+                g, snr = [], []
+                for k, w in enumerate(ws):
+                    delta = torch.as_tensor(w, dtype=torch.float32, device=ids.device)[:, None] * d[None, :]
+                    _, p1 = one_pass(decoder, rig, ids, delta)
+                    gk, nk = rig.curves(p0, p1, PERIODS, input_mags(w, PERIODS, Bc).clamp_min(1e-30))
+                    g.append(float(gk[k])); snr.append(float(gk[k] / nk[k]))
+                rig.B = None
+                rows.append({"seed": sd, "scale": sc, "tilt": float(slope(PERIODS, torch.tensor(g))),
+                             "gains": g, "snr": snr})
     LoRALinear.scale = 0.0
     return rows
 
@@ -324,6 +351,8 @@ def main():
     ap.add_argument("--beta", type=float, default=1.0)
     ap.add_argument("--periods-per-step", type=int, default=3)
     ap.add_argument("--skip-forward-ad", action="store_true")
+    ap.add_argument("--sdpa", choices=["default", "efficient", "flash"], default="default",
+                    help="restrict SDPA to one backend for training steps (forward and the recompute in backward)")
     args = ap.parse_args()
 
     spec = yaml.safe_load(open(args.spec))
@@ -383,14 +412,23 @@ def main():
     if not args.skip_forward_ad:
         d0 = direction(1, dim, dev)
         LoRALinear.scale = 1.0
+        rig.enabled = False
         for bw in (False, True):
             r = forward_ad_probe(decoder, layers, measured, eval_ids, d0, norm, 2048, bw, params)
             report[f"forward_ad_backward_{bw}"] = r
             print(f"== forward AD (backward={bw}): {r}")
         LoRALinear.scale = 0.0
+        rig.enabled = True
 
     # 5. training
     undo = checkpoint_layers(layers)
+    torch.cuda.empty_cache()
+    report["gib_before_training"] = torch.cuda.memory_allocated() / 2**30
+    print(f"== allocated before training: {report['gib_before_training']:.1f} GiB", flush=True)
+    from contextlib import nullcontext
+    from torch.nn.attention import sdpa_kernel, SDPBackend
+    kernel = {"default": nullcontext, "efficient": lambda: sdpa_kernel([SDPBackend.EFFICIENT_ATTENTION]),
+              "flash": lambda: sdpa_kernel([SDPBackend.FLASH_ATTENTION])}[args.sdpa]
     opt = torch.optim.Adam(params, lr=args.lr)
     rng = np.random.default_rng(0)
     steps = []
@@ -399,21 +437,22 @@ def main():
         t0 = time.time()
         per = sorted(rng.choice(PERIODS, size=args.periods_per_step, replace=False).tolist())
         d = direction(10000 + step, dim, dev)
-        w, _ = scaled_tones(norm, per, rng)
+        w, _ = tones(per, TONE_A * norm, rng)
         with torch.no_grad():
-            LoRALinear.scale, rig.delta, rig.B = 0.0, None, None
-            h_base = decoder(input_ids=train_ids, use_cache=False).last_hidden_state[0]
+            LoRALinear.scale, rig.B = 0.0, None
+            h_base = one_pass(decoder, rig, train_ids, None)[0].last_hidden_state[0]
         LoRALinear.scale = 1.0
-        g, nz, h_adapt = run_pass(decoder, rig, train_ids, per, w, d, keep_hidden=True)
-        tilt = slope(per, g)
-        tilt_loss = ((tilt - target) / tilt0) ** 2
-        kl = kl_to_base(h_adapt, h_base, logits)
-        loss = tilt_loss + args.beta * kl
-        opt.zero_grad(set_to_none=True)
-        loss.backward()
+        with kernel():
+            g, nz, h_adapt = run_pass(decoder, rig, train_ids, per, w, d, keep_hidden=True)
+            tilt = slope(per, g)
+            tilt_loss = ((tilt - target) / tilt0) ** 2
+            kl = kl_to_base(h_adapt, h_base, logits)
+            loss = tilt_loss + args.beta * kl
+            opt.zero_grad(set_to_none=True)
+            loss.backward()
         gn = float(torch.sqrt(sum((p.grad.float() ** 2).sum() for p in params if p.grad is not None)))
         opt.step()
-        rig.delta, rig.B, rig.proj = None, None, {}
+        rig.proj, rig.B = {}, None
         row = {"step": step, "periods": per, "tilt": float(tilt), "tilt_loss": float(tilt_loss), "kl": float(kl),
                "grad_norm": gn, "seconds": time.time() - t0, "peak_gib": torch.cuda.max_memory_allocated() / 2**30,
                "min_snr": float((g / nz).min())}

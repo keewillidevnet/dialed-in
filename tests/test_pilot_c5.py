@@ -41,7 +41,7 @@ def test_input_magnitude_matches_lockin():
     w, _ = P.tones(P.PERIODS, 1.0, rng)
     B = P.basis(P.PERIODS, "cpu")
     mags = P.input_mags(w, P.PERIODS, B)
-    a = 1.0 / math.sqrt(len(P.PERIODS))
+    a = 1.0
     expect = a * P.W / 4                        # Hann sum is W/2; a cosine puts half its amplitude in each sign
     for n, m in zip(P.PERIODS, mags.tolist()):
         if n != 2:
@@ -97,3 +97,15 @@ def test_kl_is_zero_at_base_and_has_gradient():
     kl2 = P.kl_to_base(ha + 0.1 * torch.randn(P.T, D), hb, f)
     kl2.backward()
     assert float(kl2) > 0 and ha.grad is not None and float(ha.grad.abs().sum()) > 0
+
+
+def test_evaluate_single_tones_on_toy():
+    lm = ToyLM()
+    rig = P.Rig(lm.layers, range(2, len(lm.layers)), heads=4)
+    ids = torch.randint(1, 900, (1, P.T))
+    P.attach_lora(lm.layers, [2], r=2, alpha=4.0)
+    rows = P.evaluate(lm, rig, ids, [1], [0.0, 1.0], 1.0, D)
+    assert len(rows) == 2 and all(len(r["gains"]) == len(P.PERIODS) for r in rows)
+    assert rows[0]["tilt"] == rows[1]["tilt"]            # B starts at zero, so scale 1 equals scale 0
+    assert rig.delta is None and rig.B is None
+    rig.remove()

@@ -11,6 +11,9 @@
 # from the same early layers with the nearest broadband size. C3 scales the selected heads and
 # measures the tilt only in layers 6 to 51, downstream of every scaled head, on sets B and C only.
 # Drive, window, operator, noise bins, validity, tilt and run rules are C1 v5's and C2's, unchanged.
+# The per-layer cap of 16 was added after a dry run showed that, uncapped, 21 of the 32 selected
+# heads sat in layer 2, which forced 10 control heads into layer 4 (layer gap 20) and would have
+# ruled out any specificity claim. That dry run used only set-A sizes, never sets B or C.
 # Every value is a proposal until Keenan seals this file with scripts/seal.sh.
 
 id: c3-glimmer-head-dial-v1
@@ -69,7 +72,7 @@ heads:
   selection:
     file: results/derived/headscan-setA-v2-c1v5-20261027T152040Z/headscan.json
     sha256: HEADSCAN_SHA
-    rule: among heads in layers 2, 3, 4 and 5 (pre-committed before the full top 32 was seen, so measurement can start at layer 6), the first 32 entries of by_low_gain (heads ranked by mean gain at N >= 1024 over set A's five books, from C1 v5's raw data); the runner refuses to start if the file's hash differs, its set is not A, or its version is not 2
+    rule: among heads in layers 2, 3, 4 and 5 (pre-committed before the full top 32 was seen, so measurement can start at layer 6), taking at most 16 heads from any one layer so every selected head can have a same-layer control, the first 32 entries of by_low_gain (heads ranked by mean gain at N >= 1024 over set A's five books, from C1 v5's raw data); the runner refuses to start if the file's hash differs, its set is not A, or its version is not 2
   control: >
     Size-matched and layer-stratified, without replacement: for each selected head, largest
     broadband size first (set-A mean gain at N = 2 and 4), take its own layer if that layer still
@@ -159,8 +162,8 @@ pass_criteria:
       On both sets |tilt(S2.0) - tilt(S0.0)| is at least 2 x |tilt(R2.0) - tilt(R0.0)| / min(r, 1),
       where r is the sealed control_size_ratio, so a smaller control must be beaten by a
       proportionally larger margin; and r is at least 0.5 and the layer gap (sum over layers 2 to 5
-      of the difference in selected and control head counts, from the sealed composition) is at
-      most 8. Otherwise a difference could come from size or layer rather than head identity, and
+      of the difference in selected and control head counts, from the sealed composition; each head
+      moved to another layer counts twice, so 8 allows at most 4 moved heads) is at most 8. Otherwise a difference could come from size or layer rather than head identity, and
       a K1 pattern is reported as K2.
     outcome_K1_dial_found: a direction, the effect and specificity
     outcome_K2_dial_not_specific: a direction and the effect, but not specificity
@@ -221,7 +224,7 @@ analysis:
     src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
     src/dialedin/headknob.py: 6379a7c4ce8031efff5c9b180cf99baf21771af0a8a094605e2526652da651aa
     src/dialedin/metrics_c3.py: d8d625daf04bea0ac263c311ec5637d5993440ef3229a2327a4f5b140b1368de
-    src/dialedin/run_c3.py: e6fd890643dc6bddb91df17cd972aef4939042191255a9fb4d78996fbd841a2e
+    src/dialedin/run_c3.py: 46c19ad1081fa098cdeb7539735ca48b8d551fd267cd747d82017e20d0f7d507
     src/dialedin/analyze_c3.py: f591d69c359e66d74fd75cfc1a8fbf92f6e5f8967b57fbcaf1476007a79633d2
 
 outputs:

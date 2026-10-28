@@ -67,7 +67,7 @@ def test_control_is_size_matched_disjoint_and_deterministic():
     assert 0 < ratio <= 1.5
     assert all(l != 3 for l, _ in ctrl) or any(l == 3 for l, _ in sel)       # global layer 3 only for layer-3 picks
     cs, cc = run_c3.composition(sel), run_c3.composition(ctrl)
-    assert cc["2"] == min(cs["2"], 12)                                       # layer 2 is filled first, up to its 12 spares
+    assert cc["2"] == min(cs["2"], 32 - cs["2"])                             # layer 2 is filled first, up to its spares
     assert run_c3.composition_gap(sel, ctrl) == sum(abs(cs[k] - cc[k]) for k in cs)
 
 
@@ -213,3 +213,11 @@ def test_s1_reproduction_aligns_layers(tmp_path):
     r = analyze_c3.analyze(str(tmp_path), SPEC, c1_run_dir=str(c1))
     assert r["diagnostic_S1_vs_C1v5"]["cells_compared"] == 7
     assert r["diagnostic_S1_vs_C1v5"]["max_relative_difference"] == 0.0
+
+
+def test_selection_caps_heads_per_layer():
+    scan = scan_rows()                       # 20 big heads in layer 2
+    sel = run_c3.selected_heads(scan)
+    assert run_c3.composition(sel)["2"] == run_c3.MAX_PER_LAYER
+    ctrl, _ = run_c3.control_heads(scan, sel)
+    assert run_c3.composition_gap(sel, ctrl) == 0               # every selected head has a same-layer control

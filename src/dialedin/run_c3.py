@@ -58,10 +58,21 @@ def load_scan(repo: str, spec: dict) -> dict:
     return scan
 
 
+MAX_PER_LAYER = 16                   # at most half of a layer's heads, so every selected head can have a same-layer control
+
+
 def selected_heads(scan: dict) -> list:
-    """The first N_SELECTED entries of by_low_gain whose layer is in SELECT_LAYERS."""
-    rows = [r for r in scan["by_low_gain"] if r["layer"] in SELECT_LAYERS]
-    return [(r["layer"], r["head"]) for r in rows[:N_SELECTED]]
+    """The first N_SELECTED entries of by_low_gain whose layer is in SELECT_LAYERS, taking at most
+    MAX_PER_LAYER from any one layer (entries past the cap are skipped and the ranking continues)."""
+    out, per = [], {}
+    for r in scan["by_low_gain"]:
+        l = r["layer"]
+        if l in SELECT_LAYERS and per.get(l, 0) < MAX_PER_LAYER:
+            out.append((l, r["head"]))
+            per[l] = per.get(l, 0) + 1
+            if len(out) == N_SELECTED:
+                break
+    return out
 
 
 LOCAL_SELECT = (2, 4, 5)             # layer 3 is global; it supplies control heads only for selected layer-3 heads

@@ -29,6 +29,7 @@ def main():
     ap.add_argument("--spec", required=True)
     ap.add_argument("--weights", default="/workspace/weights/Muse-Glimmer-30B")
     ap.add_argument("--manifest", default="/workspace/data/books/MANIFEST.json")
+    ap.add_argument("--heads-only", action="store_true", help="print the selection, control and ratio, then stop (no GPU)")
     args = ap.parse_args()
     spec = yaml.safe_load(open(args.spec))
     sel = spec["heads"]["selection"]
@@ -45,6 +46,8 @@ def main():
     spec["heads"]["selection"]["sha256"] = sha                 # smoke only: the sealed file will carry these values
     spec["heads"]["control_size_ratio"] = ratio
     spec["heads"]["composition"] = {"selected": run_c3.composition(picked), "control": run_c3.composition(control)}
+    if args.heads_only:
+        return
     s = object.__new__(run_c3.Session)
     s.repo, s.seal_hash, s.spec, s.code = os.getcwd(), "smoke", spec, {}
     s.ledger = types.SimpleNamespace(check=lambda *a: None, add=lambda *a: 0.0, last_pass=0.0)

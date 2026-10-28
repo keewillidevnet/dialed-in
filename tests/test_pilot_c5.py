@@ -117,3 +117,24 @@ def test_configure_lengths():
         assert P.configure(4096) == (2, 4, 16, 64, 256, 1024) and P.T1 == 1024
     finally:
         assert P.configure(8192) == P.PERIODS and P.W == 6144
+
+
+def test_perplexity_matches_direct():
+    lm = ToyLM()
+    f = P.logits_fn(lm.head, 0.5, 3.0)
+    ids = torch.randint(1, 900, (1, P.T))
+    with torch.no_grad():
+        h = lm(ids).last_hidden_state[0]
+        ppl = P.perplexity(h, ids, f)
+        lp = f(h[P.T1:P.T - 1]).log_softmax(-1)
+        direct = math.exp(-float(lp.gather(1, ids[0, P.T1 + 1:, None]).mean()))
+    assert abs(ppl / direct - 1) < 1e-5
+
+
+def test_evaluate_with_periods_and_perplexity():
+    lm = ToyLM()
+    rig = P.Rig(lm.layers, range(2, len(lm.layers)), heads=4)
+    ids = torch.randint(1, 900, (1, P.T))
+    rows = P.evaluate(lm, rig, ids, [5], [0.0], 1.0, D, periods=(3, 48, 768), logits=P.logits_fn(lm.head, None, None))
+    assert len(rows[0]["gains"]) == 3 and rows[0]["perplexity"] > 1
+    rig.remove()

@@ -47,7 +47,8 @@ def configure(tokens: int):
     W = T - T1
     return tuple(p for p in PERIODS if W % p == 0)
 TRAIN_START, EVAL_START, BOOK = 98304, 131072, 2701
-EVAL_SEEDS = (1, 2)
+EVAL_SEEDS = (1, 2, 3, 4)
+BASE_SEEDS = (20001, 20002, 20003)             # directions for the base-gain cache on the training text
 TONE_A = 0.1                                   # amplitude of each tone, as a fraction of the median residual norm
                                                # (C1 v5's sealed a; linear to 2a for a single tone)
 KL_CHUNK = 1024
@@ -269,9 +270,21 @@ def checkpoint_layers(layers):
 
 
 # ---------------------------------------------------------------- pilot
-def evaluate(decoder, rig, ids, seeds, scales, norm, dim):
-    """No grad. One tone per driven pass at the sealed amplitude (0.1 x the median norm), all 7 periods, one shared
-    undriven pass, per held-out direction and adapter scale. Tilt over the 7 periods."""
+def perplexity(h, ids, logits):
+    """exp of the mean next-token loss over predictions of tokens T1+1 .. T-1, chunked."""
+    total, count = 0.0, 0
+    for s in range(T1, T - 1, KL_CHUNK):
+        e = min(s + KL_CHUNK, T - 1)
+        lp = logits(h[s:e]).log_softmax(-1)
+        total += float(-lp.gather(1, ids[0, s + 1:e + 1, None]).sum())
+        count += e - s
+    return math.exp(total / count)
+
+
+def evaluate(decoder, rig, ids, seeds, scales, norm, dim, periods=None, logits=None):
+    """No grad. One tone per driven pass at the sealed amplitude (0.1 x the median norm), one shared undriven pass
+    (with perplexity, if logits is given), per direction and adapter scale. Tilt over the periods."""
+    PERIODS = tuple(periods or globals()["PERIODS"])
     rows = []
     B = basis(PERIODS, ids.device)
     Bc = basis(PERIODS, "cpu")
@@ -283,7 +296,9 @@ def evaluate(decoder, rig, ids, seeds, scales, norm, dim):
             for sc in scales:
                 LoRALinear.scale = sc
                 rig.B = B
-                _, p0 = one_pass(decoder, rig, ids, None)
+                out0, p0 = one_pass(decoder, rig, ids, None)
+                ppl = perplexity(out0.last_hidden_state[0], ids, logits) if logits else None
+                del out0
                 g, snr = [], []
                 for k, w in enumerate(ws):
                     delta = torch.as_tensor(w, dtype=torch.float32, device=ids.device)[:, None] * d[None, :]
@@ -292,7 +307,7 @@ def evaluate(decoder, rig, ids, seeds, scales, norm, dim):
                     g.append(float(gk[k])); snr.append(float(gk[k] / nk[k]))
                 rig.B = None
                 rows.append({"seed": sd, "scale": sc, "tilt": float(slope(PERIODS, torch.tensor(g))),
-                             "gains": g, "snr": snr})
+                             "gains": g, "snr": snr, "perplexity": ppl})
     LoRALinear.scale = 0.0
     return rows
 
@@ -353,14 +368,17 @@ def main():
     ap.add_argument("--manifest", default="/workspace/data/books/MANIFEST.json")
     ap.add_argument("--spec", default="criteria/sealed/c4-glimmer-structure-and-text-v1.yaml")
     ap.add_argument("--out", default="/workspace/env/pilot_c5.json")
-    ap.add_argument("--steps", type=int, default=20)
+    ap.add_argument("--steps", type=int, default=150)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--rank", type=int, default=8)
     ap.add_argument("--layers", type=int, nargs="+", default=[2, 3, 4, 5])
-    ap.add_argument("--target-factor", type=float, default=0.7, help="target tilt = factor x the starting tilt")
-    ap.add_argument("--beta", type=float, default=1.0)
+    ap.add_argument("--shift", type=float, default=-0.2,
+                    help="target relative tilt change per unit of adapter scale (scale 2 aims for twice this)")
+    ap.add_argument("--scale-range", type=float, nargs=2, default=[0.25, 2.0],
+                    help="each training step draws the adapter scale uniformly from this range")
+    ap.add_argument("--beta", type=float, default=5.0)
     ap.add_argument("--periods-per-step", type=int, default=3)
-    ap.add_argument("--tokens", type=int, nargs="+", default=[8192, 6144, 4096],
+    ap.add_argument("--tokens", type=int, nargs="+", default=[6144, 4096],
                     help="training lengths to try in order; the first that fits is used")
     ap.add_argument("--skip-forward-ad", action="store_true")
     ap.add_argument("--sdpa", choices=["default", "efficient", "flash"], default="default",
@@ -413,12 +431,11 @@ def main():
 
     # 3. noise of the 8K tilt before training
     t0 = time.time()
-    report["eval_before"] = evaluate(decoder, rig, eval_ids, EVAL_SEEDS, [0.0], norm, dim)
+    report["eval_before"] = evaluate(decoder, rig, eval_ids, EVAL_SEEDS, [0.0], norm, dim, logits=logits)
     for r in report["eval_before"]:
         print(f"   before: seed {r['seed']} tilt {r['tilt']:.4f}  min SNR {min(r['snr']):.1f}")
     report["eval_seconds_per_pass"] = (time.time() - t0) / len(EVAL_SEEDS)
     tilt0 = float(np.mean([r["tilt"] for r in report["eval_before"]]))
-    target = args.target_factor * tilt0
 
     # 4. forward-mode AD probe (inference, then backward), on 2,048 tokens
     if not args.skip_forward_ad:
@@ -458,7 +475,10 @@ def main():
             LoRALinear.scale, rig.B = 0.0, None
             h_base = one_pass(decoder, rig, ids, None)[0].last_hidden_state[0]
         mem["after_base_pass"] = gib()
-        LoRALinear.scale = 1.0
+        sc = float(rng.uniform(*args.scale_range))
+        base_tilt = float(slope(per, torch.tensor([base_gain[n] for n in per])))
+        target = base_tilt * (1.0 + sc * args.shift)
+        LoRALinear.scale = sc
         with kernel():
             rig.B = basis(per, dev)
             out0, p0 = one_pass(decoder, rig, ids, None)
@@ -480,10 +500,12 @@ def main():
         gn = float(torch.sqrt(sum((p.grad.float() ** 2).sum() for p in params if p.grad is not None)))
         opt.step()
         rig.proj, rig.B = {}, None
-        row = {"step": step, "tokens": T, "periods": per, "tilt": float(tilt), "tilt_loss": float(tilt_loss),
+        row = {"step": step, "tokens": T, "periods": per, "scale": sc, "base_tilt": base_tilt, "target": target,
+               "tilt": float(tilt), "tilt_loss": float(tilt_loss),
                "kl": float(kl), "grad_norm": gn, "seconds": time.time() - t0,
                "peak_gib": torch.cuda.max_memory_allocated() / 2**30, "min_snr": float((g / nz).min()), "memory": mem}
-        print(f"   step {step:>3} ({T} tok): N {per} tilt {row['tilt']:.4f} (target {target:.4f})  kl {row['kl']:.2e}  "
+        print(f"   step {step:>3} ({T} tok): N {per} scale {sc:.2f} tilt {row['tilt']:.4f} base {base_tilt:.4f} "
+              f"target {target:.4f}  kl {row['kl']:.2e}  "
               f"grad {gn:.2e}  {row['seconds']:.1f} s  peak {row['peak_gib']:.1f} GiB", flush=True)
         return row
 
@@ -492,6 +514,12 @@ def main():
     for tokens in args.tokens:
         periods = configure(tokens)
         ids = torch.tensor([allids[TRAIN_START:TRAIN_START + T]], device=dev)
+        LoRALinear.scale = 0.0
+        cache = evaluate(decoder, rig, ids, BASE_SEEDS, [0.0], norm, dim, periods=periods)
+        base_gain = {n: float(np.mean([r["gains"][k] for r in cache])) for k, n in enumerate(periods)}
+        report[f"base_gain_{tokens}"] = base_gain
+        print(f"== base gains at {tokens} tokens (training text, {len(BASE_SEEDS)} directions): "
+              f"{', '.join(f'{n}: {g:.3f}' for n, g in base_gain.items())}", flush=True)
         try:
             steps.append(train_step(0, ids, periods, verbose=True))
             chosen = (tokens, ids, periods)
@@ -511,7 +539,7 @@ def main():
             steps.append(train_step(step, ids, periods, verbose=False))
     report["train"] = steps
     configure(8192)
-    report["target_tilt"], report["start_tilt"] = target, tilt0
+    report["start_tilt"] = tilt0
 
     # 6. dose response on held-out text and directions (always at 8,192 tokens)
     undo()
@@ -520,10 +548,24 @@ def main():
         with open(args.out, "w") as fh:
             json.dump(report, fh, indent=1)
         raise SystemExit("== no training length fit in memory; see the memory lines above")
-    report["eval_after"] = evaluate(decoder, rig, eval_ids, EVAL_SEEDS, [0.0, 0.5, 1.0, 1.5, 2.0], norm, dim)
-    for sc in (0.0, 0.5, 1.0, 1.5, 2.0):
-        ts = [r["tilt"] for r in report["eval_after"] if r["scale"] == sc]
-        print(f"   held out, scale {sc}: tilt {np.mean(ts):.4f}  ({', '.join(f'{x:.4f}' for x in ts)})")
+    scales = [0.0, 0.5, 1.0, 1.5, 2.0]
+    report["eval_after"] = rows = evaluate(decoder, rig, eval_ids, EVAL_SEEDS, scales, norm, dim, logits=logits)
+    at = {(r["seed"], r["scale"]): r for r in rows}
+    summary = []
+    for sc in scales:
+        rel = [at[(sd, sc)]["tilt"] / at[(sd, 0.0)]["tilt"] - 1 for sd in EVAL_SEEDS]
+        pr = [at[(sd, sc)]["perplexity"] / at[(sd, 0.0)]["perplexity"] for sd in EVAL_SEEDS]
+        summary.append({"scale": sc, "tilt_mean": float(np.mean([at[(sd, sc)]["tilt"] for sd in EVAL_SEEDS])),
+                        "relative_change_mean": float(np.mean(rel)), "relative_change_min": float(min(rel)),
+                        "relative_change_max": float(max(rel)), "perplexity_ratio": float(np.mean(pr))})
+        x = summary[-1]
+        print(f"   held out, scale {sc}: tilt {x['tilt_mean']:.4f}  change {100 * x['relative_change_mean']:+.1f}% "
+              f"(directions {100 * x['relative_change_min']:+.1f}% to {100 * x['relative_change_max']:+.1f}%)  "
+              f"perplexity x{x['perplexity_ratio']:.3f}", flush=True)
+    from .metrics import spearman
+    report["dose_response"] = {"rows": summary, "spearman_scale_vs_tilt":
+                               float(spearman(scales, [x["tilt_mean"] for x in summary]))}
+    print(f"== Spearman(scale, tilt) = {report['dose_response']['spearman_scale_vs_tilt']:.2f}", flush=True)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as fh:
         json.dump(report, fh, indent=1)

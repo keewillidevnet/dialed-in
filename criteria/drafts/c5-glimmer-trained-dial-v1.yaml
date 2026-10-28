@@ -1,0 +1,284 @@
+# C5: a trained dial. v1
+# DRAFT. Follows C4 (sealed; run c4v1-20261028T065820Z: window D0, RoPE D0, text A). C2 to C4 moved the
+# tilt by at most 17 percent with built-in settings and activation scaling. Exploratory pilots (results/pilots/,
+# src/dialedin/pilot_c5.py) then trained a low-rank adapter to flatten the tilt in proportion to its scale.
+# Pilot run 3 (results/pilots/c5-all.json; Moby Dick, 8,192 tokens, 4 held-out directions) changed the tilt by
+# -11.0, -20.1, -25.8 and -33.6 percent at scales 0.5, 1, 1.5 and 2 (Spearman -1.00) with perplexity x0.985 to
+# x0.988. Pilot run 2 (results/pilots/c5-run2-unstable.json) showed the failure this recipe guards against:
+# training diverged and perplexity rose 14 to 21 times. C5 asks whether the pilot recipe, trained once on other
+# books, gives a dial on set A at C1 v5's full 32K measurement. Disclosure: the recipe was chosen on pilots
+# that trained and evaluated on Moby Dick (2701), a set A book, in tokens 98,304 to 139,263, outside the
+# measured first 32,768; C5 trains on no set A text. If the family chosen at sealing is not "all", the pilot
+# run 3 numbers above describe the "all" adapter, not the sealed one. Drive, window, operator, noise bins, validity,
+# tilt and run rules are C1 v5's, C2's and C4's. Every value is a proposal until Keenan seals this file.
+
+id: c5-glimmer-trained-dial-v1
+version: 1
+drafted: 2026-10-28
+follows: c4-glimmer-structure-and-text-v1 (sealed, run complete, outcomes window D0, RoPE D0, text A)
+status: draft
+
+questions:
+  dial: Does a low-rank adapter, trained once with the sealed recipe on text from sets B and C, change the tilt of Glimmer's frequency response on set A by at least a quarter at scale 2, in step with its scale (0, 0.5, 1, 1.5, 2), consistently across books, without raising perplexity by more than 10 percent?
+  recall: Exploratory, not gated. Does the scale change long-context passkey recall?
+  predictions: >
+    The tilt flattens as the scale rises (Spearman near -1), by about 20 percent at scale 1 and 30 percent or more
+    at scale 2 (the pilot, at 8,192 tokens), with perplexity within a few percent of scale 0. The adapter is
+    trained to flatten, so only a flattening counts as a dial; a steepening is L0, reported with its direction.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  start: first token of the main text, after the Project Gutenberg header is stripped
+  special_tokens: none (no BOS); input = first 32,768 token ids of the stripped text
+  prompt_sets:                      # one set; C5 compares adapter scales within the same books
+    A: {1342: Pride and Prejudice, 2701: Moby Dick, 1400: Great Expectations, 145: Middlemarch, 1184: The Count of Monte Cristo}
+  token_counts_checked: 2026-10-26, shortest 94,774 tokens (Treasure Island), all at least 33,792
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+  reuse: set A with the same first 32,768 tokens as C1 v5 and C4, so scale 0 repeats C4's BASE condition bit for bit (checked as a diagnostic); no set A text is used in training
+
+training:
+  summary: >
+    One adapter, trained once in phase T and frozen. Rank-r low-rank updates (y = W x + scale (alpha / r) B A x) on
+    the chosen module family in decoder layers 2 to 5; A drawn from randn / sqrt(fan_in), B zero, both float32,
+    the branch run in bfloat16. At scale 0 the branch is skipped, so the model is Glimmer bit for bit (checked).
+  family: all                       # FILLED AT SEAL by family_rule from results/pilots/compare.txt; "all" until then
+  family_rule: >
+    compare_pilots.choose_family over results/pilots/c5-{all,qk,gate,v,o,mlp}.json (eligibility and ranking
+    written 2026-10-28 before the family runs; choose_family written the same day while they ran, before any
+    family result was seen): the winner if it is a single family; if the winner is "all", the single family
+    among its 2-point ties with the largest scale-1 flattening; otherwise "all"; "all" if none is eligible.
+    results/pilots/compare.txt and the chosen family are cited at sealing.
+  families: {all: every linear module, qk: self_attn.q_proj and k_proj, v: self_attn.v_proj, gate: self_attn.gate_proj, o: self_attn.o_proj, mlp: mlp.*}
+  layers: [2, 3, 4, 5]
+  rank: 8
+  alpha: 16.0
+  steps: 150
+  optimizer: Adam
+  lr: 3.0e-4
+  clip: 1.0                         # gradient norm cap per step
+  beta: 5.0                         # weight of KL(base || adapted) on the undriven pass, mean per token
+  kl_budget: 0.02
+  beta_excess: 100.0                # extra penalty per nat of KL above the budget
+  kl_rollback: 0.5                  # a step above this restores the last snapshot (taken every 10 steps with KL <= 0.04) and halves the learning rate
+  shift: -0.2                       # target tilt at scale s = base tilt x (1 + s x shift)
+  scale_range: [0.25, 2.0]          # each step draws the scale uniformly from this range
+  periods_per_step: 3               # drawn without replacement from periods_N
+  periods_N: [2, 4, 16, 64, 256, 1024, 2048]   # every period dividing the training window; 4096 does not fit
+  tokens: 6144                      # training input length; 8,192 did not fit in memory with gradients (pilot)
+  window: tokens 2,048 to 6,143 (W = 4,096); one tone per period, amplitude 0.1 x the region's median residual norm
+  seed: 0                           # numpy default_rng(0) for periods, phases and scales; torch.manual_seed(0)
+  direction_seed_offset: 10000      # step k drives along the unit randn direction from torch.Generator seed 10000 + k
+  base_seeds: [20001, 20002, 20003] # directions for the base-gain cache
+  regions:                          # each 6,144 tokens from the given start; step k uses region k mod 4
+    - {gutenberg_id: 1260, start: 40960}    # Jane Eyre (set B)
+    - {gutenberg_id: 345, start: 40960}     # Dracula (set B)
+    - {gutenberg_id: 37106, start: 40960}   # Little Women (set C)
+    - {gutenberg_id: 174, start: 40960}     # The Picture of Dorian Gray (set C)
+  tilt0_note: >
+    The pilot normalized by the mean held-out tilt at 8,192 tokens; C5 uses the mean base tilt of its training
+    regions at 6,144 tokens over the training periods. Both are expected near 0.13 on this model (pilot start
+    tilt 0.1316 at 8,192), so the weight of the tilt loss against KL should be comparable; the value used is
+    recorded in training.json as tilt0, and the pilot's 6,144-token value is reported at sealing.
+  loss: >
+    ((tilt - target) / tilt0)^2 + beta x KL + beta_excess x max(0, KL - kl_budget), where tilt is the slope of
+    ln(mean head gain) on ln(N) over the step's periods from an undriven and a driven pass at the step's scale
+    (lock-in projections at every measured head; src/dialedin/pilot_c5.py), target uses the base tilt of the same
+    region and periods from the base-gain cache (mean over base_seeds), and tilt0 is the mean base tilt over the
+    regions over all training periods.
+  checkpointing: every decoder layer's forward is checkpointed (non-reentrant); the drive is added outside it
+  determinism: training runs with torch.use_deterministic_algorithms(False), since some backward kernels have no deterministic version (training.json records training_deterministic false); measurement phases are deterministic as in C1 to C4
+  output: results/raw/<run_id>/adapter.pt and training.json with the adapter's sha256; phases A, B and R refuse an adapter whose sha256 differs
+  no_retraining: >
+    One training per seal. Once any run under the seal has a training.json, no new phase T is admitted, whatever
+    the reason; that run must be continued. A training that crashes before writing training.json may be restarted
+    only with a written infrastructure reason. An unstable training is reported as is.
+
+conditions:
+  S0: {scale: 0.0}
+  S0.5: {scale: 0.5}
+  S1: {scale: 1.0}
+  S1.5: {scale: 1.5}
+  S2: {scale: 2.0}
+  order_per_book: S0, S0.5, S1, S1.5, S2; each gets its own undriven pass (with perplexity) and sham
+  setup_checks: >
+    At the start of Phase A. (1) Adapter: on the first 2,048 tokens of book 1342, layer 10's o_proj input at scale
+    0 must equal the unadapted model's (recorded before the adapter is attached) bit for bit; scale 1 must change
+    it; returning to scale 0 must reproduce it bit for bit. (2) Perplexity path: at scale 0, on the same tokens,
+    C5's logits must match the full model's own logits to within 0.5 percent of the largest absolute logit. If a
+    check fails, phaseA.json is written with the results and C5 is not run, outcome U.
+  perplexity: >
+    On every undriven pass, exp of the mean next-token loss over predictions of tokens 8,193 to 32,767, with
+    Glimmer's output path (head, output_multiplier, softcap; as C4). Per scale, the ratio to S0 per book, and its
+    median over books.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every token t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from that scale's own undriven pass (the adapter sits in later layers, so this is the same at every scale, and is recorded)
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1342, after the setup checks, under every scale: one undriven pass, then A and 2A at N = 2 and 4096
+    (one sham before the first scale). A scale passes if the 2A/A response ratio is within 10 percent of 2 at
+    both N and the whole-model SNR at A, N = 4096 is at least 3. If any fails, stop: C5 is not run, outcome U.
+  controls:
+    sham: zero wave, under every scale of every book, plus a closing sham per book; every head-output value must have the same bits as that scale's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: scale 0 runs the same computation as C4's BASE condition on set A; the maximum relative difference of per-head target magnitudes from C4's raw files (run c4v1-20261028T065820Z) is reported, expected 0, not a gate
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), layers 2 to 51 as in C1 v5
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: tokens [8192, 32768), W = 24576. Every period N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 tokens are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4); at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all 1,600 measured heads of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    Per scale, a period counts for a set only if the median over the set's five books of
+    the whole-model SNR is at least 3. Invalid periods are excluded from that set's tilt for
+    that scale and listed in the output.
+  curves:
+    per_book: mean gain over all heads in layers 2 to 51 (whole), per N
+    per_set: the mean over its five books of each book's curve, per N
+    per_condition: every curve is computed separately for each adapter scale
+
+tilt:
+  definition: the least-squares slope of ln(set-mean whole-model gain) against ln(N) (metrics_c2.tilt, sealed with C2), fit over the periods valid under every scale; a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  book_tilts: each book's tilt per scale from its own curve, over the periods valid in that book under every scale (same 5-period minimum)
+
+pass_criteria:
+  outcome_U: any of the five set-level tilts undefined, or tilt(S0) not positive (C4's BASE tilt on set A was 0.137)
+  direction: tilt(S2) < tilt(S0) with tilt(S0) > 0 (a flattening, the trained direction)
+  monotone: Spearman(scale, tilt) over the five scales is at most -0.9
+  effect: the absolute value of tilt(S2) - tilt(S0) is at least 0.25 x the absolute value of tilt(S0)
+  consistency: at least 4 of the 5 books have tilt(S2) - tilt(S0) with the same sign as the set's; a book whose tilt is undefined at S0 or S2 counts as disagreeing
+  damage: the median over books of perplexity(scale) / perplexity(S0) is above 1.10 at any of S0.5, S1, S1.5 or S2
+  outcome_L1_dial: direction, monotone, the effect and consistency, without damage
+  outcome_L2_dial_with_damage: direction, monotone, the effect and consistency, with damage
+  outcome_L0_no_dial: every tilt defined and L1 and L2 do not hold
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is labeled PARTIAL and never reported as C5
+  every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished, with any partial look cited
+  diagnostic_groups: >
+    Reported, never gated, pre-registered: the set-level tilt per scale and the S0 to S2 relative change over
+    (a) the measured layers the adapter does not touch (6 to 51), (b) local layers, (c) global layers, fit over
+    the same periods as the main tilts. It shows whether the change is carried by the adapted layers 2 to 5 (128
+    of 1,600 heads) or reaches the rest of the model.
+  recall: >
+    Exploratory (phase R, after phase B): 20 passkey trials (each set A book, needle depths 0.1, 0.3, 0.6 and
+    0.9 of a 16,384-token context of the book's tokens from 40,000; five-digit keys from default_rng(5)), per
+    scale: the teacher-forced log-probability of the answer tokens and whether each is the top choice. Reported
+    with no outcome and never used to rescue or qualify the dial outcome.
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts. Report 95 percent percentile intervals of (tilt(S2) - tilt(S0)) / tilt(S0),
+    (tilt(S1) - tilt(S0)) / tilt(S0) and Spearman(scale, tilt).
+  not_covered: one training run with one seed; the bootstrap covers books, not training randomness
+
+decisions:
+  L1: the adapter is a dial on the tilt; it becomes the demo's knob, shown with its perplexity and recall
+  L2: the adapter moves the tilt but harms the model; shown as a stress test, not a dial
+  L0: the trained adapter does not give a dial at 32K on set A; reported as is
+  U: inconclusive; reported as is
+  no_rescue: other families, ranks, layers, steps, scales, training text, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in results/ledger/).
+    Phase T writes STARTED.json before any GPU work. A new run is refused if any earlier run under the seal is
+    complete or was stopped by rule in Phase A (a failed setup check, or not linear or underpowered under some
+    scale), and otherwise needs a written reason (an infrastructure failure: crash, failed sham, preflight
+    failure). Phases A, B and R need the run's STARTED.json and training.json; only the newest run may continue.
+    Every book attempt writes an ATTEMPT record first; a book with an earlier attempt or failure record may be
+    retried only with a written reason, stamped on that book. All earlier runs and records are kept and listed in
+    the summary. A Phase A retry after a Phase A failure record also needs a written reason. The pre-seal smoke run on the pod runs two training steps and the same setup checks. The
+    analysis refuses to run if more than one run under the seal is complete, requires phaseA.json and
+    training.json, and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 4                  # wall-clock hours of every run process under this seal, from start to exit, including model loads
+  ledger: results/ledger/c5v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  training_hours_estimate: 0.75     # phase T preflight
+  recall_seconds_per_trial_estimate: 6
+  estimate: >
+    Phase T about 0.6 hours (150 steps at about 12.5 s, the base-gain cache of 4 regions x 3 directions x 8
+    passes, and the load). Phase A 26 passes plus 6 short check passes at 2,048 tokens (1 reference, 3 adapter, 2 logits). Phase B 5 books x 46 passes (per scale 1
+    undriven, 1 sham and 7 driven, plus 1 closing sham) = 230 passes. 256 passes at about 13.4 s is about 0.95
+    hours, plus perplexity on 30 undriven passes. Phase R 100 forwards of 16,384 tokens, about 0.15 hours. With
+    four loads, about 2 hours.
+  cost: about $5 at about $2.50 per pod hour for counted time
+  peak_gpu_memory: training about 90 GiB at 6,144 tokens (pilot); measurement about C4's 74.3 GiB
+  pre_seal_smoke: SMOKE_RESULT
+
+analysis:
+  runner: src/dialedin/run_c5.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
+    src/dialedin/metrics_c5.py: 9607387afa2535ae4cc3e362f3e2d0a13a46a68922a83383bf71e54995ee6e56
+    src/dialedin/run_c5.py: 9d2f5a333f54f8b4738ed744b9c7f76e439ece29a93e09ac1f9e0964ed3f79e4
+    src/dialedin/compare_pilots.py: 63ff8fb8417f7e0d1c7412ed38cff20b06b42de099c3b2e9539d49bc9fb478a8
+    src/dialedin/analyze_c5.py: 1120d283bbdbf4f3369559f7f74aef3cb5c0ea4ead7e7ba5daf4adcc0ace37ee
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; adapter.pt and training.json; phaseA.json with the adapter and perplexity-path checks; one book_<set>_<id>.json per book with, per scale and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per scale the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter and text hashes; recall.json; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c5_summary.json and c5_curves.png, citing every raw file used

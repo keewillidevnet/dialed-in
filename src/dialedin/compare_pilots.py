@@ -11,6 +11,9 @@ Rule (written 2026-10-28, before the family runs):
             and the mean perplexity ratio at scale 1 is at most 1.10.
   winner    the eligible family with the largest mean relative change at scale 1.
   tie       eligible families whose scale-1 changes are within 2 percentage points of the winner's.
+  family for C5 (choose_family): the winner, if it is a single family; if the winner is "all", the single family
+            among its ties with the largest scale-1 change (the smaller mechanism); "all" if no single family ties
+            with it; "all" if no family is eligible.
 """
 import json
 import sys
@@ -50,6 +53,16 @@ def rank(rows: list) -> dict:
     return {"winner": best["family"], "ties": ties}
 
 
+def choose_family(rows: list) -> str:
+    res = rank(rows)
+    if res["winner"] is None:
+        return "all"
+    if res["winner"] != "all":
+        return res["winner"]
+    tied = [r for r in rows if r["family"] in res["ties"] and r["family"] != "all"]
+    return min(tied, key=lambda r: r["change_1"])["family"] if tied else "all"
+
+
 def main(paths):
     rows = [summarize(p) for p in paths]
     print(f"{'family':<6} {'params':>11} {'steps':>5} {'chg@1':>7} {'chg@2':>7} {'dirs@1':>16} {'rho':>6} "
@@ -62,6 +75,7 @@ def main(paths):
     res = rank(rows)
     print(f"== winner: {res['winner']}" + (f"; tied within 2 points: {res['ties']}" if res.get("ties") else "")
           + (f" ({res['note']})" if res.get("note") else ""))
+    print(f"== family for C5 (choose_family): {choose_family(rows)}")
     return rows, res
 
 

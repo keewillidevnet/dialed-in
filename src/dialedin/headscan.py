@@ -9,12 +9,14 @@ gain curve (target magnitude over input component, mean over the five books) and
   tilt: least-squares slope of ln(gain) against ln(N) over all 23 periods (how low-pass the head is)
   low:  mean gain at N >= 1024 (how large its slow response is)
 
-It also reports how concentrated the slow response is (share of summed low-frequency gain held by the
+It also records each head's broadband size, its mean gain at N = 2 and 4, which C3 uses to draw a
+size-matched control. It also reports how concentrated the slow response is (share of summed low-frequency gain held by the
 top k heads) and how much of the whole-model tilt the top k account for arithmetically. That last
 number is a caution, not a result: removing heads from the average changes the average by
 construction, which is why C3 measures only heads it does not touch.
 
-Output: results/derived/headscan-setA-<run-id>/headscan.json (never overwritten).
+Output: results/derived/headscan-setA-v2-<run-id>/headscan.json (never overwritten). v2 adds the size field;
+the rankings are computed exactly as in v1.
 """
 import argparse
 import glob
@@ -56,6 +58,7 @@ def main():
     tilt = slope(lnN, np.log(np.maximum(flat, 1e-30)))
     longmask = np.asarray(grid) >= 1024
     low = flat[longmask].mean(axis=0)
+    size = flat[np.isin(np.asarray(grid), (2, 4))].mean(axis=0)
     whole = flat.mean(axis=1)
     whole_tilt = float(slope(lnN, np.log(whole)[:, None])[0])
 
@@ -65,7 +68,8 @@ def main():
 
     def table(score, name):
         order = np.argsort(-score)
-        rows = [dict(label(i), rank=r + 1, tilt=float(tilt[i]), low_gain=float(low[i])) for r, i in enumerate(order)]
+        rows = [dict(label(i), rank=r + 1, tilt=float(tilt[i]), low_gain=float(low[i]), size=float(size[i]))
+                for r, i in enumerate(order)]
         top = rows[: args.top]
         print(f"\n== top {args.top} heads by {name}")
         for r in top:
@@ -87,17 +91,19 @@ def main():
         print(f"   k={k:<4} share {v['share_of_low_gain']:.1%}   tilt of the remaining heads' average {v['whole_tilt_without_topk_arithmetic']:.4f}")
     kinds = np.array([label(i)["kind"] for i in range(L * H)])
     print("== median head tilt: local %.3f, global %.3f" % (np.median(tilt[kinds == "local"]), np.median(tilt[kinds == "global"])))
-    out_dir = os.path.join(args.repo, "results", "derived", f"headscan-set{args.set}-{args.run_id}")
+    out_dir = os.path.join(args.repo, "results", "derived", f"headscan-set{args.set}-v2-{args.run_id}")
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, "headscan.json")
     if os.path.exists(out):
         raise SystemExit(f"{out} exists; derived results are not overwritten.")
-    json.dump({"run_id": args.run_id, "set": args.set, "books": [os.path.relpath(p, args.repo) for p in paths],
+    tmp = out + ".tmp"
+    json.dump({"version": 2, "run_id": args.run_id, "set": args.set, "books": [os.path.relpath(p, args.repo) for p in paths],
                "grid": grid, "whole_tilt": whole_tilt, "by_tilt": by_tilt, "by_low_gain": by_low,
                "concentration": conc,
                "median_tilt": {"local": float(np.median(tilt[kinds == "local"])),
                                "global": float(np.median(tilt[kinds == "global"]))}},
-              open(out, "w"), indent=1)
+              open(tmp, "w"), indent=1)
+    os.replace(tmp, out)
     print(f"\n== wrote {os.path.relpath(out, args.repo)}")
 
 

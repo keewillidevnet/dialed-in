@@ -218,7 +218,14 @@ budget:
   estimate: Phase A 36 passes (1 sham, then per condition 1 undriven and 4 driven) plus short setup-check passes (6 at 4,096 tokens, 6 at 2,048, 2 at 2,048 for the logits); Phase B 5 books x 64 passes (per condition 1 undriven, 1 sham and 7 driven, plus 1 closing sham) = 320 passes; 356 passes at about 13.4 s is about 1.33 hours, plus perplexity on 42 undriven passes (7 in Phase A, 35 in Phase B) and loads, about 1.45 hours
   cost: about $4 at about $2.50 per pod hour for counted time
   peak_gpu_memory: about C1 v5's 74.3 GiB plus about 3 GiB for the kept final hidden state and one logits chunk (bfloat16 head output, float32 copy and log-softmax) during perplexity
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: >
+    2026-10-27 on the pod (commit a3e74ee, src/dialedin/smoke_c4.py): 11 C4 tests passed; load 84 s; preflight
+    passed; 39 local layers, RoPE base 500000.0, inv_freq size 64, softcap 20.0, output multiplier 0.19611613513818404.
+    Window checks as expected at 1024, 2048 and 4096. RoPE x0.5 and x2.0 changed layer 0's output and 1x restored
+    it bit for bit. Perplexity path: max |logit difference| 0 against max |logit| 19.88. Passes under BASE, W4096,
+    R2.0 and CONST took 13.17 to 13.48 s with a peak of 74.3 GiB; all outputs finite; 5 shams with 0 differing
+    values. BASE perplexity on book 1342, tokens 8,193 to 32,767: 1.352 (low, so the book is likely familiar to
+    the model; C4 uses perplexity only as a ratio to BASE on the same book).
 
 analysis:
   runner: src/dialedin/run_c4.py

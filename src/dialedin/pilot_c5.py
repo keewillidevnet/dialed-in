@@ -36,6 +36,16 @@ from torch import nn
 T, T1 = 8192, 2048
 W = T - T1
 PERIODS = (2, 4, 16, 64, 256, 1024, 2048)
+
+
+def configure(tokens: int):
+    """Sets the measurement length. Evaluation always uses 8,192; training may fall back to 6,144 or 4,096.
+    Burn-in 2,048 (1,024 at 4,096 tokens). Returns the periods that divide the window."""
+    global T, T1, W
+    T = tokens
+    T1 = 2048 if tokens >= 6144 else 1024
+    W = T - T1
+    return tuple(p for p in PERIODS if W % p == 0)
 TRAIN_START, EVAL_START, BOOK = 98304, 131072, 2701
 EVAL_SEEDS = (1, 2)
 TONE_A = 0.1                                   # amplitude of each tone, as a fraction of the median residual norm
@@ -350,6 +360,8 @@ def main():
     ap.add_argument("--target-factor", type=float, default=0.7, help="target tilt = factor x the starting tilt")
     ap.add_argument("--beta", type=float, default=1.0)
     ap.add_argument("--periods-per-step", type=int, default=3)
+    ap.add_argument("--tokens", type=int, nargs="+", default=[8192, 6144, 4096],
+                    help="training lengths to try in order; the first that fits is used")
     ap.add_argument("--skip-forward-ad", action="store_true")
     ap.add_argument("--sdpa", choices=["default", "efficient", "flash"], default="default",
                     help="restrict SDPA to one backend for training steps (forward and the recompute in backward)")
@@ -367,7 +379,6 @@ def main():
 
     allids = tok(texts[BOOK], add_special_tokens=False)["input_ids"]
     assert len(allids) >= EVAL_START + T, len(allids)
-    train_ids = torch.tensor([allids[TRAIN_START:TRAIN_START + T]], device=dev)
     eval_ids = torch.tensor([allids[EVAL_START:EVAL_START + T]], device=dev)
     measured = range(2, len(layers))
     dim = decoder.config.hidden_size
@@ -397,6 +408,7 @@ def main():
         decoder(input_ids=eval_ids, use_cache=False)
     hk.remove()
     report["scale0_bitwise_equal"] = bool(torch.equal(ref["x"], chk["x"]))
+    ref.clear(); chk.clear()
     print(f"== scale 0 bit for bit equal to base: {report['scale0_bitwise_equal']}")
 
     # 3. noise of the 8K tilt before training
@@ -432,39 +444,82 @@ def main():
     opt = torch.optim.Adam(params, lr=args.lr)
     rng = np.random.default_rng(0)
     steps = []
-    for step in range(args.steps):
+    def gib():
+        return torch.cuda.memory_allocated() / 2**30
+
+    def train_step(step, ids, periods, verbose):
+        mem = {}
         torch.cuda.reset_peak_memory_stats()
         t0 = time.time()
-        per = sorted(rng.choice(PERIODS, size=args.periods_per_step, replace=False).tolist())
+        per = sorted(rng.choice(periods, size=args.periods_per_step, replace=False).tolist())
         d = direction(10000 + step, dim, dev)
         w, _ = tones(per, TONE_A * norm, rng)
         with torch.no_grad():
             LoRALinear.scale, rig.B = 0.0, None
-            h_base = one_pass(decoder, rig, train_ids, None)[0].last_hidden_state[0]
+            h_base = one_pass(decoder, rig, ids, None)[0].last_hidden_state[0]
+        mem["after_base_pass"] = gib()
         LoRALinear.scale = 1.0
         with kernel():
-            g, nz, h_adapt = run_pass(decoder, rig, train_ids, per, w, d, keep_hidden=True)
+            rig.B = basis(per, dev)
+            out0, p0 = one_pass(decoder, rig, ids, None)
+            mem["after_undriven_with_grad"] = gib()
+            delta = torch.as_tensor(w, dtype=torch.float32, device=dev)[:, None] * d[None, :]
+            _, p1 = one_pass(decoder, rig, ids, delta)
+            mem["after_driven_with_grad"] = gib()
+            g, nz = rig.curves(p0, p1, per, input_mags(w, per, basis(per, "cpu")))
             tilt = slope(per, g)
             tilt_loss = ((tilt - target) / tilt0) ** 2
-            kl = kl_to_base(h_adapt, h_base, logits)
+            kl = kl_to_base(out0.last_hidden_state[0], h_base, logits)
+            mem["after_kl"] = gib()
+            mem["peak_forward"] = torch.cuda.max_memory_allocated() / 2**30
+            if verbose:
+                print(f"   memory (GiB): {', '.join(f'{k} {v:.1f}' for k, v in mem.items())}", flush=True)
             loss = tilt_loss + args.beta * kl
             opt.zero_grad(set_to_none=True)
             loss.backward()
         gn = float(torch.sqrt(sum((p.grad.float() ** 2).sum() for p in params if p.grad is not None)))
         opt.step()
         rig.proj, rig.B = {}, None
-        row = {"step": step, "periods": per, "tilt": float(tilt), "tilt_loss": float(tilt_loss), "kl": float(kl),
-               "grad_norm": gn, "seconds": time.time() - t0, "peak_gib": torch.cuda.max_memory_allocated() / 2**30,
-               "min_snr": float((g / nz).min())}
-        steps.append(row)
-        print(f"   step {step:>3}: N {per} tilt {row['tilt']:.4f} (target {target:.4f})  kl {row['kl']:.2e}  "
+        row = {"step": step, "tokens": T, "periods": per, "tilt": float(tilt), "tilt_loss": float(tilt_loss),
+               "kl": float(kl), "grad_norm": gn, "seconds": time.time() - t0,
+               "peak_gib": torch.cuda.max_memory_allocated() / 2**30, "min_snr": float((g / nz).min()), "memory": mem}
+        print(f"   step {step:>3} ({T} tok): N {per} tilt {row['tilt']:.4f} (target {target:.4f})  kl {row['kl']:.2e}  "
               f"grad {gn:.2e}  {row['seconds']:.1f} s  peak {row['peak_gib']:.1f} GiB", flush=True)
-        del h_base, h_adapt, g, nz, tilt, loss
+        return row
+
+    import gc
+    attempts, chosen = [], None
+    for tokens in args.tokens:
+        periods = configure(tokens)
+        ids = torch.tensor([allids[TRAIN_START:TRAIN_START + T]], device=dev)
+        try:
+            steps.append(train_step(0, ids, periods, verbose=True))
+            chosen = (tokens, ids, periods)
+            attempts.append({"tokens": tokens, "ok": True})
+            break
+        except torch.OutOfMemoryError as e:
+            attempts.append({"tokens": tokens, "ok": False, "error": str(e)[:200]})
+            print(f"== {tokens} tokens: out of memory in training; trying a shorter input", flush=True)
+            rig.proj, rig.B = {}, None
+            opt.zero_grad(set_to_none=True)
+            del e
+            gc.collect(); torch.cuda.empty_cache()
+    report["train_attempts"] = attempts
+    if chosen:
+        tokens, ids, periods = chosen
+        for step in range(1, args.steps):
+            steps.append(train_step(step, ids, periods, verbose=False))
     report["train"] = steps
+    configure(8192)
     report["target_tilt"], report["start_tilt"] = target, tilt0
 
-    # 6. dose response on held-out text and directions
+    # 6. dose response on held-out text and directions (always at 8,192 tokens)
     undo()
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+    if not chosen:
+        with open(args.out, "w") as fh:
+            json.dump(report, fh, indent=1)
+        raise SystemExit("== no training length fit in memory; see the memory lines above")
     report["eval_after"] = evaluate(decoder, rig, eval_ids, EVAL_SEEDS, [0.0, 0.5, 1.0, 1.5, 2.0], norm, dim)
     for sc in (0.0, 0.5, 1.0, 1.5, 2.0):
         ts = [r["tilt"] for r in report["eval_after"] if r["scale"] == sc]

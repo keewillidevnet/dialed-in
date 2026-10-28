@@ -109,3 +109,11 @@ def test_evaluate_single_tones_on_toy():
     assert rows[0]["tilt"] == rows[1]["tilt"]            # B starts at zero, so scale 1 equals scale 0
     assert rig.delta is None and rig.B is None
     rig.remove()
+
+
+def test_configure_lengths():
+    try:
+        assert P.configure(6144) == P.PERIODS and P.W == 4096
+        assert P.configure(4096) == (2, 4, 16, 64, 256, 1024) and P.T1 == 1024
+    finally:
+        assert P.configure(8192) == P.PERIODS and P.W == 6144

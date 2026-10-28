@@ -74,17 +74,38 @@ class LoRALinear(nn.Module):
         return y + (LoRALinear.scale * self.alpha / self.r) * d
 
 
-def attach_lora(layers, layer_ids, r, alpha):
-    """Wraps every nn.Linear inside the chosen decoder layers. Returns the wrapped module names and the params."""
+FAMILIES = {                                   # module paths inside one decoder layer
+    "all": None,
+    "qk": ("self_attn.q_proj", "self_attn.k_proj"),  # where attention looks: sharpness, focus, distance
+    "v": ("self_attn.v_proj",),                     # what attention carries
+    "gate": ("self_attn.gate_proj",),               # Glimmer's per-head output gate
+    "o": ("self_attn.o_proj",),                     # how heads are mixed back into the residual stream
+    "mlp": ("mlp.",),                               # per-token processing, no mixing across time (the control)
+}
+
+
+def in_family(rel: str, family: str) -> bool:
+    prefixes = FAMILIES[family]
+    return prefixes is None or any(rel == p or (p.endswith(".") and rel.startswith(p)) for p in prefixes)
+
+
+def attach_lora(layers, layer_ids, r, alpha, family="all"):
+    """Wraps the nn.Linear modules of one family inside the chosen decoder layers. Every chosen layer must have at
+    least one match, so a misnamed module fails loudly. Returns the wrapped module names and the params."""
     names, params = [], []
     for i in layer_ids:
+        found = 0
         for name, mod in list(layers[i].named_modules()):
             for cname, child in list(mod.named_children()):
-                if isinstance(child, nn.Linear):
+                rel = f"{name + '.' if name else ''}{cname}"
+                if isinstance(child, nn.Linear) and in_family(rel, family):
+                    found += 1
                     w = LoRALinear(child, r, alpha)
                     setattr(mod, cname, w)
-                    names.append(f"layers.{i}.{name + '.' if name else ''}{cname}")
+                    names.append(f"layers.{i}.{rel}")
                     params += [w.A, w.B]
+        if not found:
+            raise SystemExit(f"no {family} modules in layer {i}")
     for p in params:
         p.requires_grad_(True)
     return names, params
@@ -371,6 +392,7 @@ def main():
     ap.add_argument("--steps", type=int, default=150)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--rank", type=int, default=8)
+    ap.add_argument("--targets", choices=list(FAMILIES), default="all", help="which module family the adapter may touch")
     ap.add_argument("--layers", type=int, nargs="+", default=[2, 3, 4, 5])
     ap.add_argument("--shift", type=float, default=-0.2,
                     help="target relative tilt change per unit of adapter scale (scale 2 aims for twice this)")
@@ -414,9 +436,10 @@ def main():
     hk.remove()
     report["median_norm_layer1"] = norm
 
-    names, params = attach_lora(layers, args.layers, args.rank, alpha=2.0 * args.rank)
-    report["lora"] = {"modules": names, "params": int(sum(p.numel() for p in params))}
-    print(f"== LoRA on {len(names)} linear layers in layers {args.layers}; {report['lora']['params']:,} params")
+    names, params = attach_lora(layers, args.layers, args.rank, alpha=2.0 * args.rank, family=args.targets)
+    report["lora"] = {"family": args.targets, "modules": names, "params": int(sum(p.numel() for p in params))}
+    print(f"== LoRA ({args.targets}) on {len(names)} linear layers in layers {args.layers}; "
+          f"{report['lora']['params']:,} params", flush=True)
 
     # 2. scale 0 reproduces the base bit for bit
     chk = {}

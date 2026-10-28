@@ -138,3 +138,36 @@ def test_evaluate_with_periods_and_perplexity():
     rows = P.evaluate(lm, rig, ids, [5], [0.0], 1.0, D, periods=(3, 48, 768), logits=P.logits_fn(lm.head, None, None))
     assert len(rows[0]["gains"]) == 3 and rows[0]["perplexity"] > 1
     rig.remove()
+
+
+def test_family_targeting():
+    lm = ToyLM()
+    names, _ = P.attach_lora(lm.layers, [2], r=2, alpha=4.0, family="o")
+    assert names == ["layers.2.self_attn.o_proj"]
+    try:
+        P.attach_lora(ToyLM().layers, [2], r=2, alpha=4.0, family="qk")
+        assert False, "a family with no modules must fail"
+    except SystemExit as e:
+        assert "qk" in str(e)
+    assert P.in_family("mlp.down_proj", "mlp") and not P.in_family("self_attn.gate_proj", "mlp")
+    assert P.in_family("self_attn.gate_proj", "gate") and not P.in_family("mlp.gate_proj", "gate")
+
+
+def test_compare_rule(tmp_path):
+    import json
+    from dialedin import compare_pilots as C
+
+    def fake(name, fam, c1, c2, rho, ppl1, dirs_same=True):
+        rows = [{"scale": s, "relative_change_mean": c, "relative_change_min": c * (1.5 if dirs_same else -1),
+                 "relative_change_max": c * 0.5, "perplexity_ratio": p, "tilt_mean": 0.13 * (1 + c)}
+                for s, c, p in ((0.0, 0.0, 1.0), (1.0, c1, ppl1), (2.0, c2, ppl1 * 1.05))]
+        path = tmp_path / f"{name}.json"
+        json.dump({"lora": {"family": fam, "params": 1000}, "train": [{"kl": 0.01}] * 30,
+                   "dose_response": {"rows": rows, "spearman_scale_vs_tilt": rho}}, open(path, "w"))
+        return str(path)
+    paths = [fake("a", "qk", -0.20, -0.35, -1.0, 1.05), fake("b", "gate", -0.19, -0.30, -1.0, 1.04),
+             fake("c", "mlp", -0.30, -0.50, -1.0, 1.30), fake("d", "v", -0.25, -0.40, -0.5, 1.01),
+             fake("e", "o", -0.28, -0.40, -1.0, 1.02, dirs_same=False)]
+    rows, res = C.main(paths)
+    assert res["winner"] == "qk" and res["ties"] == ["gate"]          # mlp too costly, v not monotone, o inconsistent
+    assert [r["eligible"] for r in rows] == [True, True, False, False, False]

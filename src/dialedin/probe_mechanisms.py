@@ -1,6 +1,6 @@
 """Exploratory mechanism probe for the C5 dial. Not sealed; nothing here gates or confirms anything.
 
-    PYTHONPATH=src python3 -m dialedin.probe_mechanisms --spec criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml
+    PYTHONPATH=src python3 -m dialedin.probe_mechanisms --spec criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml
 
 Question: when the frozen C5 adapter is turned up (scales 0, 1, 2), which mechanisms in Glimmer change, and which part
 of layers 2 to 5 carries the change in lean? Run it after C6 is complete (it reads C6's text region).
@@ -338,7 +338,7 @@ def summarize(periods, tr, op, global_layers) -> dict:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--spec", default="criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml")
+    ap.add_argument("--spec", default="criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--weights", default="/workspace/weights/Muse-Glimmer-30B")
     ap.add_argument("--manifest", default="/workspace/data/books/MANIFEST.json")

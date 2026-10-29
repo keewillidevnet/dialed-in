@@ -15,7 +15,7 @@ import yaml
 
 from . import glimmer, metrics, metrics_c6
 
-SEALED = "criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml"
+SEALED = "criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml"
 CONDITIONS = metrics_c6.CONDITIONS
 BOOT = 1000
 BINS = ((1, 16), (17, 64), (65, 256), (257, 1024), (1025, 2048))

@@ -1,7 +1,7 @@
-"""Run C6 exactly as sealed in criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml.
+"""Run C6 exactly as sealed in criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml.
 
     PYTHONPATH=src python3 -m dialedin.run_c6                     # the sealed run (one per seal)
-    PYTHONPATH=src python3 -m dialedin.run_c6 --smoke --spec criteria/drafts/c6-glimmer-dial-topic-switch-v1.yaml
+    PYTHONPATH=src python3 -m dialedin.run_c6 --smoke --spec criteria/drafts/c6-glimmer-dial-topic-switch-v2.yaml
 
 Forked from run_c5.py (phase R). C6 is a confirmatory test of one exploratory C5 finding: the trained adapter from run
 c5v1-20261029T025343Z, frozen and hash-checked, raised the excess next-token loss after a topic switch at every step of
@@ -28,8 +28,8 @@ import yaml
 from . import glimmer
 from . import pilot_c5 as P
 
-SEALED = "criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml"
-TAG = "c6v1"
+SEALED = "criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml"
+TAG = "c6v2"
 CONDITIONS = {"S0": 0.0, "S0.5": 0.5, "S1": 1.0, "S1.5": 1.5, "S2": 2.0}
 ORDER = ("S0", "S0.5", "S1", "S1.5", "S2")
 CHECK_BOOK = 1260                   # adapter and logits checks read the first 2,048 tokens of this book

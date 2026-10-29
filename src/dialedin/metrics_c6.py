@@ -1,5 +1,5 @@
 """C6 metrics: does the C5 adapter's scale raise the excess loss after a topic switch? Implements
-criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml. Pure Python plus numpy.
+criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml. Pure Python plus numpy.
 """
 import numpy as np
 

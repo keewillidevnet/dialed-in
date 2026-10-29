@@ -270,7 +270,17 @@ budget:
     per pass; C7's Phase A measured 13.7 wall seconds per pass, results/raw/c7v1-20261029T154201Z/phaseA.json) is
     about 1.15 hours, plus perplexity on 36 undriven passes and the load, about 1.25 hours. Muse Wonder estimated 1.7.
   peak_gpu_memory: about C7's 76.8 GiB
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-29 with the code at commit ccec08f (python3 -m dialedin.run_c8 --smoke): load 71 s;
+    preflight passed; adapter 32 modules, sha256 as above; set C books 37106, 74, 120, 174 and 940 have 265,598,
+    100,887, 94,774, 107,449 and 200,948 tokens (each needs 32,768); adapter and condition checks all true (BASE equals
+    the unadapted model bit for bit; FULL, QKV2, V2, QK2 and V4 each change it and all differ from each other; FULL
+    and BASE restored bit for bit; modules on: FULL 32, QKV2 3, V2 1, QK2 2, V4 1); perplexity path max |logit
+    difference| 0 of max |logit| 19.75; on book 74 under BASE and V2, undriven, sham and driven passes at N = 2 and
+    4096 took 13.19 to 13.52 s each, peak 74.3 GiB (BASE) and 76.8 GiB (V2), all outputs finite; 3 shams with 0
+    differing values; BASE perplexity on book 74 3.740. No gains, tilts or V2 perplexity were printed. FULL, QKV2 and
+    QK2 were not smoked; C7 ran FULL and QKV2 at 32,768 tokens on this pod at the same peak.
+  smoke_code_note: run_c8.py is the same file the smoke ran; metrics_c8.py and analyze_c8.py are as hashed below
 
 analysis:
   runner: src/dialedin/run_c8.py

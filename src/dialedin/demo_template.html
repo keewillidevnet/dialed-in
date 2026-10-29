@@ -1,0 +1,375 @@
+<title>Dialed In</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a bench instrument. Three panels read top to bottom: the dial, where it lives, the lab that found it. */
+:root{
+  --paper:#edf0f2; --panel:#f8f9fa; --ink:#15202a; --muted:#56636f; --rule:#cfd6dc; --faint:#dfe4e8;
+  --dial:#b05a00; --dial-soft:#b05a0022; --base:#2f6688; --good:#2c7a4b; --warn:#9a6700; --bad:#b03636;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",sans-serif;
+  --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f151a; --panel:#151d24; --ink:#e4e9ed; --muted:#93a0ab; --rule:#27323c; --faint:#1d2730;
+  --dial:#f0a240; --dial-soft:#f0a24026; --base:#7db0d1; --good:#5cc08a; --warn:#e0b04a; --bad:#ef7a7a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f151a; --panel:#151d24; --ink:#e4e9ed; --muted:#93a0ab; --rule:#27323c; --faint:#1d2730;
+  --dial:#f0a240; --dial-soft:#f0a24026; --base:#7db0d1; --good:#5cc08a; --warn:#e0b04a; --bad:#ef7a7a; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(34px,6vw,54px);line-height:1}
+h2{font-size:24px}
+h3{font-size:16px;font-weight:500}
+p{margin:0;max-width:68ch}
+.eyebrow{font:500 11px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+header{display:grid;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+header .lede{font-size:18px;max-width:62ch}
+header .facts{display:flex;flex-wrap:wrap;gap:8px 20px;font:13px var(--mono);color:var(--muted)}
+section{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:22px;display:grid;gap:18px}
+.head{display:grid;gap:6px}
+.cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+.src{font:11px var(--mono);color:var(--muted);word-break:break-all}
+svg text{fill:var(--muted);font:11px var(--mono)}
+/* dial */
+.chart{width:100%;height:auto;display:block}
+.slider{display:grid;gap:6px}
+.slider input{width:100%;accent-color:var(--dial);height:28px}
+.ticks{display:flex;justify-content:space-between;font:12px var(--mono);color:var(--muted)}
+.ticks button{font:inherit;color:inherit;background:none;border:0;padding:4px 6px;cursor:pointer;border-radius:3px}
+.ticks button[aria-pressed="true"]{color:var(--dial);font-weight:500}
+.ticks button:focus-visible,.slider input:focus-visible,.chip:focus-visible{outline:2px solid var(--dial);outline-offset:2px}
+.readout{display:grid;gap:14px}
+.meter{display:grid;gap:2px;padding-bottom:12px;border-bottom:1px solid var(--faint)}
+.meter .v{font:500 30px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.meter .v.dial{color:var(--dial)}
+.books{display:grid;gap:6px}
+.book{display:grid;grid-template-columns:minmax(0,9.5em) 1fr 3.4em;gap:8px;align-items:center;font-size:13px}
+.book .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.book .track{position:relative;height:10px;background:var(--faint);border-radius:2px}
+.book .bar{position:absolute;inset:0 auto 0 0;background:var(--dial);border-radius:2px;transition:width .35s}
+.book .ghost{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--base)}
+.book .n{font:12px var(--mono);text-align:right}
+.note{font-size:13px;color:var(--muted)}
+/* where */
+.mapwrap{display:grid;gap:8px}
+canvas{width:100%;height:auto;display:block;image-rendering:pixelated}
+.legend{display:flex;align-items:center;gap:8px;font:11px var(--mono);color:var(--muted);flex-wrap:wrap}
+.legend .ramp{width:120px;height:8px;border-radius:2px}
+.hover{font:12px var(--mono);min-height:1.5em;color:var(--ink)}
+.share{display:grid;gap:10px}
+.srow{display:grid;gap:4px}
+.srow .lab{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.strack{position:relative;height:16px;background:var(--faint);border-radius:2px}
+.sbar{position:absolute;top:0;bottom:0;border-radius:2px}
+.sci{position:absolute;top:50%;height:2px;background:var(--ink);transform:translateY(-50%)}
+.mark{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1.5px dashed var(--muted)}
+.pending{background:repeating-linear-gradient(135deg,var(--faint) 0 6px,transparent 6px 12px)}
+.card{border:1px solid var(--rule);border-radius:4px;padding:14px;display:grid;gap:10px;background:var(--paper)}
+/* loop */
+.cycle{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.cycle .step{padding:6px 10px;border:1px solid var(--rule);border-radius:999px;background:var(--paper)}
+.cycle .step.muse{border-color:var(--base)}
+.cycle .step.human{border-style:dashed}
+.cycle .step.now{border-color:var(--dial);background:var(--dial-soft)}
+.cycle .arrow{color:var(--muted)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+th{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule)}
+td{padding:9px 8px;border-bottom:1px solid var(--faint);vertical-align:top}
+td.id{font:12px var(--mono);white-space:nowrap}
+.chip{display:inline-block;font:500 11px/1.6 var(--mono);padding:0 7px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.chip.pos{color:var(--good)} .chip.neg{color:var(--muted)} .chip.warn{color:var(--warn)} .chip.run{color:var(--dial)} .chip.bad{color:var(--bad)}
+.who{font-size:12px;color:var(--muted)} .who.muse{color:var(--base);font-weight:500}
+.story{display:grid;gap:0;position:relative}
+.ev{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--faint)}
+.ev:first-child{border-top:0}
+.ev .when{font:12px var(--mono);color:var(--muted)}
+.ev .what{min-width:0}
+.ev .what>.src{display:block;margin-top:4px}
+.ev ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:13.5px}
+.sev{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
+.sev.Blocker{color:var(--bad)} .sev.Major{color:var(--warn)} .sev.Minor{color:var(--muted)}
+blockquote{margin:0;padding:16px 18px;border-left:3px solid var(--base);background:var(--paper);display:grid;gap:10px;font-size:14.5px}
+.cite{font:500 10.5px var(--mono);color:var(--base);border:1px solid var(--base);border-radius:3px;padding:0 4px;cursor:help;white-space:nowrap}
+.sources{display:grid;gap:3px;font-size:12px}
+footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Meta Global AI Developer Hackathon · Theme 2: Push the Frontier</span>
+  <h1>Dialed In</h1>
+  <p class="lede">Muse Glimmer-30B listens unevenly. Slow patterns in a text pass through its attention heads more strongly than fast ones. We measured that lean, trained a dial that turns it down, traced the dial to one layer, and let Muse run the lab that asks what to test next.</p>
+  <div class="facts" id="facts"></div>
+</header>
+
+<section id="dial" aria-labelledby="h-dial">
+  <div class="head">
+    <span class="eyebrow">1 · The dial</span>
+    <h2 id="h-dial">Turn the lean down</h2>
+    <p class="muted">We add a faint sine wave with a period of N tokens to the model's hidden states and read how strongly each head carries it. Gain climbs with the period: the model favors slow patterns. The dial is a small trained adapter. Each setting below was measured on five books.</p>
+  </div>
+  <div class="cols">
+    <div style="display:grid;gap:12px;min-width:0">
+      <svg class="chart" id="curve" viewBox="0 0 640 340" role="img" aria-label="Gain against period at the selected dial setting"></svg>
+      <div class="slider">
+        <label class="eyebrow" for="scale">Dial setting (adapter scale)</label>
+        <input id="scale" type="range" min="0" max="4" step="1" value="0">
+        <div class="ticks" id="ticks"></div>
+      </div>
+    </div>
+    <div class="readout">
+      <div class="meter"><span class="eyebrow">Tilt (slope of log gain on log period)</span><span class="v dial" id="r-tilt"></span><span class="note" id="r-change"></span></div>
+      <div class="meter"><span class="eyebrow">Cost: perplexity on the same text</span><span class="v" id="r-ppl"></span><span class="note">Ratio to the dial at 0. 1.000 means no cost.</span></div>
+      <div class="books"><span class="eyebrow">Tilt per book (blue tick: dial at 0)</span><div id="books" class="books"></div></div>
+    </div>
+  </div>
+  <p class="note" id="dial-note"></p>
+  <div class="src" id="dial-src"></div>
+</section>
+
+<section id="where" aria-labelledby="h-where">
+  <div class="head">
+    <span class="eyebrow">2 · Where it lives</span>
+    <h2 id="h-where">One early layer does most of the work</h2>
+    <p class="muted">Each cell is one attention head, colored by its own lean. The adapter touches layers 2 to 5. Switching its parts on and off showed that three matrices in layer 2 carry most of the effect.</p>
+  </div>
+  <div class="cols">
+    <div class="mapwrap">
+      <canvas id="map" width="640" height="420" aria-label="Head map: tilt of each attention head by layer"></canvas>
+      <div class="legend"><span>flat</span><span class="ramp" id="ramp"></span><span>steep lean</span><span>· gray: below the noise floor · heads sorted by tilt within a layer · G marks a global layer</span></div>
+      <div class="hover" id="hover">Hover a head to read it.</div>
+      <div class="src" id="map-src"></div>
+    </div>
+    <div style="display:grid;gap:16px;min-width:0">
+      <div class="share" id="c7"></div>
+      <div class="card" id="c8"></div>
+    </div>
+  </div>
+</section>
+
+<section id="lab" aria-labelledby="h-lab">
+  <div class="head">
+    <span class="eyebrow">3 · The lab loop</span>
+    <h2 id="h-lab">Muse as the scientist</h2>
+    <p class="muted">Muse Spark narrates results and critiques designs. Muse Wonder proposes the next experiment and reviews the code. A person seals each pre-registered spec before the GPU runs it. Every number Muse writes must match a cited fact from the result files.</p>
+  </div>
+  <div class="cycle" id="cycle"></div>
+  <div class="tablewrap"><table id="ledger"></table></div>
+  <div class="src" id="ledger-src"></div>
+  <div class="cols">
+    <div style="display:grid;gap:10px;min-width:0">
+      <h3>C8: from Muse's proposal to a sealed run</h3>
+      <div class="story" id="story"></div>
+    </div>
+    <div style="display:grid;gap:10px;min-width:0">
+      <h3>Muse Spark explains the record</h3>
+      <blockquote id="narr"></blockquote>
+      <div class="sources" id="narr-src"></div>
+      <div class="card" id="next"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Built by <span class="mono">python3 -m dialedin.demo</span> from the files named under each panel. No number on this page is typed by hand.</span>
+  <span>Model: Muse Glimmer-30B, BF16, one RTX PRO 6000. Muse Spark and Muse Wonder via the Meta Model API.</span>
+</footer>
+</div>
+
+<script>
+const D=/*DATA*/null;
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct=(x,d=1)=>(x>=0?"+":"−")+Math.abs(x*100).toFixed(d)+"%";
+const stamp=s=>s?`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)} ${s.slice(9,11)}:${s.slice(11,13)} UTC`:"";
+const SCALES=["S0","S0.5","S1","S1.5","S2"], LBL=["0","0.5","1","1.5","2"];
+const dial=D.dial, W=D.where, L=D.loop;
+
+/* header facts */
+$("facts").innerHTML=[
+  `tilt ${dial.tilts.S0.toFixed(3)} → ${dial.tilts.S2.toFixed(3)}`,
+  `flatter by ${Math.abs(dial.relative_change*100).toFixed(1)}%`,
+  `perplexity ×${dial.ppl.S2.toFixed(3)}`,
+  `layer 2 q, k, v: ${(W.c7.share_QKV2*100).toFixed(1)}% of the effect`,
+  `${L.rows.length} sealed specs`].map(s=>`<span>${s}</span>`).join("");
+
+/* ---------- 1. dial chart ---------- */
+const grid=dial.grid, X0=56,X1=620,Y0=24,Y1=296;
+const norm=k=>dial.curves[k].map(g=>g/dial.curves[k][grid.length-1]);
+const all=SCALES.flatMap(norm), ymin=Math.min(...all)*0.92, ymax=1.04;
+const xs=N=>X0+(Math.log2(N)-1)/(Math.log2(grid[grid.length-1])-1)*(X1-X0);
+const ys=v=>Y1-(Math.log(v)-Math.log(ymin))/(Math.log(ymax)-Math.log(ymin))*(Y1-Y0);
+const path=a=>a.map((v,i)=>`${i?"L":"M"}${xs(grid[i]).toFixed(1)},${ys(v).toFixed(1)}`).join("");
+function drawAxes(){
+  let s="";
+  for(const v of [0.3,0.4,0.5,0.6,0.7,0.8,1.0]) if(v>=ymin&&v<=ymax)
+    s+=`<line x1="${X0}" x2="${X1}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--faint)"/><text x="${X0-8}" y="${ys(v)+4}" text-anchor="end">${v.toFixed(1)}</text>`;
+  for(const N of grid) s+=`<line x1="${xs(N)}" x2="${xs(N)}" y1="${Y1}" y2="${Y1+5}" stroke="var(--rule)"/><text x="${xs(N)}" y="${Y1+19}" text-anchor="middle">${N}</text>`;
+  s+=`<text x="${(X0+X1)/2}" y="${Y1+36}" text-anchor="middle">period N (tokens per cycle), log scale</text>`;
+  s+=`<text x="14" y="${(Y0+Y1)/2}" text-anchor="middle" transform="rotate(-90 14 ${(Y0+Y1)/2})">gain, relative to N = ${grid[grid.length-1]}</text>`;
+  return s;
+}
+const svg=$("curve");
+svg.innerHTML=drawAxes()+SCALES.map(k=>`<path d="${path(norm(k))}" fill="none" stroke="var(--rule)" stroke-width="1.2"/>`).join("")+
+  `<path d="${path(norm("S0"))}" fill="none" stroke="var(--base)" stroke-width="1.6" stroke-dasharray="5 4"/>`+
+  `<text x="${xs(grid[1])+8}" y="${ys(norm("S0")[1])+18}" style="fill:var(--base)">dial at 0 (dashed)</text>`+
+  `<path id="live" fill="none" stroke="var(--dial)" stroke-width="3" stroke-linejoin="round"/><g id="dots"></g><text id="lab0" style="fill:var(--dial);font-weight:500"></text>`;
+let cur=norm("S0").slice(), target=cur.slice(), raf=null;
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function paint(){
+  $("live").setAttribute("d",path(cur));
+  $("dots").innerHTML=cur.map((v,i)=>`<circle cx="${xs(grid[i])}" cy="${ys(v)}" r="4" fill="var(--dial)"/>`).join("");
+  const t=$("lab0"); t.setAttribute("x",xs(grid[0])); t.setAttribute("y",ys(cur[0])-12);
+  t.textContent=`${(cur[0]*100).toFixed(0)}% at N = 2`;
+}
+function animate(){
+  let done=true;
+  cur=cur.map((v,i)=>{const d=target[i]-v; if(Math.abs(d)>1e-4){done=false; return v+d*0.18} return target[i]});
+  paint(); raf=done?null:requestAnimationFrame(animate);
+}
+$("ticks").innerHTML=LBL.map((l,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===0}">${l}</button>`).join("");
+$("ticks").addEventListener("click",e=>{const b=e.target.closest("button"); if(b){$("scale").value=b.dataset.i; setScale(+b.dataset.i)}});
+const tmax=Math.max(...dial.books.flatMap(b=>Object.values(b.tilts)))*1.08;
+function setScale(i){
+  const k=SCALES[i];
+  [...$("ticks").children].forEach((b,j)=>b.setAttribute("aria-pressed",j===i));
+  target=norm(k); if(reduce){cur=target.slice(); paint()} else if(!raf) raf=requestAnimationFrame(animate);
+  const ch=dial.tilts[k]/dial.tilts.S0-1;
+  $("r-tilt").textContent=dial.tilts[k].toFixed(4);
+  $("r-change").textContent=i?`${pct(ch)} against the dial at 0`:"The unmodified model.";
+  $("r-ppl").textContent="×"+dial.ppl[k].toFixed(3);
+  $("books").innerHTML=dial.books.map(b=>`<div class="book"><span class="t" title="${esc(b.title)}">${esc(b.title)}</span>
+    <span class="track"><span class="bar" style="width:${b.tilts[k]/tmax*100}%"></span><span class="ghost" style="left:${b.tilts.S0/tmax*100}%"></span></span>
+    <span class="n">${b.tilts[k].toFixed(3)}</span></div>`).join("");
+}
+$("scale").addEventListener("input",e=>setScale(+e.target.value));
+setScale(0); cur=target.slice(); paint();
+$("dial-note").innerHTML=`Pre-registered bar: a ${(dial.needed_relative*100).toFixed(0)}% drop at setting 2. Measured: ${(Math.abs(dial.relative_change)*100).toFixed(1)}% (95% interval ${(Math.abs(dial.ci_S2[1])*100).toFixed(1)} to ${(Math.abs(dial.ci_S2[0])*100).toFixed(1)}%), in order at every step, in ${dial.books_agree} of 5 books. A miss by the rules we set, recorded as one. In a separate test on ${dial.c6.books} new books, loss just after a topic switch rose ${pct(dial.c6.rise)} at setting 2 (random adapter of the same size: ${pct(dial.c6.control)}).`;
+$("dial-src").textContent=`Sources: ${dial.src} · ${dial.c6.src}`;
+
+/* ---------- 2. head map ---------- */
+const cv=$("map"), ctx=cv.getContext("2d");
+const rows=W.layers.length, cols=W.tilt[0].length, ML=46, MT=6, CW=(cv.width-ML-8)/cols, CH=(cv.height-MT-6)/rows;
+const VMAX=0.35;
+function ramp(t){ // sequential: paper-blue to amber
+  t=Math.max(0,Math.min(1,t));
+  const a=[47,102,136], m=[160,170,150], b=[240,162,64];
+  const [p,q,u]=t<.5?[a,m,t*2]:[m,b,(t-.5)*2];
+  return `rgb(${p.map((v,i)=>Math.round(v+(q[i]-v)*u)).join(",")})`;
+}
+$("ramp").style.background=`linear-gradient(90deg,${[0,.25,.5,.75,1].map(ramp).join(",")})`;
+const sorted=W.tilt.map(r=>r.map((v,h)=>({v,h})).sort((a,b)=>(b.v??-1)-(a.v??-1)));
+function drawMap(hl){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.font="10px "+css("--mono"); ctx.textBaseline="middle"; ctx.textAlign="right";
+  sorted.forEach((r,li)=>{
+    const L_=W.layers[li], y=MT+li*CH, glob=(L_-3)%4===0;
+    r.forEach((c,ci)=>{ctx.fillStyle=c.v==null?css("--faint"):ramp(c.v/VMAX); ctx.fillRect(ML+ci*CW,y,CW-1,CH-1)});
+    if(L_%5===0||L_===2){ctx.fillStyle=L_===2?css("--dial"):css("--muted"); ctx.fillText(`L${L_}`,ML-16,y+CH/2)}
+    if(glob){ctx.fillStyle=css("--muted"); ctx.fillText("G",ML-4,y+CH/2)}
+  });
+  const y2=MT+W.layers.indexOf(2)*CH;
+  ctx.strokeStyle=css("--dial"); ctx.lineWidth=2; ctx.strokeRect(ML-1,y2-1,cols*CW+1,CH+1);
+  if(hl){ctx.strokeStyle=css("--ink"); ctx.lineWidth=1.5; ctx.strokeRect(ML+hl[1]*CW-.5,MT+hl[0]*CH-.5,CW,CH)}
+}
+drawMap();
+cv.addEventListener("mousemove",e=>{
+  const r=cv.getBoundingClientRect(), x=(e.clientX-r.left)*cv.width/r.width, y=(e.clientY-r.top)*cv.height/r.height;
+  const li=Math.floor((y-MT)/CH), ci=Math.floor((x-ML)/CW);
+  if(li<0||li>=rows||ci<0||ci>=cols){$("hover").textContent="Hover a head to read it."; drawMap(); return}
+  const c=sorted[li][ci], L_=W.layers[li];
+  $("hover").textContent=`layer ${L_} (${(L_-3)%4===0?"global":"local"}), head ${c.h}: ${c.v==null?"below the noise floor":"tilt "+c.v.toFixed(3)}`;
+  drawMap([li,ci]);
+});
+cv.addEventListener("mouseleave",()=>{$("hover").textContent="Hover a head to read it."; drawMap()});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>drawMap());
+new MutationObserver(()=>drawMap()).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+$("map-src").textContent=`${W.resolved} of ${W.total} heads resolved at every period. Source: ${W.headmap_src} (exploratory)`;
+
+function sbar(label,v,ci,color,marks=[],max=1.2){
+  const w=x=>Math.max(0,Math.min(100,x/max*100));
+  return `<div class="srow"><div class="lab"><span>${label}</span><span class="mono">${v==null?"pending":(v*100).toFixed(1)+"%"}</span></div>
+  <div class="strack ${v==null?"pending":""}">${v==null?"":`<span class="sbar" style="left:0;width:${w(v)}%;background:${color}"></span>`}
+  ${ci?`<span class="sci" style="left:${w(ci[0])}%;width:${w(ci[1])-w(ci[0])}%"></span>`:""}
+  ${marks.map(m=>`<span class="mark" style="left:${w(m)}%" title="${m}"></span>`).join("")}</div></div>`;
+}
+$("c7").innerHTML=`<span class="eyebrow">C7 · sealed · outcome ${W.c7.outcome}</span>
+  <h3>Share of the dial's effect</h3>
+  ${sbar("Layer 2 q, k, v (3 of 32 matrices)",W.c7.share_QKV2,W.c7_ci.share_QKV2,"var(--dial)")}
+  ${sbar("Everything else (29 matrices)",W.c7.share_REST,W.c7_ci.share_REST,"var(--base)")}
+  <p class="note">The full dial flattened this set ${Math.abs(W.c7.full_change*100).toFixed(1)}%. Under it, layer 2's own heads flattened ${Math.abs(W.c7_layer2_full*100).toFixed(1)}% and layers 3 to 51 ${Math.abs(W.c7_later_full*100).toFixed(1)}%. Layer 2 alone cost perplexity ×${W.c7_ppl_qkv2.toFixed(3)}.</p>
+  <div class="src">Source: ${W.c7_src}</div>`;
+
+function c8card(){
+  const r=D.c8;
+  if(!r) return `<span class="eyebrow">C8 · sealed · <span class="chip run">running</span></span>
+    <h3>Is it one matrix?</h3>
+    <p class="note">Muse Wonder asked whether layer 2's v matrix alone (1 of 32) gives a majority of the effect, with layer 4's v as the matched control. Bars fill when the analysis lands.</p>
+    ${sbar("Layer 2 v alone (needs 50 to 140%)",null,null,"",[0.5])}
+    ${sbar("Layer 4 v, control (must stay within 30%)",null,null,"",[0.3])}
+    ${sbar("Layer 2 q, k, v (repeat of C7 on new text)",null,null,"",[])}
+    <div class="src">${D.running?`Run ${esc(D.running)} in progress. `:""}Spec: ${L.spec_src}</div>`;
+  const c=r.C8, ci=r.ci||{};
+  const code={O1:["pos","one matrix"],O2S:["warn","sufficient, not specific"],O0:["neg","not one matrix"],U:["bad","undetermined"]}[c.outcome]||["neg",c.outcome];
+  return `<span class="eyebrow">C8 · sealed · outcome <span class="chip ${code[0]}">${esc(c.outcome)}: ${code[1]}</span></span>
+    <h3>Is it one matrix?</h3>
+    ${c.reason?`<p class="note">${esc(c.reason)}</p>`:""}
+    ${sbar("Layer 2 v alone (needs 50 to 140%)",c.share_V2??null,ci.share_V2,"var(--dial)",[0.5])}
+    ${sbar("Layer 4 v, control (must stay within 30%)",c.share_V4!=null?Math.abs(c.share_V4):null,null,"var(--base)",[0.3])}
+    ${sbar("Layer 2 q, k, v (repeat of C7 on new text)",c.share_QKV2??null,ci.share_QKV2,"var(--muted)")}
+    ${c.full_change!=null?`<p class="note">Full dial on this set: ${pct(c.full_change)}. Books agreeing on v alone: ${c.books_agree_V2} of 5.</p>`:""}
+    <div class="src">Source: ${esc(r.src)}</div>`;
+}
+$("c8").innerHTML=c8card();
+
+/* ---------- 3. lab loop ---------- */
+const runningC8=!D.c8;
+$("cycle").innerHTML=[["Muse Wonder proposes","muse"],["Muse Spark critiques, Wonder revises","muse"],["Independent review and Muse Wonder code review","muse"],["A person seals the spec","human"],["GPU run",runningC8?"now":""],["Muse Spark narrates the result","muse"]]
+  .map(([t,c],i,a)=>`<span class="step ${c}">${t}</span>${i<a.length-1?'<span class="arrow" aria-hidden="true">→</span>':'<span class="arrow" aria-hidden="true">↺</span>'}`).join("");
+const outChip=o=>{
+  if(!o) return "";
+  const pos=/^(T|M1|O1)$/.test(o), warn=/^(L0|O2S)$/.test(o), bad=/^U/.test(o);
+  return `<span class="chip ${pos?"pos":warn?"warn":bad?"bad":"neg"}">${esc(o)}</span>`;
+};
+$("ledger").innerHTML=`<thead><tr><th>Spec</th><th>Sealed</th><th>Proposed by</th><th>State</th><th>Outcome</th><th>What it showed</th></tr></thead><tbody>`+
+  L.rows.map(r=>{
+    let state=r.state, outcome=r.outcome, plain=L.plain[r.id]||"";
+    if(r.id.startsWith("c8-")){
+      if(D.c8){state="analyzed"; outcome=D.c8.C8.outcome; plain=D.c8.C8.reason?`Not passed: ${D.c8.C8.reason}.`:`Layer 2 v alone carries ${(D.c8.C8.share_V2*100).toFixed(1)}% of the dial's effect.`}
+      else if(D.running){state="running"; plain="Running on the pod now."}
+    }
+    if(state==="sealed, not run") plain=plain||"Superseded by a later version before it ran.";
+    const muse=/muse/.test(r.proposed_by);
+    return `<tr><td class="id">${esc(r.id.replace("-glimmer",""))}</td><td class="mono">${esc(r.sealed_utc.slice(5,16).replace("T"," "))}</td>
+      <td class="who ${muse?"muse":""}">${muse?"Muse Wonder":"the lab"}</td>
+      <td>${state==="running"?'<span class="chip run">running</span>':esc(state)}</td><td>${outChip(outcome)}</td><td>${esc(plain)}</td></tr>`;
+  }).join("")+"</tbody>";
+$("ledger-src").textContent=`Built from ${L.status_src} (as of ${stamp(L.status_utc)}), criteria/SEALS.txt and each experiment's summary file. Outcome codes are defined in each sealed spec.`;
+
+const rv=L.review;
+$("story").innerHTML=[
+  [stamp(L.proposal_utc),`<b>Muse Wonder proposes.</b> “${esc(L.proposal.question)}” <span class="src">${L.proposal_src}</span>`],
+  ["review",`<b>Review changes the design.</b> Four revisions, each with its reason in the sealed spec:<ul>${L.revisions.map(r=>`<li>${esc(r.text)}</li>`).join("")}</ul>`],
+  [stamp(L.review_utc),`<b>Muse Wonder reviews the code: ${esc(rv.verdict)}.</b> ${rv.items.length} findings, working separately from an independent reviewer:<ul>${rv.items.map(i=>`<li><span class="sev ${i.severity}">${i.severity}</span>${esc(i.label)}</li>`).join("")}</ul><span class="src">${L.review_src}</span>`],
+  [L.seal?L.seal.utc.slice(0,16).replace("T"," ")+" UTC":"",`<b>Sealed by a person.</b> <span class="mono">sha256 ${L.seal?L.seal.sha.slice(0,16):""}…</span> The run script refuses to start if the file changes.`],
+  ["GPU",D.c8?`<b>Result: ${esc(D.c8.C8.outcome)}.</b> ${esc(D.c8.C8.reason||"")} <span class="src">${esc(D.c8.src)}</span>`:`<b>Running.</b> ${D.running?`Run <span class="mono">${esc(D.running)}</span>, `:""}6 conditions × 5 books on one RTX PRO 6000.`],
+].map(([w,h])=>`<div class="ev"><span class="when">${w}</span><div class="what">${h}</div></div>`).join("");
+
+const N=L.narration;
+$("narr").innerHTML=N.paragraphs.map(p=>`<p>${esc(p).replace(/\[(F\d+)\]/g,(m,f)=>`<span class="cite" title="${esc((N.sources[f]||{}).label||"")}: ${esc((N.sources[f]||{}).path||"")}">${f}</span>`)}</p>`).join("");
+$("narr-src").innerHTML=`<span class="eyebrow">${N.verified?"Checked: every number matches the fact it cites":"Not verified"}</span>`+
+  Object.entries(N.sources).map(([f,s])=>`<span><span class="cite">${f}</span> ${esc(s.label)} <span class="src">${esc(s.path)}</span></span>`).join("")+
+  `<span class="src">Narration: ${L.narration_src}</span>`;
+
+$("next").innerHTML=D.next?`<span class="eyebrow">Next · proposed by ${esc(D.next.model||"Muse")} · awaiting a human seal</span><h3>${esc(D.next.title)}</h3><p class="note">${esc(D.next.question)}</p>${D.next.why?`<p class="note">${esc(D.next.why)}</p>`:""}<div class="src">${esc(D.next.src)}</div>`
+  :`<span class="eyebrow">Next</span><h3>C9 is Muse's call</h3><p class="note">When C8 is analyzed, one loop turn has Spark narrate it, Wonder propose C9, Spark critique it and Wonder revise it. The proposal appears here, then waits for a person to seal it.</p>`;
+</script>

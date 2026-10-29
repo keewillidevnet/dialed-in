@@ -63,7 +63,7 @@ inputs:
 
 adapter:
   file: results/raw/c5v1-20261029T025343Z/adapter.pt
-  sha256: FILL_AT_SEAL              # from the pre-seal smoke run; must equal results/raw/c5v1-20261029T025343Z/training.json adapter_sha256
+  sha256: FILL_AT_SEAL              # from the pre-seal smoke run; the runner refuses to start, before STARTED.json, unless the file, this value and results/raw/c5v1-20261029T025343Z/training.json adapter_sha256 all agree
   family: all
   layers: [2, 3, 4, 5]
   rank: 8
@@ -98,6 +98,26 @@ switch:
     output_multiplier, softcap; as C4 and C5), in float32 from bfloat16 logits. Excess per pair = the summed loss in
     the switch input minus the same tokens in y's clean input, at the same scale.
 
+reproduction_of_c5:
+  books: [1342, 2701]
+  start: 53856
+  c5_behavior: results/raw/c5v1-20261029T025343Z/behavior.json
+  what: >
+    Diagnostic, not gated, run after the main measurement with the trained adapter: the two ordered set A pairs
+    1342->2701 and 2701->1342 at C5's tokens (53,856 to 62,047), at S0 and S2. Their summed excess is compared with
+    C5's behavior.json per-pair totals; the maximum relative difference is reported (expected 0 or near it, since
+    the computation is the same). It ties C6's adapter loading to the number C6 is confirming.
+
+control:
+  seed: 12345
+  what: >
+    Secondary, reported, never gated, run last: every adapter module's A and B are replaced by standard-normal factors
+    (torch.Generator seeded 12345 + module index) scaled so that the Frobenius norm of B A equals the trained module's;
+    the full 90-pair switch, clean and noise measurement is repeated at S2 only (S0 is the base model, the same as the
+    trained run's S0). Reported: the control's relative rise at S2 next to the trained adapter's. A control rise of
+    similar size would mean the effect comes from perturbing layers 2 to 5 at that strength, not from what the adapter
+    learned, and the result would be described that way.
+
 pass_criteria:
   excess_per_scale: mean over the 90 pairs of the summed excess (nats)
   outcome_U: an excess undefined or not finite, or excess(S0) not positive
@@ -106,16 +126,23 @@ pass_criteria:
   consistency: >
     For each of the 10 target books y, the mean excess over the 9 pairs that switch into y; at least 8 of the 10 have
     a higher value at S2 than at S0 (an undefined value counts as not agreeing)
-  outcome_B1_confirmed: monotone, the effect and consistency
+  outcome_B1_confirmed: monotone, the effect and consistency (a claim about this adapter; the control says whether it is specific)
   outcome_B0_not_confirmed: every value defined and B1 does not hold; a fall is B0, reported with its direction
   secondary: >
-    Reported, never gated: the rise for target books the adapter trained on (other regions) and for the 6 it never
-    saw; excess by bin after the seam (1-16, 17-64, 65-256, 257-1,024, 1,025-2,048); noise excess per scale and its
-    Spearman trend; clean mean loss per scale and the implied perplexity ratio to S0.
+    Reported, never gated: per scale, the mean summed switch loss and clean loss on the scored tokens (excess is their
+    difference, so this shows which side moves); the rise for target books the adapter trained on (other regions) and
+    for the 6 it never saw; per source book the rise at S2, the number of source books rising, and the overall rise
+    with each source book left out in turn (minimum and maximum); excess summed (nats) by bin after the seam (1-16,
+    17-64, 65-256, 257-1,024, 1,025-2,048; C5 reported bin means, so compare C5 to C6 by total, not by bin); noise
+    excess per scale and its Spearman trend; clean mean loss per scale and the implied perplexity ratio to S0.
 
 uncertainty:
   bootstrap: resample the 10 target books with replacement 1,000 times (numpy default_rng([0, 0])); report the 95 percent percentile interval of the relative rise at S2
-  not_covered: one adapter from one training seed; the bootstrap covers target books only
+  not_covered: >
+    One adapter from one training seed. The bootstrap resamples target books with their source books held fixed;
+    each book is a source in 9 pairs and a target in 9, so pairs are not independent and the interval is narrower
+    than a full two-way resample would give. The 8-of-10 target rule and the leave-one-source-out range guard
+    against one dominant book.
 
 decisions:
   B1: the topic-switch effect is confirmed on new text; the demo shows the dial as a control on how long Glimmer stays on old context, with its perplexity cost
@@ -131,8 +158,11 @@ decisions:
 budget:
   max_gpu_hours: 1.5
   ledger: results/ledger/c6v1_<first 12 of seal hash>.jsonl, append-only
-  seconds_per_forward_estimate: 2.5
-  estimate: per scale 10 clean, 90 switch and 10 noise forwards of 8,192 tokens = 110; 550 forwards at about 2 s is about 0.31 hours, plus the load and checks, about 0.4 hours
+  seconds_per_forward_estimate: 2.5  # the preflight uses this; C5's smoke measured 1.95 s for one 8,192-token forward
+  estimate: >
+    Per scale 10 clean, 90 switch and 10 noise forwards of 8,192 tokens = 110; 5 scales plus the control at S2 =
+    660, plus the reproduction (2 clean, 2 switch, 2 noise at S0 and S2) = 672 forwards; at the 2.5 s estimate about
+    0.47 hours (about 0.36 hours at the measured 1.95 s), plus the load and checks, about 0.55 hours
   pre_seal_smoke: SMOKE_RESULT
 
 analysis:
@@ -142,8 +172,8 @@ analysis:
     src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
     src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
     src/dialedin/metrics_c6.py: dd6e2cc8394b87bb4fb3e2274aae2bbc56f8be6239c95286a94c7e3e6987fb2e
-    src/dialedin/run_c6.py: 40d3b4bb55135ce2719bfe70017729cdc0916bd1d40a3bff6f6028694e7142b4
-    src/dialedin/analyze_c6.py: 3356ab8b2c806b040b152ffa2fa410de103edda373570826b0cc063c1e025b1d
+    src/dialedin/run_c6.py: 3811fb28d4ad437d66aa4d2c1a8549b2a55feb19b92b3bd10f6c6b8079d9b433
+    src/dialedin/analyze_c6.py: e4ca9bbda5baafb3faf9f57a08bdab49273d6726e1a64e6cf6835fb539532132
 outputs:
-  raw: results/raw/<run_id>/ (STARTED.json; switch.json with, per scale, clean mean loss per book, summed excess per pair, mean excess curves for switch and noise, setup checks, and a record of seal, code, platform, adapter and text hashes; any checks.json or FAILED record)
+  raw: results/raw/<run_id>/ (STARTED.json; switch.json with, per scale, clean mean loss per book, summed excess per pair, mean excess curves for switch and noise, the reproduction of C5's pairs, the random-adapter control at S2 with its per-module norms, setup checks, and a record of seal, code, platform, adapter and text hashes; any checks.json or FAILED record)
   derived: results/derived/<run_id>/c6_summary.json, citing every raw file used

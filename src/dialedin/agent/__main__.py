@@ -127,6 +127,7 @@ def main():
     ap.add_argument("task", choices=["facts", "narrate", "propose"])
     ap.add_argument("--repo", default=".")
     ap.add_argument("--model", default=None, help="muse-spark-1.3 (default) or muse-wonder-1.0")
+    ap.add_argument("--timeout", type=float, default=600.0, help="seconds to wait for one reply (reasoning can be slow)")
     args = ap.parse_args()
     sheet = facts.build(args.repo)
     if not sheet.facts:
@@ -136,7 +137,8 @@ def main():
     from .muse import MuseClient
     out_dir = os.path.join(args.repo, "results", "agent")
     os.makedirs(out_dir, exist_ok=True)
-    client = MuseClient(log_path=os.path.join(out_dir, "calls.jsonl"), **({"model": args.model} if args.model else {}))
+    client = MuseClient(log_path=os.path.join(out_dir, "calls.jsonl"), timeout=args.timeout,
+                        **({"model": args.model} if args.model else {}))
     (narrate if args.task == "narrate" else propose)(client, sheet, out_dir)
 
 

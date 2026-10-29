@@ -14,7 +14,7 @@ MODEL = os.environ.get("MUSE_MODEL", "muse-spark-1.3")   # not the -contributor 
 
 
 class MuseClient:
-    def __init__(self, log_path: str = "results/agent/calls.jsonl", model: str = MODEL, timeout: float = 120.0):
+    def __init__(self, log_path: str = "results/agent/calls.jsonl", model: str = MODEL, timeout: float = 600.0):
         self.key = os.environ.get("META_API_KEY")
         if not self.key:
             raise SystemExit("Set META_API_KEY in this shell first (read -rs META_API_KEY; export META_API_KEY).")
@@ -38,6 +38,9 @@ class MuseClient:
                     time.sleep(5 * (attempt + 1))
                     continue
                 raise SystemExit(f"Muse API error {e.code}: {e.read()[:500]!r}")
+            except (TimeoutError, OSError) as e:
+                raise SystemExit(f"No reply from {self.model} within {self.timeout:.0f} s ({e!r}); "
+                                 f"rerun with a longer --timeout")
         choice = out["choices"][0]
         text = choice["message"]["content"] or ""
         if choice.get("finish_reason") == "length":

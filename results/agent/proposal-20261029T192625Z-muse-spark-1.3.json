@@ -1,0 +1,58 @@
+{
+  "title": "Fresh text specificity of layer 2 qkv",
+  "question": "Does layer 2 q k v alone carry the full dial tilt change on fresh text while layer 3 q k v does not",
+  "prediction": "On set B the full dial gave relative change -0.268 [F112] with layer 2 q k v share 0.7971 [F113] and other 29 share 0.2191 [F114]. We predict the same pattern on fresh text with layer 2 share near 0.8 and layer 3 share near zero.",
+  "intervention": "Use the frozen C5 adapter with subsets switched on. Measure tilt at 32768 tokens with 7 periods and shams. Compare baseline to full dial to layer subsets.",
+  "conditions": [
+    "Baseline with adapter off which is dial at 0. Tilt measured at 32768 tokens.",
+    "Full dial with all 32 modules on at dial scale 2. Tilt measured at 32768 tokens.",
+    "Layer 2 q k v only with 3 modules on at dial scale 2. Tilt measured at 32768 tokens.",
+    "Layer 3 q k v only with 3 modules on at dial scale 2. Tilt measured at 32768 tokens."
+  ],
+  "control": "Layer 3 q k v at dial scale 2 with same module count and rank. It is the same kind and size in a different layer. It should not flatten tilt if layer 2 specificity is right.",
+  "books": "5 books from set C. Use only text beyond token 70000. This segment has not been used. It tests generalization.",
+  "primary_metric": "Share of full tilt change. It equals baseline tilt minus subset tilt divided by baseline tilt minus full tilt. It is computed from mean tilt across 5 books.",
+  "pass_rule": "PASS if layer 2 share is at least 0.6 and absolute layer 3 share is at most 0.3. Threshold 0.6 is set because it requires a majority of effect which rules out diffuse causes. Threshold 0.3 is set because it caps control effects which rules out layer general causes. Rule is fixed before any data.",
+  "failure_meaning": "If layer 2 share is low then localization fails to generalize. If layer 3 share is high then effect is not layer 2 specific. Either failure means the localized dial claim needs revision.",
+  "gpu_hours_estimate": 1.5,
+  "risks": [
+    "Fresh text may shift baseline tilt which could add noise.",
+    "Small full effect would make share ratio noisy which could give inconclusive outcome."
+  ],
+  "why_this_next": "C7 showed localization but layer 3 alone was never isolated. Fresh text beyond 70000 has not been used. This test checks generalization and specificity in one run. It decides if the dial is a true localized mechanism.",
+  "_checks": {
+    "missing_fields": [],
+    "numbers": {
+      "unverified_numbers": [
+        "3",
+        "29",
+        "3",
+        "32768",
+        "7",
+        "32768",
+        "32768",
+        "3",
+        "32768",
+        "3",
+        "3",
+        "32768",
+        "3",
+        "70000",
+        "3",
+        "3",
+        "3",
+        "70000"
+      ],
+      "mismatched_citations": [],
+      "unknown_citations": [],
+      "citations_used": [
+        "F112",
+        "F113",
+        "F114"
+      ],
+      "ok": true
+    },
+    "within_budget": true
+  },
+  "_model": "muse-spark-1.3"
+}

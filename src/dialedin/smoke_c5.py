@@ -102,7 +102,9 @@ def main():
     shams.append(timed("closing sham", s.sham_differences, ids))
     s.set_condition("S0")
 
-    # 4. recall timing
+    # 4. recall and switch timing (hooks off, as phase R sets them)
+    s.probe.mode = None
+    s.injector.disarm()
     trials = run_c5.recall_trials(s)
     print(f"== recall: {len(trials)} trials of {len(trials[0]['ids'])} tokens; answer {trials[0]['answer_len']} tokens")
     t = time.time()

@@ -1,0 +1,96 @@
+{
+ "correlations": {
+  "corner_vs_mean_distance": {
+   "spearman": 0.7023965270962549,
+   "heads": 357,
+   "within_layer_r": 0.5912726192212042,
+   "within_layer_heads": 342
+  },
+  "corner_vs_near_mass": {
+   "spearman": -0.8459719176783616,
+   "heads": 357,
+   "within_layer_r": -0.762731045995071,
+   "within_layer_heads": 342
+  },
+  "corner_vs_entropy": {
+   "spearman": 0.8065879281733515,
+   "heads": 357,
+   "within_layer_r": 0.738094192822596,
+   "within_layer_heads": 342
+  },
+  "corner_vs_first_token_mass": {
+   "spearman": 0.24715631992948095,
+   "heads": 357,
+   "within_layer_r": 0.13735146555915445,
+   "within_layer_heads": 342
+  },
+  "corner_vs_head_output_share": {
+   "spearman": -0.2288217708786508,
+   "heads": 357,
+   "within_layer_r": -0.265469460154365,
+   "within_layer_heads": 342
+  },
+  "tilt_vs_mean_distance": {
+   "spearman": -0.37402304747047965,
+   "heads": 458,
+   "within_layer_r": 0.005341461912075185,
+   "within_layer_heads": 445
+  },
+  "tilt_vs_near_mass": {
+   "spearman": 0.25085559754305375,
+   "heads": 458,
+   "within_layer_r": -0.16023093439775354,
+   "within_layer_heads": 445
+  },
+  "tilt_vs_entropy": {
+   "spearman": -0.13964487307540907,
+   "heads": 458,
+   "within_layer_r": 0.27681896587307664,
+   "within_layer_heads": 445
+  },
+  "tilt_vs_first_token_mass": {
+   "spearman": -0.6307835130796267,
+   "heads": 458,
+   "within_layer_r": 0.07107723998539442,
+   "within_layer_heads": 445
+  },
+  "tilt_vs_head_output_share": {
+   "spearman": -0.0951508655214066,
+   "heads": 458,
+   "within_layer_r": -0.04602575238147578,
+   "within_layer_heads": 445
+  }
+ },
+ "bands": {
+  "corner_16_or_less": {
+   "heads": 121,
+   "median_mean_distance": 32.873406728108726,
+   "median_near_mass": 0.8750241200129191,
+   "median_entropy": 1.9873400926589966,
+   "median_first_token_mass": 0.0,
+   "median_head_output_share": 0.029972797259688377
+  },
+  "corner_24_to_96": {
+   "heads": 114,
+   "median_mean_distance": 80.59330749511719,
+   "median_near_mass": 0.6270443101723989,
+   "median_entropy": 3.0465373198191323,
+   "median_first_token_mass": 0.0,
+   "median_head_output_share": 0.027101888321340084
+  },
+  "corner_256_or_more": {
+   "heads": 90,
+   "median_mean_distance": 422.4352671305338,
+   "median_near_mass": 0.08453020391364892,
+   "median_entropy": 4.795461575190226,
+   "median_first_token_mass": 0.0,
+   "median_head_output_share": 0.023805496903757252
+  }
+ },
+ "exploratory": true,
+ "what": "Joins two independent measurements head by head: the head filter map (results/derived/headmap-c1v5-20261027T152040Z,\nC1 v5 sine drives, 15 books, first 32,768 tokens) and the mechanism probe's base-model attention statistics\n(results/raw/probe-mech-20261029T065204Z, eager attention at scale 0, set C books 74, 120 and 174, tokens 60,000 to\n64,095, queries 2,048 to 4,095). Reports Spearman correlations over heads, and within layers (ranks within each layer\nwith at least 5 resolved heads, pooled), and attention statistics per listening-range band. No GPU.\nOutput: results/derived/headmap-attention/compare.json (never overwritten).",
+ "cites": [
+  "results/derived/headmap-c1v5-20261027T152040Z/headmap.json",
+  "results/raw/probe-mech-20261029T065204Z/mechanisms.json"
+ ]
+}

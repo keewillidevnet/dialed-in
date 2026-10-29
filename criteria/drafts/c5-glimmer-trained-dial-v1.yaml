@@ -75,13 +75,16 @@ training:
     One adapter, trained once in phase T and frozen. Rank-r low-rank updates (y = W x + scale (alpha / r) B A x) on
     the chosen module family in decoder layers 2 to 5; A drawn from randn / sqrt(fan_in), B zero, both float32,
     the branch run in bfloat16. At scale 0 the branch is skipped, so the model is Glimmer bit for bit (checked).
-  family: all                       # FILLED AT SEAL by family_rule from results/pilots/compare.txt; "all" until then
+  family: all                       # filled at seal by family_rule: results/pilots/compare.txt (commit d0438b7) prints "family for C5 (choose_family): all"
   family_rule: >
     compare_pilots.choose_family over results/pilots/c5-{all,qk,gate,v,o,mlp}.json (eligibility and ranking
     written 2026-10-28 before the family runs; choose_family written the same day while they ran, before any
     family result was seen): the winner if it is a single family; if the winner is "all", the single family
     among its 2-point ties with the largest scale-1 flattening; otherwise "all"; "all" if none is eligible.
-    results/pilots/compare.txt and the chosen family are cited at sealing.
+    Result at sealing (results/pilots/compare.txt, commit d0438b7): all six families eligible; scale-1 changes
+    all -20.1, mlp -14.2, v -12.2, gate -9.7, qk -9.0, o -8.2 percent; winner all; no single family within 2
+    points of it (closest mlp, 5.9 points); family = all, so the pilot run 3 numbers in the header describe the
+    sealed recipe's family.
   families: {all: every linear module, qk: self_attn.q_proj and k_proj, v: self_attn.v_proj, gate: self_attn.gate_proj, o: self_attn.o_proj, mlp: mlp.*}
   layers: [2, 3, 4, 5]
   rank: 8
@@ -112,7 +115,11 @@ training:
     The pilot normalized by the mean held-out tilt at 8,192 tokens; C5 uses the mean base tilt of its training
     regions at 6,144 tokens over the training periods. Both are expected near 0.13 on this model (pilot start
     tilt 0.1316 at 8,192), so the weight of the tilt loss against KL should be comparable; the value used is
-    recorded in training.json as tilt0, and the pilot's 6,144-token value is reported at sealing.
+    recorded in training.json as tilt0. At sealing: the pilot's training-text tilt at 6,144 tokens was 0.1215
+    (results/pilots/c5-all.json base_gain_6144) against its normalizer 0.1316, a ratio of 0.92; the C5 smoke run's
+    regional base tilts were 0.1534, 0.1580, 0.1537 and 0.1419 (mean 0.1518, which is C5's normalizer), a ratio near
+    1.0. For the same relative miss, C5's tilt term therefore weighs about (1 / 0.92)^2 = 1.17 times the pilot's
+    against KL; the KL budget, excess penalty and rollback are unchanged.
   loss: >
     ((tilt - target) / tilt0)^2 + beta x KL + beta_excess x max(0, KL - kl_budget), where tilt is the slope of
     ln(mean head gain) on ln(N) over the step's periods from an undriven and a driven pass at the step's scale
@@ -285,7 +292,17 @@ budget:
     four loads, about 2.1 hours.
   cost: about $5 at about $2.50 per pod hour for counted time
   peak_gpu_memory: training about 90 GiB at 6,144 tokens (pilot); measurement about C4's 74.3 GiB
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-28 (results/smoke/c5-smoke-20261028.log, commit 0791bfd; code at c8dd705): preflight
+    passed; training regions 1260, 345, 37106 and 174 have 259,274, 214,362, 265,598 and 107,449 tokens (each needs
+    47,104); 2 training steps with family all on 32 modules at 12.0 to 12.1 s, peak 90.0 GiB, 0 rollbacks, 160 s
+    with the base-gain cache; a fresh load with the throwaway adapter: adapter checks all true (scale 0 equals the
+    unadapted model bit for bit, scale 1 changes it, scale 0 restores it); perplexity path max |logit difference| 0
+    of max |logit| 19.88; passes under S0 and S2 13.19 to 13.51 s, peak 76.8 GiB, all outputs finite; 3 shams with
+    0 differing values; S0 perplexity on book 1342 1.352 (C4's BASE value); recall 20 trials of 16,384 tokens, one
+    forward 3.87 s; switch 20 ordered pairs plus 5 clean and 5 noise inputs of 8,192 tokens, one forward with
+    per-token loss 1.95 s, losses finite. An earlier smoke attempt the same day stopped at the recall timing
+    because the smoke script left the sham hook on (fixed in smoke_c5.py at c8dd705; phase R already turns it off).
 
 analysis:
   runner: src/dialedin/run_c5.py

@@ -110,3 +110,18 @@ def test_citation_must_match_its_fact():
     bad = verify.check("It used 32 [F3] modules.", sh)                      # 32 is on the sheet, but F3 holds 8
     assert not bad["ok"] and bad["mismatched_citations"] == ["32 [F3]"]
     assert not verify.check("Only layer 2 [F1] matters.", sh)["ok"]           # a label cited to a fact
+
+
+def test_proposal_allows_design_numbers_but_checks_citations(tmp_path):
+    write_results(tmp_path)
+    sh = facts.build(str(tmp_path))
+    fid = next(f["id"] for f in sh.facts if f["value"] == 0.1371)
+    prop = {k: "x" for k in agent.SCHEMA["required"]}
+    prop.update(conditions=["dial 0", "dial 2"], risks=["r"], gpu_hours_estimate=1.0,
+                pass_rule=f"Pass if the share is at least 0.6 (a clear majority); base tilt was 0.137 [{fid}].")
+    out = tmp_path / "p1"; out.mkdir()
+    agent.propose(FakeClient([json.dumps(prop)]), sh, str(out))
+    assert json.load(open(next(out.glob("proposal-*.json"))))["_checks"]["numbers"]["ok"]
+    out2 = tmp_path / "p2"; out2.mkdir()
+    agent.propose(FakeClient([json.dumps(dict(prop, pass_rule=f"Pass if share reaches 0.5066 [{fid}]."))]), sh, str(out2))
+    assert not json.load(open(next(out2.glob("proposal-*.json"))))["_checks"]["numbers"]["ok"]

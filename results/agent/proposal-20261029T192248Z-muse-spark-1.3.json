@@ -1,0 +1,38 @@
+{
+  "title": "Value carrier check on fresh text",
+  "question": "Does value alone carry most of the dial effect on unused text?",
+  "prediction": "Value alone reproduces most of the full change while q and k alone reproduces less.",
+  "intervention": "Switch on frozen adapter subsets on early attention then measure tilt with drive.",
+  "conditions": [
+    "full dial at high scale",
+    "value alone at high scale in early layer",
+    "q and k alone at high scale in early layer",
+    "remaining modules alone at high scale"
+  ],
+  "control": "remaining modules alone at same scale",
+  "books": "set C unused span",
+  "primary_metric": "share of full tilt change carried by value alone",
+  "pass_rule": "Pass if value alone share reaches at least 0.5066 [F86] and remaining modules share stays at or below 0.2306 [F118].",
+  "failure_meaning": "Failure means the effect stays distributed and value alone lacks causal weight.",
+  "gpu_hours_estimate": 1,
+  "risks": [
+    "Fresh span may shift baseline qualitatively.",
+    "Subset effects may interact qualitatively."
+  ],
+  "why_this_next": "Prior work localizes the dial to early attention but leaves the split between value and q plus k open. Exploratory shares need confirmation on unused text with a control. This test isolates the carrier with small compute.",
+  "_checks": {
+    "missing_fields": [],
+    "numbers": {
+      "unverified_numbers": [],
+      "mismatched_citations": [],
+      "unknown_citations": [],
+      "citations_used": [
+        "F86",
+        "F118"
+      ],
+      "ok": true
+    },
+    "within_budget": true
+  },
+  "_model": "muse-spark-1.3"
+}

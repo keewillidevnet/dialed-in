@@ -45,11 +45,18 @@ PROPOSE = ("You are Muse, the AI scientist of the Dialed In lab. Using the resul
            "the local window size and RoPE base; shuffled or repeated-token text; and, as a separately labeled side "
            "check only, the same model loaded in 4-bit NF4. Book sets A, B and C hold 5 books each; text beyond "
            "token 70,000 has not been used. No new training. The proposal must test something the facts leave "
-           "open, fix its pass rule before any data with a numeric threshold, and include a control. "
+           "open, fix its pass rule before any data with a numeric threshold, and include a control. The conditions "
+           "must include the unmodified model (dial at 0) as the baseline, and use dial scale 2, the sealed scale. The "
+           "control must be an intervention of the same kind and size that should NOT produce the effect if the "
+           "hypothesis is right (for example, the same modules in a different layer). Design numbers (thresholds, "
+           "scales, counts, hours) are your own choices: write them plainly, without a citation, and justify each "
+           "threshold in one clause. Cite a fact only when you quote a result. "
            "Reply with one JSON object only, no other text, with exactly these keys: " + ", ".join(
                ["title", "question", "prediction", "intervention", "conditions", "control", "books", "primary_metric",
                 "pass_rule", "failure_meaning", "gpu_hours_estimate", "risks", "why_this_next"]) +
-           ". conditions and risks are lists of strings; gpu_hours_estimate is a number; the rest are strings. " + STYLE)
+           ". conditions and risks are lists of strings; gpu_hours_estimate is a number; the rest are strings. "
+           "Write in plain, short sentences. Never use em dashes. Results you quote must carry the id of the fact that "
+           "holds that exact number, like 0.797 [F113]; never cite a fact for a design number or a label.")
 
 SCHEMA = {"type": "object", "additionalProperties": False,
           "required": ["title", "question", "prediction", "intervention", "conditions", "control", "books",
@@ -105,6 +112,7 @@ def propose(client, sheet, out_dir):
     prop = parse_json(raw)
     missing = [k for k in SCHEMA["required"] if k not in prop]
     report = verify.check(json.dumps(prop), sheet)
+    report["ok"] = not report["mismatched_citations"] and not report["unknown_citations"]   # design numbers are free
     prop["_checks"] = {"missing_fields": missing, "numbers": report,
                        "within_budget": isinstance(prop.get("gpu_hours_estimate"), (int, float)) and prop["gpu_hours_estimate"] <= 2}
     prop["_model"] = getattr(client, "model", "unknown")

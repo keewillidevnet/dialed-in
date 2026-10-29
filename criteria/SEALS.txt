@@ -7,3 +7,4 @@
 2026-10-29T02:53:21Z 78dffbf9990e81c470fe9df53cc2cf49ba7edbd00a9598d811c4a7adb5ed5906 criteria/sealed/c5-glimmer-trained-dial-v1.yaml
 2026-10-29T06:02:09Z bc32c0eb343e185521aa7bccc3086aa0913ababf61fc15480f4e9644e1d6e087 criteria/sealed/c6-glimmer-dial-topic-switch-v1.yaml
 2026-10-29T06:08:39Z f286bcee5ca864968b7a2c4f4b15125bc9010104c2a3fdd5a89a40ca9297e07d criteria/sealed/c6-glimmer-dial-topic-switch-v2.yaml
+2026-10-29T15:41:43Z d263977ed267e5befb0da53afa68ba7df2c0af16c4b9bd8a36949cbc875e9581 criteria/sealed/c7-glimmer-dial-localization-v1.yaml

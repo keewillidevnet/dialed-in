@@ -1,0 +1,255 @@
+# C7: where does the dial act? v1 (confirmatory)
+# DRAFT. Follows C5 (sealed; run c5v1-20261029T025343Z: outcome L0, tilt -24.0 percent at scale 2 on set A) and C6
+# (sealed v2; run c6v2-20261029T060851Z: outcome B0). Two exploratory probes, unsealed and labeled as such, then asked
+# where the C5 adapter's tilt change comes from. Both used set C books 74, 120 and 174 at tokens 60,000 to 68,191
+# (8,192 tokens, periods 2 to 2,048, directions 1 and 2), not C7's text, length or window.
+#   results/raw/probe-mech-20261029T065204Z (src/dialedin/probe_mechanisms.py): the tilt measured on layer 2's attention
+#   output fell 81 percent at scale 2 and layer 3's 79 percent, against 11 and 10 percent for layers 4 and 5; layer 2's
+#   gain at N = 2,048 halved while its gain at N = 2 rose 24 percent.
+#   results/raw/probe-loc-20261029T072304Z and probe-loc-deep-20261029T075459Z (src/dialedin/probe_localize.py), which
+#   switch adapter modules off by zeroing their B: with the probes' own all-module tilt change at scale 2 (-25.0
+#   percent on set C at 8,192 tokens, the C5 curve over layers 2 to 51; C5's sealed value on set A at 32K was -24.0) as
+#   100 percent, layer 2's five attention modules alone gave 84 percent, all modules except layer 2's 14
+#   percent, MLP modules only 1 percent; within layer 2's attention, q and k alone 44 percent and v alone 64 percent of
+#   that 84, gate and o alone nothing, and the five minus gate or minus o 100 and 104 percent of it.
+# Disclosure: the condition C7 gates, layer 2's q_proj, k_proj and v_proj alone, was never measured; the probes imply
+# it carries about 84 percent of the full change. The REST condition (the other 29 modules, which keep layer 2's
+# gate, o and MLP) was not measured either; the closest probe condition, all but layer 2, gave 14 percent, and layer 2
+# alone (8 modules) gave 91 percent against 84 for its attention, so REST is expected somewhat above 14 percent. The
+# thresholds below were chosen after seeing those probes. An independent review before sealing found that the
+# first draft's rule let a negative REST share or an overshooting QKV2 share pass as M1; both are now bounded. C7
+# tests the claim on text no adapter condition has been measured on, at C5's full 32K measurement. Every value is a
+# proposal until Keenan seals this file.
+
+id: c7-glimmer-dial-localization-v1
+version: 1
+drafted: 2026-10-29
+follows: c6-glimmer-dial-topic-switch-v2 (sealed, run complete, outcome B0); c5-glimmer-trained-dial-v1 (outcome L0)
+status: draft
+
+questions:
+  localization: >
+    At scale 2 on set B, does turning on only layer 2's q_proj, k_proj and v_proj (3 of the C5 adapter's 32 modules)
+    give between 60 and 140 percent of the tilt change that all 32 give, in at least 4 of 5 books, while the other 29
+    together move it by at most 30 percent of that change in either direction?
+  predictions: >
+    FULL flattens the tilt by about a quarter, as on set A (C5, -24.0 percent). QKV2 gives most of that, near the
+    probes' implied 84 percent; REST gives a small part, near or somewhat above the probes' 14 percent. Perplexity
+    stays within 1 percent of BASE under every condition.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  start: first token of the main text, after the Project Gutenberg header is stripped
+  special_tokens: none (no BOS); input = first 32,768 token ids of the stripped text
+  prompt_sets:                      # one set; C7 compares conditions within the same books
+    B: {1260: Jane Eyre, 768: Wuthering Heights, 345: Dracula, 84: Frankenstein, 25344: The Scarlet Letter}
+  why_set_B: >
+    No adapter condition has been measured on any book's first 32,768 tokens outside set A (C5). The adapter trained
+    on books 1260 and 345 at tokens 40,960 to 47,103 only; C6 used set B at tokens 60,000 to 68,191 (losses only); the
+    probes used set C. C1 v5 measured set B's first 32,768 tokens on the base model, which BASE reproduces.
+  token_counts_checked: 2026-10-26 for all 15 books (C5 spec), shortest 94,774 tokens; C1 v5 measured these five at 32,768
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+
+adapter:
+  file: results/raw/c5v1-20261029T025343Z/adapter.pt
+  sha256: 2b20e86e9af79b81dc881bbedbef350331a24ef8ee1d541183ba6bac035d9f20   # the C6 v2 sealed value; the runner refuses to start, before STARTED.json, unless the file, this value and results/raw/c5v1-20261029T025343Z/training.json adapter_sha256 all agree
+  family: all
+  layers: [2, 3, 4, 5]
+  rank: 8
+  alpha: 16.0
+  frozen: no training; the adapter is loaded as C5 trained it
+
+conditions:
+  BASE: {scale: 0.0}                # Glimmer itself; every module's branch is skipped at scale 0
+  FULL: {scale: 2.0}                # all 32 modules on
+  QKV2:
+    scale: 2.0
+    modules: [layers.2.self_attn.q_proj, layers.2.self_attn.k_proj, layers.2.self_attn.v_proj]
+  REST: {scale: 2.0}                # the other 29 modules on; layer 2's q_proj, k_proj and v_proj off
+  switching: >
+    A module is off when its B factor is set to zero; its branch then adds exactly zero. Switching a condition copies
+    each on module's saved B back, so every condition sees the trained values bit for bit (checked). The scale is the
+    shared C5 dial value.
+  order_per_book: BASE, FULL, QKV2, REST; each gets its own undriven pass (with perplexity) and sham
+  setup_checks: >
+    At the start of Phase A, on the first 2,048 tokens of book 1260, layer 10's o_proj input: BASE must equal the
+    unadapted model's (recorded before the adapter is attached) bit for bit; FULL, QKV2 and REST must each differ from
+    BASE, and QKV2 and REST from FULL; FULL again after QKV2 and REST must equal the first FULL bit for bit, and BASE
+    again the first BASE. Perplexity path: under BASE, C7's logits must match the full model's own logits to within
+    0.5 percent of the largest absolute logit. If a check fails, phaseA.json is written and C7 is not run, outcome U.
+  perplexity: >
+    On every undriven pass, exp of the mean next-token loss over predictions of tokens 8,193 to 32,767 (as C5). Per
+    condition, the median over books of the ratio to BASE. Reported, not gated.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every token t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from that condition's own undriven pass (the adapter sits in later layers, so this is the same under every condition, and is recorded)
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1260, after the setup checks, under every condition (BASE, FULL, QKV2, REST): one undriven pass, then A
+    and 2A at N = 2 and 4096 (one sham, after BASE's undriven pass, which it is compared against). A condition passes if the 2A/A response ratio is
+    within 10 percent of 2 at both N and the whole-model SNR at A, N = 4096 is at least 3. If any fails, stop: C7 is
+    not run, outcome U.
+  controls:
+    sham: zero wave, under every condition of every book, plus a closing sham per book; every head-output value must have the same bits as that condition's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: BASE runs the same computation as C1 v5's main drive on set B (same tokens, direction, amplitude rule and periods); the maximum relative difference of per-head target magnitudes from C1 v5's raw files (run c1v5-20261027T152040Z) is reported, expected 0, not a gate
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), layers 2 to 51 as in C1 v5
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: tokens [8192, 32768), W = 24576. Every period N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 tokens are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4); at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all 1,600 measured heads of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    Per condition, a period counts for a set only if the median over the set's five books of
+    the whole-model SNR is at least 3. Invalid periods are excluded from that set's tilt for
+    that condition and listed in the output.
+  curves:
+    per_book: mean gain over all heads in layers 2 to 51 (whole), per N
+    per_set: the mean over its five books of each book's curve, per N
+    per_condition: every curve is computed separately for each condition
+
+tilt:
+  definition: the least-squares slope of ln(set-mean whole-model gain) against ln(N) (metrics_c2.tilt, sealed with C2), fit over the periods valid under every condition; a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  book_tilts: each book's tilt per condition from its own curve, over the periods valid in that book under every condition (same 5-period minimum)
+
+pass_criteria:
+  share: for a condition X, (tilt(X) - tilt(BASE)) / (tilt(FULL) - tilt(BASE)), set-level tilts
+  outcome_U: any of the four set-level tilts undefined, tilt(BASE) not positive, or (tilt(FULL) - tilt(BASE)) / tilt(BASE) above -0.10 (FULL must flatten by at least 10 percent, or there is nothing to split)
+  book_agrees: a book agrees if its BASE, FULL and QKV2 tilts are defined, FULL and QKV2 both flatten it, and (tilt(QKV2) - tilt(BASE)) / (tilt(FULL) - tilt(BASE)) in that book is at least 0.30
+  sufficient: share(QKV2) between 0.60 and 1.40 inclusive (above 1.40, QKV2 alone overshoots FULL so far that the parts interact strongly, and it is not counted), and at least 4 of the 5 books agree
+  exclusive: the absolute value of share(REST) at most 0.30 (REST may neither carry nor oppose more than 30 percent of FULL's change)
+  outcome_M1_localized: sufficient and exclusive
+  outcome_M2_sufficient_not_exclusive: sufficient, not exclusive
+  outcome_M0_not_localized: every tilt defined, FULL flattens enough, and not sufficient
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is labeled PARTIAL, its numbers are kept under partial_diagnostic, and it is never reported as C7
+  every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished
+  secondary: >
+    Reported, never gated, pre-registered: FULL's relative tilt change (compared with C5's -24.0 percent on set A);
+    share(QKV2) + share(REST) (additivity; 1 if the parts add); per-book tilts and shares; median perplexity ratio per
+    condition; set-level tilts, relative changes and shares over (a) layer 2's heads only, (b) layers 3 to 51, (c)
+    layers 6 to 51 (no adapter), fit over the main periods; the BASE reproduction of C1 v5 (per-head targets, input
+    component per period, amplitude reference; status complete only if every book and period was compared).
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts. Report 95 percent percentile intervals of share(QKV2), share(REST) and FULL's relative
+    change. Shares are taken only from resamples where FULL flattens by at least 10 percent (as the outcome requires);
+    resamples with an undefined tilt or tilt(BASE) not positive are dropped; the number used for each is reported.
+  not_covered: one adapter from one training seed; one probe direction; the bootstrap covers books only
+
+decisions:
+  M1: the dial's effect on the tilt lives in layer 2's q, k and v; that becomes the mechanism claim, with C5's dial
+  M2: those three modules are enough to give most of the effect, but the rest of the adapter also moves the tilt, in either direction, by more than 30 percent of FULL's change; both reported
+  M0: the effect is not concentrated in those three modules at 32K on set B, or too few books agree, or QKV2 alone overshoots FULL by more than 40 percent (reported with its share); the reason is recorded; the probes' claim is not confirmed and is reported as exploratory only
+  U: inconclusive; reported as is
+  no_rescue: other module sets, scales, layers, books, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in results/ledger/). A new
+    run writes STARTED.json before any GPU work and is refused if any earlier run under the seal is complete or was
+    stopped by rule in Phase A; otherwise a new run needs a written reason (an infrastructure failure). A run is
+    continued with --run-id; only the newest run may continue; a Phase A retry after a failure record, and every book
+    with an earlier attempt or failure record, need a written reason, stamped on the record. All records are kept.
+    Before admission (so a failure leaves no run): seal and code hashes, condition scales, no placeholder left in
+    this file, the adapter hash against this file and C5's training.json, and every text hash. The model load and
+    platform preflight run after STARTED.json; a failure there is an infrastructure failure. The analysis refuses to
+    run if more than one run under the seal is complete, requires phaseA.json (not stopped, QKV2 modules as sealed),
+    and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 1.5                # wall-clock hours of every run process under this seal, including model loads
+  ledger: results/ledger/c7v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  estimate: >
+    Phase A: 21 passes (per condition 1 undriven and 4 driven, plus 1 sham) and 9 short check passes at 2,048 tokens
+    (1 reference, 6 adapter and condition, 2 logits). Phase B: 5 books x 37 passes (per condition 1 undriven, 1 sham
+    and 7 driven, plus 1 closing sham) = 185. 206 passes at C5's measured 13.4 s is about 0.77 hours, plus
+    perplexity on 24 undriven passes and the load, about 0.85 hours.
+  peak_gpu_memory: about C5's 76.8 GiB
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-29 with the code at commit c522372 (python3 -m dialedin.run_c7 --smoke): preflight
+    passed; adapter 32 modules, sha256 as above; set B books 1260, 768, 345, 84 and 25344 have 259,274, 165,676,
+    214,362, 99,044 and 120,158 tokens (each needs 32,768); adapter and condition checks all true (BASE equals the
+    unadapted model bit for bit; FULL, QKV2 and REST each change it, QKV2 and REST differently from FULL; FULL and
+    BASE restored bit for bit; modules on: FULL 32, QKV2 3, REST 29); perplexity path max |logit difference| 0 of max
+    |logit| 19.88; on book 1260 under BASE and QKV2, undriven, sham and driven passes at N = 2 and 4096 took 13.31 to
+    13.46 s each, peak 74.3 GiB (BASE) and 76.8 GiB (QKV2), all outputs finite; 3 shams with 0 differing values; BASE
+    perplexity on book 1260 3.774. No gains, tilts or QKV2 perplexity were printed.
+  smoke_code_note: the smoke ran commit c522372; the sealed code is the same files (hashes below)
+
+analysis:
+  runner: src/dialedin/run_c7.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
+    src/dialedin/metrics_c7.py: 8a7dd0dbf92484131285ddfb3750dc3548f1b2ba9edfa63bb227b58709591ac8
+    src/dialedin/run_c7.py: a3de37d6ee251362bddfc5bb3f6a0a95715190bdda26ad2029a1b705331bdc10
+    src/dialedin/analyze_c7.py: c2adc561be88c5bcc386b551c21a975710c0a5ece6a060865603b9640d7cfb13
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the adapter, condition and perplexity-path checks; one book_B_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per condition the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter, condition modules and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c7_summary.json and c7_curves.png, citing every raw file used

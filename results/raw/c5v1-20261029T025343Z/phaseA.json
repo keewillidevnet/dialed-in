@@ -1,0 +1,295 @@
+{
+  "phase": "A",
+  "finished_utc": "2026-10-29T03:33:36+00:00",
+  "wall_seconds_per_pass": 13.515986983592693,
+  "book": 1342,
+  "a": 0.1,
+  "adapter_checks": {
+    "scale0_equals_unadapted": true,
+    "scale1_changes": true,
+    "scale0_restored": true,
+    "as_expected": true
+  },
+  "logits_check": {
+    "max_abs_diff": 0.0,
+    "max_abs_logit": 19.875,
+    "tolerance": 0.099375,
+    "as_expected": true
+  },
+  "stopped": null,
+  "outcome_if_stopped": null,
+  "sham_differences": 0,
+  "rows": [
+    {
+      "condition": "S0",
+      "median_norm": 64.93833923339844,
+      "perplexity": 1.3520999503187492,
+      "by_N": {
+        "2": {
+          "response_a": 52.37466515436768,
+          "response_2a": 103.57209528721869,
+          "ratio": 1.977522815314486,
+          "within_10pct": true,
+          "snr_at_a": 18.540658863916367
+        },
+        "4096": {
+          "response_a": 69.51929942570627,
+          "response_2a": 137.70289267778398,
+          "ratio": 1.9807865415120303,
+          "within_10pct": true,
+          "snr_at_a": 10.374690827492184
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S0.5",
+      "median_norm": 64.93833923339844,
+      "perplexity": 1.353949335594641,
+      "by_N": {
+        "2": {
+          "response_a": 55.05490393809974,
+          "response_2a": 108.57754558809101,
+          "ratio": 1.9721684685921668,
+          "within_10pct": true,
+          "snr_at_a": 20.644594374167383
+        },
+        "4096": {
+          "response_a": 70.55183262355625,
+          "response_2a": 137.60397073984146,
+          "ratio": 1.9503954131716976,
+          "within_10pct": true,
+          "snr_at_a": 8.772645379095739
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S1",
+      "median_norm": 64.93833923339844,
+      "perplexity": 1.3568189904540149,
+      "by_N": {
+        "2": {
+          "response_a": 58.232939946204425,
+          "response_2a": 114.59641553394496,
+          "ratio": 1.9678967889962125,
+          "within_10pct": true,
+          "snr_at_a": 21.699360345647946
+        },
+        "4096": {
+          "response_a": 70.59387571401894,
+          "response_2a": 139.45748904705047,
+          "ratio": 1.9754899081048218,
+          "within_10pct": true,
+          "snr_at_a": 8.67458181043811
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S1.5",
+      "median_norm": 64.93833923339844,
+      "perplexity": 1.359781029659904,
+      "by_N": {
+        "2": {
+          "response_a": 61.61724065102637,
+          "response_2a": 121.4164390527457,
+          "ratio": 1.970494585117765,
+          "within_10pct": true,
+          "snr_at_a": 23.842933482521367
+        },
+        "4096": {
+          "response_a": 73.01630520418286,
+          "response_2a": 138.7019980201125,
+          "ratio": 1.8996030767682113,
+          "within_10pct": true,
+          "snr_at_a": 6.441218951244369
+        }
+      },
+      "linear": true,
+      "powered": true
+    },
+    {
+      "condition": "S2",
+      "median_norm": 64.93833923339844,
+      "perplexity": 1.3628525279761978,
+      "by_N": {
+        "2": {
+          "response_a": 65.13782932993024,
+          "response_2a": 128.55433045402168,
+          "ratio": 1.9735740625141178,
+          "within_10pct": true,
+          "snr_at_a": 25.703806323427138
+        },
+        "4096": {
+          "response_a": 73.41110279746354,
+          "response_2a": 141.13430245175957,
+          "ratio": 1.9225198515426192,
+          "within_10pct": true,
+          "snr_at_a": 6.51312538929052
+        }
+      },
+      "linear": true,
+      "powered": true
+    }
+  ],
+  "chosen_a": 0.1,
+  "seconds_per_pass_last": 13.308777809143066,
+  "record": {
+    "conditions": {
+      "S0": 0.0,
+      "S0.5": 0.5,
+      "S1": 1.0,
+      "S1.5": 1.5,
+      "S2": 2.0
+    },
+    "adapter_sha256": "2b20e86e9af79b81dc881bbedbef350331a24ef8ee1d541183ba6bac035d9f20",
+    "adapter_modules": [
+      "layers.2.self_attn.q_proj",
+      "layers.2.self_attn.k_proj",
+      "layers.2.self_attn.v_proj",
+      "layers.2.self_attn.o_proj",
+      "layers.2.self_attn.gate_proj",
+      "layers.2.mlp.gate_proj",
+      "layers.2.mlp.up_proj",
+      "layers.2.mlp.down_proj",
+      "layers.3.self_attn.q_proj",
+      "layers.3.self_attn.k_proj",
+      "layers.3.self_attn.v_proj",
+      "layers.3.self_attn.o_proj",
+      "layers.3.self_attn.gate_proj",
+      "layers.3.mlp.gate_proj",
+      "layers.3.mlp.up_proj",
+      "layers.3.mlp.down_proj",
+      "layers.4.self_attn.q_proj",
+      "layers.4.self_attn.k_proj",
+      "layers.4.self_attn.v_proj",
+      "layers.4.self_attn.o_proj",
+      "layers.4.self_attn.gate_proj",
+      "layers.4.mlp.gate_proj",
+      "layers.4.mlp.up_proj",
+      "layers.4.mlp.down_proj",
+      "layers.5.self_attn.q_proj",
+      "layers.5.self_attn.k_proj",
+      "layers.5.self_attn.v_proj",
+      "layers.5.self_attn.o_proj",
+      "layers.5.self_attn.gate_proj",
+      "layers.5.mlp.gate_proj",
+      "layers.5.mlp.up_proj",
+      "layers.5.mlp.down_proj"
+    ],
+    "softcap": 20.0,
+    "output_multiplier": 0.19611613513818404,
+    "sealed_file": "criteria/sealed/c5-glimmer-trained-dial-v1.yaml",
+    "seal_sha256": "78dffbf9990e81c470fe9df53cc2cf49ba7edbd00a9598d811c4a7adb5ed5906",
+    "code_sha256": {
+      "src/dialedin/metrics.py": "be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113",
+      "src/dialedin/hooks.py": "f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd",
+      "src/dialedin/glimmer.py": "b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c",
+      "src/dialedin/wave.py": "2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5",
+      "src/dialedin/analyze_c1v5.py": "43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f",
+      "src/dialedin/metrics_c2.py": "44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac",
+      "src/dialedin/pilot_c5.py": "673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d",
+      "src/dialedin/metrics_c5.py": "9607387afa2535ae4cc3e362f3e2d0a13a46a68922a83383bf71e54995ee6e56",
+      "src/dialedin/run_c5.py": "b21cc8f13a804845ce97706f3aa21a052ecbda803926306a88a4d33cd93cbe06",
+      "src/dialedin/compare_pilots.py": "63ff8fb8417f7e0d1c7412ed38cff20b06b42de099c3b2e9539d49bc9fb478a8",
+      "src/dialedin/analyze_c5.py": "a7bcc04ccce249373863a166f4ac6e9bae32374d81bdd9e02ede5707f75891b8"
+    },
+    "platform": {
+      "dtype": "bfloat16",
+      "attention": "sdpa",
+      "revision": "cec94fcfd6512f2cfe708138c32533b346ea4f69",
+      "transformers": "5.21.0",
+      "torch": "2.8.0+cu128",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "global_layers": [
+        3,
+        7,
+        11,
+        15,
+        19,
+        23,
+        27,
+        31,
+        35,
+        39,
+        43,
+        47,
+        51
+      ],
+      "batch_size": 1,
+      "deterministic": true,
+      "tf32": false
+    },
+    "gutenberg_id": 1342,
+    "text_sha256": "cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138",
+    "token_ids_sha256": "278b3e5731ecff7f2deb94669f6f6f6c24d61dbf293d195f92d1bf3ba9e9aff1",
+    "tokenizer": "TokenizersBackend",
+    "direction_seed": 0,
+    "direction_sha256": "7f7b3201448c4c105df27346222373740699340e00be64a2e550770a1965d894",
+    "drive": {
+      "form": "amplitude * cos(2 pi t / N + phase) at every token t",
+      "phase_main": 0.0
+    },
+    "window": [
+      8192,
+      32768
+    ],
+    "T": 32768,
+    "layers_measured": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ]
+  }
+}

@@ -226,7 +226,16 @@ budget:
     and 7 driven, plus 1 closing sham) = 185. 206 passes at C5's measured 13.4 s is about 0.77 hours, plus
     perplexity on 24 undriven passes and the load, about 0.85 hours.
   peak_gpu_memory: about C5's 76.8 GiB
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-29 with the code at commit c522372 (python3 -m dialedin.run_c7 --smoke): preflight
+    passed; adapter 32 modules, sha256 as above; set B books 1260, 768, 345, 84 and 25344 have 259,274, 165,676,
+    214,362, 99,044 and 120,158 tokens (each needs 32,768); adapter and condition checks all true (BASE equals the
+    unadapted model bit for bit; FULL, QKV2 and REST each change it, QKV2 and REST differently from FULL; FULL and
+    BASE restored bit for bit; modules on: FULL 32, QKV2 3, REST 29); perplexity path max |logit difference| 0 of max
+    |logit| 19.88; on book 1260 under BASE and QKV2, undriven, sham and driven passes at N = 2 and 4096 took 13.31 to
+    13.46 s each, peak 74.3 GiB (BASE) and 76.8 GiB (QKV2), all outputs finite; 3 shams with 0 differing values; BASE
+    perplexity on book 1260 3.774. No gains, tilts or QKV2 perplexity were printed.
+  smoke_code_note: the smoke ran commit c522372; the sealed code is the same files (hashes below)
 
 analysis:
   runner: src/dialedin/run_c7.py

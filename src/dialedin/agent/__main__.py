@@ -17,19 +17,24 @@ import time
 from . import facts, verify
 
 STYLE = ("Write in plain, short sentences. Never use em dashes. Never use the construction 'not X, it's Y'. "
-         "Use only numbers that appear in the fact sheet, rounded as written there or to fewer digits, and put "
-         "the fact id in square brackets right after each number, like 0.137 [F12]. Do not compute new numbers. "
-         "If a claim needs a number that is not on the sheet, say it qualitatively.")
+         "Use only numbers that appear in the fact sheet, rounded as written there or to fewer digits, or a fraction "
+         "on the sheet written as a percentage (0.268 as 27 percent). Put the fact id in square brackets right after "
+         "each number, and only the id of the fact that holds that exact number, like 0.137 [F12]. Never cite a fact "
+         "for a word or a label. Do not compute new numbers. If a claim needs a number that is not on the sheet, say "
+         "it qualitatively.")
 
 NARRATE = ("You are Muse, the AI scientist of the Dialed In lab. The lab measures the frequency response of the "
            "Muse Glimmer-30B language model: it adds a small sine wave of period N tokens to the model's internal "
            "signal after layer 1 and measures how strongly each later attention head responds, for N from 2 to "
            "4,096 tokens. Every sealed experiment (C1 to C7) was pre-registered and sealed by hash before it ran; facts "
-           "labeled EXPLORATORY come from unsealed probes and must be called exploratory. Explain the story of the "
-           "results for a technical judge, in under 350 words: what the lab measured, which built-in settings failed "
-           "to move it (C2 to C4), the trained dial (C5) and its near miss, what it does to behavior (C5, C6), where "
-           "the dial acts (C7), and what the exploratory head map adds. Give each sealed outcome by its code. Be "
-           "candid about null and failed results. " + STYLE)
+           "labeled EXPLORATORY come from unsealed probes and must be called exploratory. Write the lab's findings "
+           "for a technical judge, in 250 to 350 words, as a story with five short paragraphs: (1) what the lab "
+           "measures and what it found, in plain words (the model favors slow, long-range patterns); (2) that no "
+           "built-in setting could turn this down (C2 to C4); (3) the trained dial and what it costs and does (C5, "
+           "C6), including the near miss and the small behavior effect; (4) where the dial acts (C7); (5) what the "
+           "exploratory head map suggests and what is still open. Lead each paragraph with its point and say what it "
+           "means. Use at most 15 numbers in total, only the ones that carry the point; prefer percentages. Give each "
+           "sealed outcome by its code. Be candid about null and failed results. " + STYLE)
 
 PROPOSE = ("You are Muse, the AI scientist of the Dialed In lab. Using the results on the fact sheet, propose the "
            "single most informative next experiment the lab can run in under 2 GPU hours on one 96 GB GPU (BF16) "
@@ -76,16 +81,19 @@ def narrate(client, sheet, out_dir):
     report = verify.check(text, sheet)
     if not report["ok"]:
         messages += [{"role": "assistant", "content": text},
-                     {"role": "user", "content": "These numbers are not on the fact sheet or have no matching fact: "
-                      f"{report['unverified_numbers']}; unknown citations: {report['unknown_citations']}. "
-                      "Rewrite the explanation using only fact-sheet numbers, each with its citation."}]
+                     {"role": "user", "content": "Verification failed. Numbers not on the fact sheet: "
+                      f"{report['unverified_numbers']}; numbers that do not match the fact they cite: "
+                      f"{report['mismatched_citations']}; unknown citations: {report['unknown_citations']}. "
+                      "Rewrite the explanation using only fact-sheet numbers, each followed by the id of the fact "
+                      "that holds it, and no citation after words or labels."}]
         text = client.chat(messages, max_tokens=12000)
         report = verify.check(text, sheet)
     path = os.path.join(out_dir, f"narration-{stamp()}-{getattr(client, 'model', 'muse')}.md")
     sources = "\n".join(f"- [{f['id']}] {f['label']}: `{f['source']}`" for f in sheet.facts if f["id"] in report["citations_used"])
     with open(path, "w") as fh:
         fh.write(text.strip() + "\n\n---\nVerification: " + ("every number matches a cited fact." if report["ok"] else
-                 f"UNVERIFIED numbers {report['unverified_numbers']}, unknown citations {report['unknown_citations']}.")
+                 f"UNVERIFIED numbers {report['unverified_numbers']}, mismatched citations {report['mismatched_citations']}, "
+                 f"unknown citations {report['unknown_citations']}.")
                  + "\n\nSources:\n" + sources + "\n")
     print(text.strip()); print("\n== verification:", "PASSED" if report["ok"] else report); print("== wrote", path)
 

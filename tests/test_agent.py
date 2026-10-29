@@ -43,7 +43,8 @@ def test_verify_numbers_and_citations(tmp_path):
     ok = verify.check(f"The tilt was 0.137 [{fid}] in C1 and C2 on 15 books.", sh)
     assert ok["ok"], ok
     bad = verify.check(f"The tilt rose by 23.7% [{fid}] and 0.555 [F999].", sh)
-    assert not bad["ok"] and "23.7%" in bad["unverified_numbers"] and bad["unknown_citations"] == ["F999"]
+    assert not bad["ok"] and f"23.7% [{fid}]" in bad["mismatched_citations"] and bad["unknown_citations"] == ["F999"]
+    assert "0.555" in verify.check("It was 0.555 overall.", sh)["unverified_numbers"]
     assert verify.check("Gain at 0.35 of the maximum, 35%.", sh)["ok"]       # percent of a fact
 
 
@@ -95,3 +96,17 @@ def test_no_anthropic_sdk_under_src():
         for f in files:
             if f.endswith(".py"):
                 assert "anthropic" not in open(os.path.join(dirpath, f)).read().lower(), f
+
+
+def test_citation_must_match_its_fact():
+    class S:
+        facts = [{"id": "F1", "label": "a", "value": 0.268, "source": "x"}, {"id": "F2", "label": "b", "value": 32, "source": "x"},
+                 {"id": "F3", "label": "c", "value": 8, "source": "x"}]
+        def numbers(self):
+            return [f["value"] for f in self.facts]
+    sh = S()
+    assert verify.check("The dial flattened it by 27 percent [F1] using 32 [F2] modules.", sh)["ok"]
+    assert verify.check("It changed by 0.268 [F1].", sh)["ok"]
+    bad = verify.check("It used 32 [F3] modules.", sh)                      # 32 is on the sheet, but F3 holds 8
+    assert not bad["ok"] and bad["mismatched_citations"] == ["32 [F3]"]
+    assert not verify.check("Only layer 2 [F1] matters.", sh)["ok"]           # a label cited to a fact

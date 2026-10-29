@@ -1,0 +1,157 @@
+{
+ "utc": "20261029T223744Z",
+ "experiments": [
+  {
+   "id": "c1-glimmer-frequency-response-v2",
+   "sealed_utc": "2026-10-27T04:21:08Z",
+   "seal_sha256": "93bc1b4435ba",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [],
+   "outcome": null,
+   "summary": null,
+   "stop_reasons": [],
+   "state": "sealed, not run"
+  },
+  {
+   "id": "c1-glimmer-frequency-response-v4",
+   "sealed_utc": "2026-10-27T06:42:30Z",
+   "seal_sha256": "04b08fb8a2c1",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c1v4-20261027T064341Z"
+   ],
+   "outcome": "U (stopped by its own rule)",
+   "summary": null,
+   "stop_reasons": [
+    "no amplitude qualified"
+   ],
+   "state": "stopped by rule"
+  },
+  {
+   "id": "c1-glimmer-frequency-response-v5",
+   "sealed_utc": "2026-10-27T15:19:48Z",
+   "seal_sha256": "44810da4c914",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c1v5-20261027T152040Z"
+   ],
+   "outcome": "T",
+   "summary": "results/derived/c1v5-20261027T152040Z/c1_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c2-glimmer-knob-tilt-v1",
+   "sealed_utc": "2026-10-27T20:18:35Z",
+   "seal_sha256": "021ee5756f1b",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c2v1-20261027T201901Z"
+   ],
+   "outcome": "K0",
+   "summary": "results/derived/c2v1-20261027T201901Z/c2_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c3-glimmer-head-dial-v1",
+   "sealed_utc": "2026-10-28T01:42:36Z",
+   "seal_sha256": "9cb091952372",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c3v1-20261028T014250Z"
+   ],
+   "outcome": "K0",
+   "summary": "results/derived/c3v1-20261028T014250Z/c3_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c4-glimmer-structure-and-text-v1",
+   "sealed_utc": "2026-10-28T06:58:04Z",
+   "seal_sha256": "68fc4ca289f2",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c4v1-20261028T065820Z"
+   ],
+   "outcome": "window D0, rope D0, text A",
+   "summary": "results/derived/c4v1-20261028T065820Z/c4_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c5-glimmer-trained-dial-v1",
+   "sealed_utc": "2026-10-29T02:53:21Z",
+   "seal_sha256": "78dffbf9990e",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c5v1-20261029T025343Z"
+   ],
+   "outcome": "L0",
+   "summary": "results/derived/c5v1-20261029T025343Z/c5_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c6-glimmer-dial-topic-switch-v1",
+   "sealed_utc": "2026-10-29T06:02:09Z",
+   "seal_sha256": "bc32c0eb343e",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [],
+   "outcome": null,
+   "summary": null,
+   "stop_reasons": [],
+   "state": "sealed, not run"
+  },
+  {
+   "id": "c6-glimmer-dial-topic-switch-v2",
+   "sealed_utc": "2026-10-29T06:08:39Z",
+   "seal_sha256": "f286bcee5ca8",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c6v2-20261029T060851Z"
+   ],
+   "outcome": "B0",
+   "summary": "results/derived/c6v2-20261029T060851Z/c6_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c7-glimmer-dial-localization-v1",
+   "sealed_utc": "2026-10-29T15:41:43Z",
+   "seal_sha256": "d263977ed267",
+   "proposed_by": "the lab (Keenan, with Claude as tooling)",
+   "muse_reviews": [],
+   "runs": [
+    "c7v1-20261029T154201Z"
+   ],
+   "outcome": "M1",
+   "summary": "results/derived/c7v1-20261029T154201Z/c7_summary.json",
+   "stop_reasons": [],
+   "state": "analyzed"
+  },
+  {
+   "id": "c8-glimmer-one-matrix-dial-v1",
+   "sealed_utc": "2026-10-29T22:29:16Z",
+   "seal_sha256": "7a7f35be363f",
+   "proposed_by": "muse-wonder-1.0 (results/agent/proposal-20261029T193320Z-muse-wonder-1.0.json), revised in review",
+   "muse_reviews": [
+    "results/agent/review-20261029T201626Z-muse-wonder-1.0.md"
+   ],
+   "runs": [],
+   "outcome": null,
+   "summary": null,
+   "stop_reasons": [],
+   "state": "sealed, not run"
+  }
+ ]
+}

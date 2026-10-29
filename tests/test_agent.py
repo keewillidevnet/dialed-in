@@ -137,3 +137,47 @@ def test_review_sends_numbered_files(tmp_path):
     sent = fake.calls[0][0][1]["content"]
     assert "===== FILE spec.yaml =====" in sent and "   2  b: 2" in sent
     assert "READY TO SEAL" in open(next(out.glob("review-*.md"))).read()
+
+
+class NamedFake(FakeClient):
+    def __init__(self, replies, model):
+        super().__init__(replies); self.model = model
+
+
+def test_loop_next_turn_writes_every_artifact_and_stops_at_the_gate(tmp_path):
+    from dialedin.agent import loop
+    write_results(tmp_path)
+    sh = facts.build(str(tmp_path))
+    fid = next(f["id"] for f in sh.facts if f["value"] == 0.1371)
+    out = tmp_path / "loop"; out.mkdir()
+    prop = {k: "x" for k in agent.SCHEMA["required"]}
+    prop.update(conditions=["dial 0", "dial 2"], risks=["r"], gpu_hours_estimate=1.0)
+    rev = dict(prop, revision_notes=["fixed the control"], prediction=f"base tilt 0.137 [{fid}]")
+    narrator = NamedFake([f"The tilt was 0.137 [{fid}]."], "muse-spark-1.3")
+    designer = NamedFake([json.dumps(prop), json.dumps(rev)], "muse-wonder-1.0")
+    critic = NamedFake(["1. The control is in a global layer. Verdict: FIXABLE"], "muse-spark-1.3")
+    turn = loop.next_turn(narrator, designer, critic, sh, str(out), agent.propose, agent.narrate, agent.parse_json,
+                          agent.SCHEMA["required"])
+    assert "Lab constraints" in designer.calls[0][0][1]["content"]           # the designer sees the constraints
+    assert "global layer" in designer.calls[1][0][1]["content"]              # and the critique when revising
+    saved = json.load(open(turn["revised_proposal"]))
+    assert saved["_checks"]["numbers_ok"] and saved["_revises"].endswith("muse-wonder-1.0.json")
+    assert os.path.exists(turn["critique"]) and os.path.exists(turn["narration"]) and "seal" in turn["human_gate"]
+    assert len(list(out.glob("turn-*.json"))) == 1
+
+
+def test_loop_status_reads_the_trail(tmp_path):
+    from dialedin.agent import loop
+    (tmp_path / "criteria" / "sealed").mkdir(parents=True)
+    spec = tmp_path / "criteria" / "sealed" / "c8-x-v1.yaml"
+    spec.write_text("id: c8-x-v1\nversion: 1\nproposed_by: muse-wonder-1.0 (proposal.json)\n")
+    (tmp_path / "criteria" / "SEALS.txt").write_text(f"2026-10-29T22:00:00Z {'a' * 64} criteria/sealed/c8-x-v1.yaml\n")
+    run = tmp_path / "results" / "raw" / "c8v1-20261029T220000Z"; run.mkdir(parents=True)
+    (run / "STARTED.json").write_text(json.dumps({"seal_sha256": "a" * 64}))
+    d = tmp_path / "results" / "derived" / "c8v1-20261029T220000Z"; d.mkdir(parents=True)
+    (d / "c8_summary.json").write_text(json.dumps({"C8": {"outcome": "O1"}}))
+    (tmp_path / "results" / "agent").mkdir(parents=True)
+    (tmp_path / "results" / "agent" / "review-1-muse-wonder-1.0.md").write_text("Reviewed files: criteria/drafts/c8-x-v1.yaml, a.py\n")
+    rows = loop.status(str(tmp_path))
+    assert rows[0]["outcome"] == "O1" and rows[0]["state"] == "analyzed" and rows[0]["proposed_by"].startswith("muse-wonder")
+    assert rows[0]["muse_reviews"] == ["results/agent/review-1-muse-wonder-1.0.md"] and rows[0]["runs"] == ["c8v1-20261029T220000Z"]

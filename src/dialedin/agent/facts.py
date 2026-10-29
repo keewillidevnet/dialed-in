@@ -163,6 +163,28 @@ def _c4_to_c7(sh, repo):
         sh.add("C7 base condition against C1: largest relative difference", r["reproduction_BASE_vs_C1v5"]["max_relative_difference"],
                f"{rel}#reproduction_BASE_vs_C1v5")
 
+    p = _latest(repo, "c8v1-*/c8_summary.json")
+    if p:
+        r = json.load(open(p)); rel = os.path.relpath(p, repo); c = r["C8"]
+        sh.add("C8 one-matrix outcome (proposed by Muse Wonder; sealed rules: O1 layer 2's v_proj alone gives 50 to 140 "
+               "percent of the full dial's tilt change and layer 4's v_proj stays within 30 percent; O2S enough but not "
+               "specific; O0 not enough; U undefined)", c["outcome"], f"{rel}#C8.outcome")
+        if "share_V2" in c:
+            sh.add("C8 full dial: relative tilt change on set C at scale 2", c["full_change"], f"{rel}#C8.full_change")
+            for k, lab in (("V2", "layer 2 v_proj alone (1 of 32 modules)"), ("V4", "layer 4 v_proj alone (the control)"),
+                           ("QKV2", "layer 2 q, k, v (replicating C7)"), ("QK2", "layer 2 q and k only")):
+                sh.add(f"C8 share of the full change from {lab}", c[f"share_{k}"], f"{rel}#C8.share_{k}")
+                ci = (r.get("bootstrap_95") or {}).get(f"share_{k}")
+                if ci:
+                    sh.add(f"C8 share_{k}, 95 percent interval low", ci[0], f"{rel}#bootstrap_95.share_{k}")
+                    sh.add(f"C8 share_{k}, 95 percent interval high", ci[1], f"{rel}#bootstrap_95.share_{k}")
+            sh.add("C8 books agreeing under layer 2 v_proj alone (of 5)", c["books_agree_V2"], f"{rel}#C8.books_agree_V2")
+            ds = r.get("secondary_downstream_shares", {})
+            for k, lab in (("V2_over_layers3_51", "layer 2 v_proj's share over layers 3 to 51"),
+                           ("V4_over_layers5_51", "layer 4 v_proj's share over layers 5 to 51")):
+                if ds.get(k) is not None:
+                    sh.add(f"C8 secondary: {lab}", ds[k], f"{rel}#secondary_downstream_shares.{k}")
+
 
 def _exploratory(sh, repo):
     """Unsealed probes. Every label starts with EXPLORATORY so a narration cannot present them as sealed results."""

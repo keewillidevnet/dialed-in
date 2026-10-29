@@ -5,6 +5,9 @@
     PYTHONPATH=src python3 -m dialedin.agent narrate    # Muse explains the results; every number checked
     PYTHONPATH=src python3 -m dialedin.agent propose    # Muse drafts the next pre-registered experiment
     PYTHONPATH=src python3 -m dialedin.agent review --files <spec> <code> ...   # Muse reviews a draft before sealing
+    PYTHONPATH=src python3 -m dialedin.agent status     # every experiment's trail, from the files (no API call)
+    PYTHONPATH=src python3 -m dialedin.agent next       # one loop turn: Spark narrates, Wonder proposes, Spark
+                                                        # critiques, Wonder revises; stops at the human gate
     add --model muse-wonder-1.0 to use Muse Wonder instead of Muse Spark (default muse-spark-1.3)
 
 Outputs go to results/agent/. Muse never seals criteria, edits sealed files, or runs the GPU: a
@@ -27,12 +30,13 @@ STYLE = ("Write in plain, short sentences. Never use em dashes. Never use the co
 NARRATE = ("You are Muse, the AI scientist of the Dialed In lab. The lab measures the frequency response of the "
            "Muse Glimmer-30B language model: it adds a small sine wave of period N tokens to the model's internal "
            "signal after layer 1 and measures how strongly each later attention head responds, for N from 2 to "
-           "4,096 tokens. Every sealed experiment (C1 to C7) was pre-registered and sealed by hash before it ran; facts "
+           "4,096 tokens. Every sealed experiment (C1 onward) was pre-registered and sealed by hash before it ran; facts "
            "labeled EXPLORATORY come from unsealed probes and must be called exploratory. Write the lab's findings "
            "for a technical judge, in 250 to 350 words, as a story with five short paragraphs: (1) what the lab "
            "measures and what it found, in plain words (the model favors slow, long-range patterns); (2) that no "
            "built-in setting could turn this down (C2 to C4); (3) the trained dial and what it costs and does (C5, "
-           "C6), including the near miss and the small behavior effect; (4) where the dial acts (C7); (5) what the "
+           "C6), including the near miss and the small behavior effect; (4) where the dial acts (C7, and C8 if it is on "
+           "the sheet: it was proposed by Muse Wonder); (5) what the "
            "exploratory head map suggests and what is still open. Lead each paragraph with its point and say what it "
            "means. Use at most 15 numbers in total, only the ones that carry the point; prefer percentages. Give each "
            "sealed outcome by its code. Be candid about null and failed results. " + STYLE)
@@ -115,11 +119,12 @@ def narrate(client, sheet, out_dir):
                  f"unknown citations {report['unknown_citations']}.")
                  + "\n\nSources:\n" + sources + "\n")
     print(text.strip()); print("\n== verification:", "PASSED" if report["ok"] else report); print("== wrote", path)
+    return path
 
 
-def propose(client, sheet, out_dir):
+def propose(client, sheet, out_dir, extra=None):
     messages = [{"role": "system", "content": PROPOSE},
-                {"role": "user", "content": "Fact sheet:\n" + sheet.text()}]
+                {"role": "user", "content": ((extra + "\n\n") if extra else "") + "Fact sheet:\n" + sheet.text()}]
     raw = client.chat(messages, temperature=0.4, max_tokens=16000)
     prop = parse_json(raw)
     missing = [k for k in SCHEMA["required"] if k not in prop]
@@ -132,6 +137,7 @@ def propose(client, sheet, out_dir):
     json.dump(prop, open(path, "w"), indent=2)
     print(json.dumps(prop, indent=2)); print("== wrote", path)
     print("== this is a draft for review: it becomes an experiment only after independent review and a human seal")
+    return prop, path
 
 
 def review(client, sheet, out_dir, files, repo, max_tokens=64000):
@@ -151,13 +157,24 @@ def review(client, sheet, out_dir, files, repo, max_tokens=64000):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("task", choices=["facts", "narrate", "propose", "review"])
+    ap.add_argument("task", choices=["facts", "narrate", "propose", "review", "status", "next"])
+    ap.add_argument("--narrator", default="muse-spark-1.3", help="next: model that explains the results")
+    ap.add_argument("--designer", default="muse-wonder-1.0", help="next: model that proposes and revises")
+    ap.add_argument("--critic", default="muse-spark-1.3", help="next: model that critiques the proposal")
     ap.add_argument("--files", nargs="+", default=[], help="for review: the draft spec and code files, repo-relative")
     ap.add_argument("--max-tokens", type=int, default=64000, help="for review: reply limit, reasoning included")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--model", default=None, help="muse-spark-1.3 (default) or muse-wonder-1.0")
     ap.add_argument("--timeout", type=float, default=600.0, help="seconds to wait for one reply (reasoning can be slow)")
     args = ap.parse_args()
+    if args.task == "status":
+        from . import loop
+        rows = loop.status(args.repo)
+        loop.print_status(rows)
+        out = os.path.join(args.repo, "results", "agent", "status.json")
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        json.dump({"utc": stamp(), "experiments": rows}, open(out, "w"), indent=1)
+        print("== wrote", out); return
     sheet = facts.build(args.repo)
     if not sheet.facts:
         raise SystemExit("no results found under results/derived/")
@@ -168,6 +185,11 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     client = MuseClient(log_path=os.path.join(out_dir, "calls.jsonl"), timeout=args.timeout,
                         **({"model": args.model} if args.model else {}))
+    if args.task == "next":
+        from . import loop
+        mk = lambda m: MuseClient(log_path=os.path.join(out_dir, "calls.jsonl"), timeout=args.timeout, model=m)
+        return loop.next_turn(mk(args.narrator), mk(args.designer), mk(args.critic), sheet, out_dir,
+                              propose, narrate, parse_json, SCHEMA["required"])
     if args.task == "review":
         if not args.files:
             raise SystemExit("review needs --files")

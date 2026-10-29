@@ -1,0 +1,332 @@
+{
+  "run_dir": "/workspace/dialed-in/results/raw/c7v1-20261029T154201Z",
+  "complete": true,
+  "grid": [
+    2,
+    4,
+    16,
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "books": 5,
+  "failure_records": [],
+  "C7": {
+    "outcome": "M1",
+    "reason": null,
+    "full_change": -0.2679703218455389,
+    "share_QKV2": 0.7971159968603964,
+    "share_REST": 0.21907162482919784,
+    "share_QKV2_in_range": true,
+    "books_agree_QKV2": 5,
+    "sufficient": true,
+    "exclusive": true,
+    "additivity": 1.0161876216895942,
+    "tilts": {
+      "BASE": 0.14062392774385157,
+      "FULL": 0.10294088856714786,
+      "QKV2": 0.11058617440578403,
+      "REST": 0.13236864312290877
+    }
+  },
+  "tilts": {
+    "BASE": 0.14062392774385157,
+    "FULL": 0.10294088856714786,
+    "QKV2": 0.11058617440578403,
+    "REST": 0.13236864312290877
+  },
+  "periods_used": [
+    2,
+    4,
+    16,
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "valid": {
+    "BASE": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "FULL": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "QKV2": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "REST": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "curves": {
+    "BASE": [
+      0.0005936627225942809,
+      0.0006532818426191309,
+      0.0008422738271094982,
+      0.0010734802039654098,
+      0.001273978842510202,
+      0.0014645684569953063,
+      0.0016994915157208727
+    ],
+    "FULL": [
+      0.0007705350459764597,
+      0.0008276728032501589,
+      0.000991304411184015,
+      0.001176612541209997,
+      0.001321041378367149,
+      0.001444949884428613,
+      0.0017093398353110897
+    ],
+    "QKV2": [
+      0.0007211924556953548,
+      0.0007779850753734049,
+      0.0009463460566612132,
+      0.0011431561387899225,
+      0.0012933979803932442,
+      0.0014261535204325617,
+      0.001687256341162247
+    ],
+    "REST": [
+      0.0006282259713487963,
+      0.0006891498865003276,
+      0.0008732843888494282,
+      0.0010930848043674733,
+      0.0012857463665220722,
+      0.0014714067518623755,
+      0.0016938039849255678
+    ]
+  },
+  "book_tilts": [
+    {
+      "gutenberg_id": 1260,
+      "tilts": {
+        "BASE": 0.14006822774917316,
+        "FULL": 0.10392973415723795,
+        "QKV2": 0.11087953339376377,
+        "REST": 0.13217094619933914
+      },
+      "shares": {
+        "QKV2": 0.8076898468707405,
+        "REST": 0.218528244121288
+      },
+      "agrees": true
+    },
+    {
+      "gutenberg_id": 25344,
+      "tilts": {
+        "BASE": 0.14421555874513137,
+        "FULL": 0.104653857060487,
+        "QKV2": 0.11373673853312127,
+        "REST": 0.13540985284475807
+      },
+      "shares": {
+        "QKV2": 0.7704122652499616,
+        "REST": 0.22258157575135804
+      },
+      "agrees": true
+    },
+    {
+      "gutenberg_id": 345,
+      "tilts": {
+        "BASE": 0.14006735231766515,
+        "FULL": 0.1017449339425957,
+        "QKV2": 0.10903333760503264,
+        "REST": 0.13229259453481568
+      },
+      "shares": {
+        "QKV2": 0.8098135772355538,
+        "REST": 0.2028775352003182
+      },
+      "agrees": true
+    },
+    {
+      "gutenberg_id": 768,
+      "tilts": {
+        "BASE": 0.14210734813656448,
+        "FULL": 0.10381832059244121,
+        "QKV2": 0.11086757294239809,
+        "REST": 0.13399194381611693
+      },
+      "shares": {
+        "QKV2": 0.8158936697508574,
+        "REST": 0.2119511735077516
+      },
+      "agrees": true
+    },
+    {
+      "gutenberg_id": 84,
+      "tilts": {
+        "BASE": 0.13689020359835066,
+        "FULL": 0.1006607723295829,
+        "QKV2": 0.10853204372577803,
+        "REST": 0.12819991966972108
+      },
+      "shares": {
+        "QKV2": 0.7827382014969497,
+        "REST": 0.23986807477491923
+      },
+      "agrees": true
+    }
+  ],
+  "perplexity_ratio_median": {
+    "BASE": 1.0,
+    "FULL": 1.0082899279720767,
+    "QKV2": 1.003962964624352,
+    "REST": 1.0058335268788883
+  },
+  "modules_on": {
+    "BASE": 32,
+    "FULL": 32,
+    "QKV2": 3,
+    "REST": 29
+  },
+  "diagnostic_groups": {
+    "layer2": {
+      "tilts": {
+        "BASE": 0.1423221501069944,
+        "FULL": 0.03746473295760416,
+        "QKV2": 0.038852786815487615,
+        "REST": 0.13947468537943225
+      },
+      "relative_change": {
+        "FULL": -0.7367610527986046,
+        "QKV2": -0.7270081516736571,
+        "REST": -0.020007178962807178
+      },
+      "shares": {
+        "QKV2": 0.986762463775873,
+        "REST": 0.02715558712938126
+      }
+    },
+    "layers3_51": {
+      "tilts": {
+        "BASE": 0.1402318888684748,
+        "FULL": 0.12137602731027618,
+        "QKV2": 0.13134344577358772,
+        "REST": 0.1307733334879857
+      },
+      "relative_change": {
+        "FULL": -0.13446200939276912,
+        "QKV2": -0.06338389339691235,
+        "REST": -0.06744939012666647
+      },
+      "shares": {
+        "QKV2": 0.471388860564811,
+        "REST": 0.5016241422485662
+      }
+    },
+    "layers6_51": {
+      "tilts": {
+        "BASE": 0.15289540770488644,
+        "FULL": 0.1458696872112358,
+        "QKV2": 0.1484034575601425,
+        "REST": 0.1490834632443252
+      },
+      "relative_change": {
+        "FULL": -0.04595115444678,
+        "QKV2": -0.029379235205115803,
+        "REST": -0.024931713239673792
+      },
+      "shares": {
+        "QKV2": 0.6393579347204962,
+        "REST": 0.5425698992731371
+      }
+    }
+  },
+  "reproduction_BASE_vs_C1v5": {
+    "status": "complete",
+    "books_compared": [
+      1260,
+      25344,
+      345,
+      768,
+      84
+    ],
+    "books_missing": [],
+    "cells_compared": 35,
+    "max_relative_difference": 0.0,
+    "max_relative_difference_input_mag": 0.0,
+    "max_relative_difference_amplitude_reference": 0.0,
+    "c1_run": "c1v5-20261027T152040Z"
+  },
+  "bootstrap_95": {
+    "share_QKV2": [
+      0.7818058172284581,
+      0.8114683617821238
+    ],
+    "share_REST": [
+      0.20887470416071235,
+      0.2305907070184747
+    ],
+    "full_change": [
+      -0.2730535521560266,
+      -0.26157284655398083
+    ]
+  },
+  "bootstrap_resamples_used": {
+    "share_QKV2": 1000,
+    "share_REST": 1000,
+    "full_change": 1000
+  },
+  "bootstrap_resamples_drawn": 1000,
+  "runs_under_seal": [
+    {
+      "run_id": "c7v1-20261029T154201Z",
+      "started_utc": "2026-10-29T15:42:01+00:00",
+      "restart_reason": null,
+      "state": "complete"
+    }
+  ],
+  "cites": [
+    "results/raw/c7v1-20261029T154201Z/STARTED.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_1260.ATTEMPT.20261029T154701323918Z.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_1260.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_25344.ATTEMPT.20261029T162014003924Z.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_25344.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_345.ATTEMPT.20261029T160336496172Z.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_345.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_768.ATTEMPT.20261029T155519096562Z.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_768.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_84.ATTEMPT.20261029T161154115760Z.json",
+    "results/raw/c7v1-20261029T154201Z/book_B_84.json",
+    "results/raw/c7v1-20261029T154201Z/phaseA.json"
+  ],
+  "seal_sha256": "d263977ed267e5befb0da53afa68ba7df2c0af16c4b9bd8a36949cbc875e9581",
+  "code_sha256": {
+    "src/dialedin/metrics.py": "be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113",
+    "src/dialedin/hooks.py": "f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd",
+    "src/dialedin/glimmer.py": "b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c",
+    "src/dialedin/wave.py": "2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5",
+    "src/dialedin/analyze_c1v5.py": "43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f",
+    "src/dialedin/metrics_c2.py": "44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac",
+    "src/dialedin/pilot_c5.py": "673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d",
+    "src/dialedin/metrics_c7.py": "8a7dd0dbf92484131285ddfb3750dc3548f1b2ba9edfa63bb227b58709591ac8",
+    "src/dialedin/run_c7.py": "a3de37d6ee251362bddfc5bb3f6a0a95715190bdda26ad2029a1b705331bdc10",
+    "src/dialedin/analyze_c7.py": "c2adc561be88c5bcc386b551c21a975710c0a5ece6a060865603b9640d7cfb13"
+  }
+}

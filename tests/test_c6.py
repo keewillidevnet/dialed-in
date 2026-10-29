@@ -32,7 +32,7 @@ def c6_world(tmp_path, monkeypatch, sha=None):
     names = {"p": 7, "q": 9, "r": 11}
     tok = lambda text, add_special_tokens=False: {"input_ids": toks[names[text]]}
     texts = {7: "p", 9: "q", 11: "r"}
-    spec = {"inputs": {"prompt_sets": {"B": {9: "q"}, "C": {11: "r", 7: "p"}}},
+    spec = {"inputs": {"prompt_sets": {"B": {9: "q"}, "C": {11: "r", 7: "p"}}}, "control": {"seed": 12345},
             "switch": {"start": 100, "context": 512, "after": 256, "noise_tokens": 8, "noise_seed": 7},
             "adapter": {"file": path, "sha256": sha or real_sha, "family": tr["family"], "layers": tr["layers"],
                         "rank": tr["rank"], "alpha": tr["alpha"], "trained_on_regions": [{"gutenberg_id": 9}]},
@@ -100,3 +100,36 @@ def test_one_run_per_seal(tmp_path):
     (raw / "c6v1-b" / "switch.json").write_text("{}")
     with pytest.raises(SystemExit, match="complete"):
         run_c6.admit(str(raw), str(raw / "c6v1-c"), "seal", restart_reason="again")
+
+
+def test_random_control_matches_norms_and_analysis_reads_it(tmp_path, monkeypatch):
+    spec, texts, full, lm, tok = c6_world(tmp_path, monkeypatch)
+    s = run_c6.Session(spec, texts, full, lm, lm.layers, tok, {"global_layers": [3]}, str(tmp_path), run_c6.NullLedger())
+    inp = run_c6.switch_inputs(spec, tok, texts)
+    with torch.no_grad():
+        m = run_c6.measure(s, inp)
+        rep = run_c6.measure(s, run_c6.switch_inputs(spec, tok, texts, [9, 11], start=50), ("S0", "S2"))
+        trained = [p.detach().clone() for p in s.params]
+        rows = run_c6.random_control(s, 12345)
+        ctl = run_c6.measure(s, inp, ("S2",))
+    assert all(abs(r["control_norm"] - r["trained_norm"]) <= 1e-4 * max(r["trained_norm"], 1e-12) for r in rows)
+    assert any(not torch.equal(a, b) for a, b in zip(trained, s.params))
+    fake_c5 = {"switch": [{"condition": c, "per_pair_total": dict(rep[c]["switch_pair_total"])} for c in ("S0", "S2")]}
+    d = {"books": inp["gids"], "conditions": m, "reproduction_of_c5": rep,
+         "control_random_adapter": {"S2": ctl["S2"], "norms": rows, "seed": 12345}}
+    r = analyze_c6.analyze(d, spec, fake_c5)
+    assert r["reproduction_of_c5"]["max_relative_difference"] == 0.0
+    sp = r["secondary"]["switch_and_clean_loss_sums"]["S0"]
+    assert abs((sp["switch_loss_sum"] - sp["clean_loss_sum"]) - r["excess"]["S0"]) < 1e-6
+    assert r["control_random_adapter"]["relative_rise"] is not None and r["secondary"]["source_books_rising"] in range(4)
+    json.dumps(r)
+
+
+def test_unfilled_hash_refused_outside_smoke(tmp_path, monkeypatch):
+    spec, texts, full, lm, tok = c6_world(tmp_path, monkeypatch, sha="FILL_AT_SEAL")
+    with pytest.raises(SystemExit, match="sha256"):
+        run_c6.Session(spec, texts, full, lm, lm.layers, tok, {"global_layers": [3]}, str(tmp_path), run_c6.NullLedger())
+    lm2, full2, _, _ = __import__("test_c5").toy_world(tmp_path)
+    s = run_c6.Session(spec, texts, full2, lm2, lm2.layers, tok, {"global_layers": [3]}, str(tmp_path), run_c6.NullLedger(),
+                       allow_unfilled=True)
+    assert len(s.adapter_sha) == 64

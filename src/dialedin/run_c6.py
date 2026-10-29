@@ -155,6 +155,7 @@ class Session:
         for p in params:
             p.requires_grad_(False)
         self.adapter_modules = names
+        self.params = params
         P.LoRALinear.scale = 0.0
         self.head = model.get_output_embeddings()
         self.softcap = getattr(decoder.config, "final_logit_softcapping", None)
@@ -227,11 +228,32 @@ class Session:
         return out
 
 
-def switch_inputs(spec, tok, texts, gids=None) -> dict:
+def random_control(s: Session, seed: int) -> list:
+    """Replaces the trained adapter, module by module, with random low-rank factors (torch.Generator seeded
+    seed + module index, standard normal) scaled so that the Frobenius norm of B A equals the trained module's.
+    Returns per module the trained and new norms. Used only after the trained measurement is complete."""
+    def ba_norm(A, B):                       # ||B A||_F = sqrt(trace((B^T B)(A A^T))), computed at rank size
+        return float(torch.sqrt(torch.trace((B.T @ B) @ (A @ A.T)).clamp_min(0)))
+    rows = []
+    with torch.no_grad():
+        for i, (A, B) in enumerate(zip(s.params[0::2], s.params[1::2])):
+            target = ba_norm(A.float(), B.float())
+            g = torch.Generator().manual_seed(seed + i)
+            A2 = torch.randn(tuple(A.shape), generator=g, dtype=torch.float32)
+            B2 = torch.randn(tuple(B.shape), generator=g, dtype=torch.float32)
+            k = (target / ba_norm(A2, B2)) ** 0.5 if target > 0 else 0.0
+            A.copy_((A2 * k).to(A.device, A.dtype)); B.copy_((B2 * k).to(B.device, B.dtype))
+            rows.append({"module": s.adapter_modules[i], "trained_norm": target, "control_norm": ba_norm(A.float(), B.float())})
+    return rows
+
+
+def switch_inputs(spec, tok, texts, gids=None, start=None) -> dict:
     """Clean: each book's tokens [start, start + context + after). Switch, for every ordered pair (x, y) of different
     books: x's first `context` of those tokens, then y's last `after`. Noise: y's clean tokens with the first
     `noise_tokens` after the context replaced by tokens drawn from y's own context tokens (default_rng(noise_seed))."""
-    sw = spec["switch"]
+    sw = dict(spec["switch"])
+    if start is not None:
+        sw["start"] = start
     L = sw["context"] + sw["after"]
     if gids is None:
         gids = [int(g) for books in spec["inputs"]["prompt_sets"].values() for g in books]
@@ -361,6 +383,12 @@ def main():
     seal_hash = glimmer.check_seal(repo, SEALED)
     spec = yaml.safe_load(open(os.path.join(repo, SEALED)))
     code = glimmer.check_code(repo, spec)
+    ad_path = os.path.join(repo, spec["adapter"]["file"])
+    ad_sha = sha_file(ad_path)                         # before admit, so a bad fill costs no run
+    c5_training = json.load(open(os.path.join(os.path.dirname(ad_path), "training.json")))
+    if not (ad_sha == spec["adapter"]["sha256"] == c5_training["adapter_sha256"]):
+        raise SystemExit(f"adapter sha256 {ad_sha}, sealed {spec['adapter']['sha256']}, C5 training.json "
+                         f"{c5_training['adapter_sha256']}: they must all agree")
     run_id = datetime.now(timezone.utc).strftime(f"{TAG}-%Y%m%dT%H%M%SZ")
     out_dir = os.path.join(raw_root, run_id)
     lock = RunLock(ledger_root, seal_hash)
@@ -381,11 +409,21 @@ def main():
                                                                    "stopped": "setup checks failed", "outcome": "U"}, indent=1)
                 raise SystemExit("C6 is not run, as sealed: setup checks failed. Outcome U.")
             inputs = switch_inputs(spec, tok, texts)
-            n_fwd = len(ORDER) * (len(inputs["clean"]) + len(inputs["pairs"]) + len(inputs["noise"]))
+            rep_spec = spec["reproduction_of_c5"]
+            rep_inputs = switch_inputs(spec, tok, texts, rep_spec["books"], start=rep_spec["start"])
+            per_scale = len(inputs["clean"]) + len(inputs["pairs"]) + len(inputs["noise"])
+            n_fwd = (len(ORDER) + 1) * per_scale + 2 * (len(rep_inputs["clean"]) + len(rep_inputs["pairs"]) + len(rep_inputs["noise"]))
             ledger.check(n_fwd * spec["budget"]["seconds_per_forward_estimate"])
             result = measure(s, inputs)
+            print("== reproduction of C5 (set A, trained adapter, S0 and S2):", flush=True)
+            reproduction = measure(s, rep_inputs, ("S0", "S2"))
+            print("== control: random adapter matched in norm, at S2:", flush=True)
+            norms = random_control(s, spec["control"]["seed"])
+            control = measure(s, inputs, ("S2",))
             write_json(os.path.join(out_dir, "switch.json"),
                        {"finished_utc": now(), "conditions": result, "pairs": [f"{x}->{y}" for x, y in inputs["pairs"]],
+                        "reproduction_of_c5": reproduction,
+                        "control_random_adapter": {"S2": control["S2"], "norms": norms, "seed": spec["control"]["seed"]},
                         "books": inputs["gids"], "checks": checks,
                         "record": {"sealed_file": SEALED, "seal_sha256": seal_hash, "code_sha256": code,
                                    "platform": platform, "adapter_sha256": s.adapter_sha,

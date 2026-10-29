@@ -12,7 +12,8 @@ measurement, without damaging the model. Phases:
   A  setup checks (perplexity path, scale 0 is the base model bit for bit, the adapter takes effect), then
      linearity and power under every scale on book 1342;
   B  per book of set A and per scale (0, 0.5, 1, 1.5, 2): undriven pass with perplexity, sham, 7 driven periods;
-  R  exploratory long-context recall at every scale (reported, not gated).
+  R  exploratory behavior at every scale (reported, never gated): passkey recall, adaptation after a topic switch,
+     and recovery after a short burst of noise.
 Analysis: dialedin.analyze_c5.
 """
 import os
@@ -54,6 +55,8 @@ CHECK_LAYER = 10                    # the scale-0 and adapter checks read this l
 RECALL = {"context_tokens": 16384, "filler_start": 40000, "depths": (0.1, 0.3, 0.6, 0.9), "key_seed": 5,
           "needle": " The secret pass key is {key}. Remember it.",
           "question": "\nWhat is the secret pass key? The secret pass key is", "answer": " {key}"}
+SWITCH = {"start": 53856, "context": 6144, "after": 2048, "noise_tokens": 32, "noise_seed": 7,
+          "bins": ((1, 16), (17, 64), (65, 256), (257, 1024), (1025, 2048))}
 
 
 def now():
@@ -690,12 +693,68 @@ def recall_trials(s: Session) -> list:
     return trials
 
 
+def token_losses(s: Session, ids: list, start: int, end: int) -> np.ndarray:
+    """Next-token loss for tokens start .. end-1 of ids (predicted from positions start-1 .. end-2), float64."""
+    x = torch.tensor([ids], device=s.device)
+    out = np.empty(end - start)
+    with torch.inference_mode():
+        h = s.decoder(input_ids=x, use_cache=False).last_hidden_state[0]
+        for a in range(start, end, PPL_CHUNK):
+            b = min(a + PPL_CHUNK, end)
+            lp = s.logits(h[a - 1:b - 1]).log_softmax(-1)
+            out[a - start:b - start] = (-lp.gather(1, x[0, a:b, None])[:, 0]).double().cpu().numpy()
+    return out
+
+
+def switch_inputs(s: Session) -> dict:
+    """Clean: each set A book's tokens [start, start + context + after). Switch, for every ordered pair (x, y) of
+    different set A books: x's first `context` of those tokens, then y's last `after`. Noise: y's clean tokens with the
+    first `noise_tokens` after the context replaced by tokens drawn from y's own context tokens, never from the scored
+    part, so the noise cannot copy what is predicted later (default_rng(noise_seed))."""
+    sw = SWITCH
+    L = sw["context"] + sw["after"]
+    gids = [int(g) for books in s.spec["inputs"]["prompt_sets"].values() for g in books]
+    clean = {}
+    for g in gids:
+        body = s.tok(s.texts[g], add_special_tokens=False)["input_ids"]
+        seg = body[sw["start"]:sw["start"] + L]
+        assert len(seg) == L, (g, len(body))
+        clean[g] = list(seg)
+    rng = np.random.default_rng(sw["noise_seed"])
+    noise = {}
+    for g in gids:
+        junk = rng.choice(np.asarray(clean[g][:sw["context"]]), size=sw["noise_tokens"]).tolist()
+        c = sw["context"]
+        noise[g] = clean[g][:c] + [int(t) for t in junk] + clean[g][c + sw["noise_tokens"]:]
+    pairs = [(x, y) for x in gids for y in gids if x != y]
+    switch = {(x, y): clean[x][:sw["context"]] + clean[y][sw["context"]:] for x, y in pairs}
+    return {"clean": clean, "noise": noise, "switch": switch, "pairs": pairs}
+
+
+def binned(curve: np.ndarray, offset: int = 0) -> dict:
+    """Mean of a per-position curve over SWITCH bins; curve[0] is position k = offset + 1 after the seam. A bin the
+    curve covers only in part is labeled with the positions it actually holds; a bin it misses is left out."""
+    out = {}
+    for lo, hi in SWITCH["bins"]:
+        a, b = max(lo - 1 - offset, 0), min(hi - offset, len(curve))
+        if b > a:
+            out[f"{a + 1 + offset}-{b + offset}"] = float(curve[a:b].mean())
+    return out
+
+
 def phase_r(s: Session, out_dir: str):
-    """Exploratory: per scale, the teacher-forced log-probability of each trial's answer tokens and whether every
-    answer token is the model's top choice. Reported, never gated."""
+    """Exploratory, reported, never gated. Per scale:
+    recall: the teacher-forced log-probability of each trial's answer tokens and whether every one is the top choice;
+    switch: excess next-token loss after the seam (switch minus clean, same tokens), mean over ordered book pairs;
+    noise: excess loss after a burst of noise tokens (noise minus clean), mean over books."""
     trials = recall_trials(s)
-    s.ledger.check(len(trials) * len(ORDER) * s.spec["budget"]["recall_seconds_per_trial_estimate"])
-    self_rows = []
+    sw_in = switch_inputs(s)
+    b = s.spec["budget"]
+    s.ledger.check(len(trials) * len(ORDER) * b["recall_seconds_per_trial_estimate"]
+                   + (len(sw_in["clean"]) * 2 + len(sw_in["pairs"])) * len(ORDER) * b["switch_seconds_per_pass_estimate"])
+    recall_rows, switch_rows, noise_rows = [], [], []
+    c, n = SWITCH["context"], SWITCH["noise_tokens"]
+    L = c + SWITCH["after"]
     s.probe.mode = None
     s.injector.disarm()
     try:
@@ -712,18 +771,44 @@ def phase_r(s: Session, out_dir: str):
                     logp = float(lp.gather(1, tgt[:, None]).sum())
                     top = bool((lp.argmax(-1) == tgt).all())
                 s.ledger.last_pass = s.ledger.add(f"recall {cond} {t['gutenberg_id']} {t['depth']}")
-                self_rows.append({"condition": cond, "gutenberg_id": t["gutenberg_id"], "depth": t["depth"],
-                                  "key": t["key"], "answer_logprob": logp, "all_top1": top})
-            done = [r for r in self_rows if r["condition"] == cond]
-            print(f"   recall {cond}: mean log-prob {np.mean([r['answer_logprob'] for r in done]):.3f}, "
-                  f"all-top-1 {sum(r['all_top1'] for r in done)}/{len(done)}", flush=True)
+                recall_rows.append({"condition": cond, "gutenberg_id": t["gutenberg_id"], "depth": t["depth"],
+                                    "key": t["key"], "answer_logprob": logp, "all_top1": top})
+            clean_loss = {}
+            for g, ids in sw_in["clean"].items():
+                s.ledger.check()
+                clean_loss[g] = token_losses(s, ids, c, L)
+                s.ledger.last_pass = s.ledger.add(f"clean {cond} {g}")
+            excess_sw = []
+            for (x, y) in sw_in["pairs"]:
+                s.ledger.check()
+                excess_sw.append(token_losses(s, sw_in["switch"][(x, y)], c, L) - clean_loss[y])
+                s.ledger.last_pass = s.ledger.add(f"switch {cond} {x}->{y}")
+            excess_nz = []
+            for g, ids in sw_in["noise"].items():
+                s.ledger.check()
+                excess_nz.append(token_losses(s, ids, c + n, L) - clean_loss[g][n:])
+                s.ledger.last_pass = s.ledger.add(f"noise {cond} {g}")
+            m_sw, m_nz = np.mean(excess_sw, axis=0), np.mean(excess_nz, axis=0)
+            switch_rows.append({"condition": cond, "clean_mean_loss": float(np.mean([v.mean() for v in clean_loss.values()])),
+                                "excess_binned": binned(m_sw), "excess_total": float(m_sw.sum()),
+                                "excess_curve": m_sw.astype(np.float32).tolist(),
+                                "per_pair_total": {f"{x}->{y}": float(e.sum()) for (x, y), e in zip(sw_in["pairs"], excess_sw)}})
+            noise_rows.append({"condition": cond, "excess_binned": binned(m_nz, offset=n),
+                               "excess_total": float(m_nz.sum()), "excess_curve": m_nz.astype(np.float32).tolist()})
+            done = [r for r in recall_rows if r["condition"] == cond]
+            print(f"   {cond}: recall log-prob {np.mean([r['answer_logprob'] for r in done]):.3f} "
+                  f"(top-1 {sum(r['all_top1'] for r in done)}/{len(done)}); switch excess {m_sw.sum():.1f} nats "
+                  f"(first 64: {m_sw[:64].sum():.1f}); noise excess {m_nz.sum():.1f} nats", flush=True)
         s.set_condition("S0")
     except BaseException as e:
-        print(f"!! Recall failed; record: {write_failure(out_dir, 'recall', e)}")
+        print(f"!! Behavior phase failed; record: {write_failure(out_dir, 'behavior', e)}")
         raise
-    write_json(os.path.join(out_dir, "recall.json"),
-               {"finished_utc": now(), "exploratory": True, "design": {k: v for k, v in RECALL.items()},
-                "rows": self_rows, "record": s.record(None, None)}, indent=1)
+    write_json(os.path.join(out_dir, "behavior.json"),
+               {"finished_utc": now(), "exploratory": True,
+                "design": {"recall": dict(RECALL), "switch": {k: v for k, v in SWITCH.items()},
+                           "pairs": [f"{x}->{y}" for x, y in sw_in["pairs"]]},
+                "recall": recall_rows, "switch": switch_rows, "noise": noise_rows,
+                "record": s.record(None, None)}, indent=1)
 
 
 def admit(phase: str, raw_root: str, out_dir: str, seal_hash: str, spec, restart_reason: str = None) -> list:
@@ -736,7 +821,7 @@ def admit(phase: str, raw_root: str, out_dir: str, seal_hash: str, spec, restart
     record needs a written reason.
     Phase B: needs this run's STARTED.json under the same seal and its phaseA.json; refused if any other run under
     the seal is complete or if a newer run under the seal has started.
-    Phase R: needs this run complete and no recall.json.
+    Phase R: needs this run complete and no behavior.json.
     """
     runs = runs_under_seal(raw_root, seal_hash, spec) if os.path.isdir(raw_root) else []
     me = os.path.basename(out_dir)
@@ -779,8 +864,8 @@ def admit(phase: str, raw_root: str, out_dir: str, seal_hash: str, spec, restart
     if phase == "R":
         if run_state(out_dir, spec) != "complete":
             raise SystemExit("Recall runs only after Phase B is complete.")
-        if os.path.exists(os.path.join(out_dir, "recall.json")):
-            raise SystemExit("recall.json exists.")
+        if os.path.exists(os.path.join(out_dir, "behavior.json")):
+            raise SystemExit("behavior.json exists.")
         return others
     if not os.path.exists(os.path.join(out_dir, "phaseA.json")):
         raise SystemExit(f"No phaseA.json in {out_dir}.")

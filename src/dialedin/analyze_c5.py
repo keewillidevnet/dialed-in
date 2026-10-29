@@ -4,7 +4,7 @@
 
 Forked from analyze_c4.py. Per-cell gains and SNR come from analyze_c1v5.cell_quantities, tilts from metrics_c2.tilt,
 the outcome from metrics_c5. Reads only Phase B book files for curves; Phase A is checked, never curved. The
-recall phase, if it ran, is summarized as exploratory and never enters the outcome.
+behavior phase (recall, topic switch, noise), if it ran, is summarized as exploratory and never enters the outcome.
 """
 import argparse
 import glob
@@ -122,16 +122,28 @@ def group_diagnostic(books, grid, common, adapted_layers) -> dict:
     return out
 
 
-def recall_summary(run_dir: str):
-    path = os.path.join(run_dir, "recall.json")
+def behavior_summary(run_dir: str):
+    """Exploratory, never gated: recall, topic-switch and noise results per scale, with Spearman(scale, value) as a
+    description of trend only."""
+    path = os.path.join(run_dir, "behavior.json")
     if not os.path.exists(path):
         return {"status": "not run"}
-    rows = json.load(open(path))["rows"]
-    out = {"status": "exploratory, not gated"}
+    d = json.load(open(path))
+    out = {"status": "exploratory, not gated", "recall": {}, "switch": {}, "noise": {}}
     for c in CONDITIONS:
-        r = [x for x in rows if x["condition"] == c]
-        out[c] = {"trials": len(r), "mean_answer_logprob": float(np.mean([x["answer_logprob"] for x in r])),
-                  "all_top1": int(sum(x["all_top1"] for x in r))}
+        r = [x for x in d["recall"] if x["condition"] == c]
+        out["recall"][c] = {"trials": len(r), "mean_answer_logprob": float(np.mean([x["answer_logprob"] for x in r])),
+                            "all_top1": int(sum(x["all_top1"] for x in r))}
+        sw = next(x for x in d["switch"] if x["condition"] == c)
+        out["switch"][c] = {"excess_total": sw["excess_total"], "excess_binned": sw["excess_binned"],
+                            "clean_mean_loss": sw["clean_mean_loss"]}
+        nz = next(x for x in d["noise"] if x["condition"] == c)
+        out["noise"][c] = {"excess_total": nz["excess_total"], "excess_binned": nz["excess_binned"]}
+    sc = list(metrics_c5.SCALES)
+    out["trend_spearman"] = {
+        "recall_logprob": metrics.spearman(sc, [out["recall"][c]["mean_answer_logprob"] for c in CONDITIONS]),
+        "switch_excess_total": metrics.spearman(sc, [out["switch"][c]["excess_total"] for c in CONDITIONS]),
+        "noise_excess_total": metrics.spearman(sc, [out["noise"][c]["excess_total"] for c in CONDITIONS])}
     return out
 
 
@@ -166,7 +178,7 @@ def analyze(run_dir: str, spec: dict, seal_hash: str = None, code: dict = None, 
               "training": {"adapter_sha256": tj["adapter_sha256"], "modules": len(tj["modules"]),
                            "params": tj["params"], "steps": len(tj["steps"]), "rollbacks": tj["rollbacks"],
                            "kl_last20_mean": float(np.mean([s["kl"] for s in tj["steps"][-20:]]))},
-              "recall": recall_summary(run_dir),
+              "behavior": behavior_summary(run_dir),
               "diagnostic_groups": group_diagnostic(books, grid, common, spec["training"]["layers"])}
     if not complete:
         result["warning"] = "PARTIAL: diagnostic look only. An incomplete run has no C5 outcome."

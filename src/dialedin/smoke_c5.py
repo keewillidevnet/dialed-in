@@ -7,7 +7,7 @@
 2. Reloads Glimmer as a new process would, builds the real C5 Session on that throwaway adapter (seal and code
    checks skipped), and runs the adapter checks and the perplexity-path check.
 3. Undriven, sham and driven passes (N = 2 and 4096) under S0 and S2, and a closing sham.
-4. One recall trial per scale (time only).
+4. One recall forward and one topic-switch forward (time and finiteness only).
 Prints times, peak memory, sham counts, finiteness and S0 perplexity only. No gains, SNRs, tilts, recall scores, or
 perplexity under the adapter, since a throwaway adapter says nothing about the sealed run anyway.
 """
@@ -109,6 +109,13 @@ def main():
     with torch.inference_mode():
         s.decoder(input_ids=torch.tensor([trials[0]["ids"]], device=s.device), use_cache=False)
     print(f"   one recall forward: {time.time() - t:.2f} s")
+    sw = run_c5.switch_inputs(s)
+    print(f"== switch: {len(sw['pairs'])} ordered pairs, {len(sw['clean'])} clean and {len(sw['noise'])} noise inputs "
+          f"of {len(next(iter(sw['clean'].values())))} tokens")
+    t = time.time()
+    first = next(iter(sw["clean"].values()))
+    loss = run_c5.token_losses(s, first, run_c5.SWITCH["context"], len(first))
+    print(f"   one switch forward with per-token loss: {time.time() - t:.2f} s; losses finite = {bool(np.isfinite(loss).all())}")
     print(f"== sham differing values: {shams} (all must be 0)")
     ok = ad["as_expected"] and lc["as_expected"] and all(x == 0 for x in shams)
     print("== smoke test PASSED" if ok else "== smoke test FAILED")

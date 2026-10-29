@@ -20,7 +20,10 @@ status: draft
 
 questions:
   dial: Does a low-rank adapter, trained once with the sealed recipe on text from sets B and C, change the tilt of Glimmer's frequency response on set A by at least a quarter at scale 2, in step with its scale (0, 0.5, 1, 1.5, 2), consistently across books, without raising perplexity by more than 10 percent?
-  recall: Exploratory, not gated. Does the scale change long-context passkey recall?
+  behavior: >
+    Exploratory, never gated. Does the scale change what the model does with context: passkey recall over 16,384
+    tokens, how quickly predictions recover after a switch to a different book, and how long a short burst of
+    noise tokens keeps hurting predictions?
   predictions: >
     The tilt flattens as the scale rises (Spearman near -1), by about 20 percent at scale 1 and 30 percent or more
     at scale 2 (the pilot, at 8,192 tokens), with perplexity within a few percent of scale 0. The adapter is
@@ -218,11 +221,28 @@ pass_criteria:
     (a) the measured layers the adapter does not touch (6 to 51), (b) local layers, (c) global layers, fit over
     the same periods as the main tilts. It shows whether the change is carried by the adapted layers 2 to 5 (128
     of 1,600 heads) or reaches the rest of the model.
-  recall: >
-    Exploratory (phase R, after phase B): 20 passkey trials (each set A book, needle depths 0.1, 0.3, 0.6 and
-    0.9 of a 16,384-token context of the book's tokens from 40,000; five-digit keys from default_rng(5)), per
-    scale: the teacher-forced log-probability of the answer tokens and whether each is the top choice. Reported
-    with no outcome and never used to rescue or qualify the dial outcome.
+  behavior: >
+    Exploratory (phase R, after phase B), reported with no outcome and never used to rescue or qualify the dial
+    outcome. Three tests per scale, all on set A text outside the measured first 32,768 tokens:
+    (1) Recall: 20 passkey trials (each set A book, needle depths 0.1, 0.3, 0.6 and 0.9 of a 16,384-token context
+    of the book's tokens from 40,000; five-digit keys from default_rng(5)): the teacher-forced log-probability of
+    the answer tokens and whether each is the top choice.
+    (2) Topic switch: clean input = a book's tokens 53,856 to 62,047 (8,192 tokens); switch input, for each of the 20
+    ordered pairs (x, y) of different set A books = x's first 6,144 of those tokens, then y's last 2,048. Excess loss
+    = per-token next-token loss on y's 2,048 tokens in the switch input minus the same in y's clean input, averaged
+    over pairs; reported per position, summed, and in bins 1-16, 17-64, 65-256, 257-1,024 and 1,025-2,048 tokens
+    after the seam.
+    (3) Noise: y's clean input with its 32 tokens after position 6,144 replaced by tokens drawn from y's own first
+    6,144 tokens, never from the scored part (default_rng(7)); excess loss on the following 2,016 tokens versus
+    clean, averaged over books, same bins (a bin the noise curve covers only in part is labeled with the positions
+    it holds, here 33-64).
+    Trend across scales is described with Spearman(scale, value), not tested.
+  behavior_expectation: >
+    Written before the run so the direction is on record, not gated. Assuming a positive (low-pass) tilt at scale 0,
+    as C1 to C4 found, a flatter tilt passes fast changes more
+    strongly relative to slow ones, so we expect the excess loss after a topic switch and after noise to fall
+    faster (a smaller late-bin and total excess) as the scale rises, and expect little change in recall. The
+    opposite, or no trend, will be reported as found.
 
 uncertainty:
   bootstrap: >
@@ -232,7 +252,7 @@ uncertainty:
   not_covered: one training run with one seed; the bootstrap covers books, not training randomness
 
 decisions:
-  L1: the adapter is a dial on the tilt; it becomes the demo's knob, shown with its perplexity and recall
+  L1: the adapter is a dial on the tilt; it becomes the demo's knob, shown with its perplexity and the behavior results
   L2: the adapter moves the tilt but harms the model; shown as a stress test, not a dial
   L0: the trained adapter does not give a dial at 32K on set A; reported as is
   U: inconclusive; reported as is
@@ -255,12 +275,14 @@ budget:
   seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
   training_hours_estimate: 0.75     # phase T preflight
   recall_seconds_per_trial_estimate: 6
+  switch_seconds_per_pass_estimate: 2.5
   estimate: >
     Phase T about 0.6 hours (150 steps at about 12.5 s, the base-gain cache of 4 regions x 3 directions x 8
     passes, and the load). Phase A 26 passes plus 6 short check passes at 2,048 tokens (1 reference, 3 adapter, 2 logits). Phase B 5 books x 46 passes (per scale 1
     undriven, 1 sham and 7 driven, plus 1 closing sham) = 230 passes. 256 passes at about 13.4 s is about 0.95
-    hours, plus perplexity on 30 undriven passes. Phase R 100 forwards of 16,384 tokens, about 0.15 hours. With
-    four loads, about 2 hours.
+    hours, plus perplexity on 30 undriven passes. Phase R: 100 recall forwards of 16,384 tokens and 150 switch, clean and noise forwards of 8,192
+    tokens, about 0.25 hours. With
+    four loads, about 2.1 hours.
   cost: about $5 at about $2.50 per pod hour for counted time
   peak_gpu_memory: training about 90 GiB at 6,144 tokens (pilot); measurement about C4's 74.3 GiB
   pre_seal_smoke: SMOKE_RESULT
@@ -276,9 +298,9 @@ analysis:
     src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
     src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
     src/dialedin/metrics_c5.py: 9607387afa2535ae4cc3e362f3e2d0a13a46a68922a83383bf71e54995ee6e56
-    src/dialedin/run_c5.py: 9d2f5a333f54f8b4738ed744b9c7f76e439ece29a93e09ac1f9e0964ed3f79e4
+    src/dialedin/run_c5.py: b21cc8f13a804845ce97706f3aa21a052ecbda803926306a88a4d33cd93cbe06
     src/dialedin/compare_pilots.py: 63ff8fb8417f7e0d1c7412ed38cff20b06b42de099c3b2e9539d49bc9fb478a8
-    src/dialedin/analyze_c5.py: 1120d283bbdbf4f3369559f7f74aef3cb5c0ea4ead7e7ba5daf4adcc0ace37ee
+    src/dialedin/analyze_c5.py: a7bcc04ccce249373863a166f4ac6e9bae32374d81bdd9e02ede5707f75891b8
 outputs:
-  raw: results/raw/<run_id>/ (STARTED.json; adapter.pt and training.json; phaseA.json with the adapter and perplexity-path checks; one book_<set>_<id>.json per book with, per scale and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per scale the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter and text hashes; recall.json; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  raw: results/raw/<run_id>/ (STARTED.json; adapter.pt and training.json; phaseA.json with the adapter and perplexity-path checks; one book_<set>_<id>.json per book with, per scale and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per scale the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter and text hashes; behavior.json with recall, switch and noise results; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
   derived: results/derived/<run_id>/c5_summary.json and c5_curves.png, citing every raw file used

@@ -30,7 +30,7 @@ def toy_spec():
                          "periods_N": list(P.PERIODS), "seed": 0, "direction_seed_offset": 10000,
                          "base_seeds": [20001], "regions": [{"gutenberg_id": 9, "start": 0}]},
             "budget": {"max_gpu_hours": 1, "seconds_per_pass_estimate": 0.01, "training_hours_estimate": 0.01,
-                       "recall_seconds_per_trial_estimate": 0.01}}
+                       "recall_seconds_per_trial_estimate": 0.01, "switch_seconds_per_pass_estimate": 0.01}}
 
 
 def toy_world(tmp_path):
@@ -137,24 +137,53 @@ def test_tampered_adapter_is_refused(tmp_path, monkeypatch):
         run_c5.Session._setup(s2, str(out))
 
 
-def test_recall_trials_and_phase_r(tmp_path, monkeypatch):
+def test_recall_trials_and_behavior_phase(tmp_path, monkeypatch):
     s, out, spec = trained_run(tmp_path, monkeypatch)
     monkeypatch.setitem(run_c5.RECALL, "context_tokens", 2048)
     monkeypatch.setitem(run_c5.RECALL, "filler_start", 100)
+    monkeypatch.setattr(run_c5, "SWITCH", {"start": 50, "context": 512, "after": 256, "noise_tokens": 8,
+                                            "noise_seed": 7, "bins": ((1, 16), (17, 64), (65, 256))})
     s.tok = lambda t, add_special_tokens=False: {"input_ids": [ord(c) % 900 + 1 for c in t]}
-    s.texts = {7: "abcdefghij" * 300}
+    s.texts = {7: "abcdefghij" * 300, 9: "klmnopqrstuvwxyz" * 200}
+    s.spec = dict(s.spec, inputs=dict(s.spec["inputs"], prompt_sets={"A": {7: "y", 9: "z"}}))
     trials = run_c5.recall_trials(s)
-    assert len(trials) == 4 and all(len(t["ids"]) == 2048 for t in trials)
+    assert len(trials) == 8 and all(len(t["ids"]) == 2048 for t in trials)
     t0 = trials[0]
     ans = s.tok(run_c5.RECALL["answer"].format(key=t0["key"]))["input_ids"]
     assert t0["ids"][t0["answer_from"]:] == ans
     needle = s.tok(run_c5.RECALL["needle"].format(key=t0["key"]))["input_ids"]
     at = int(0.1 * (2048 - len(needle) - len(s.tok(run_c5.RECALL["question"])["input_ids"]) - len(ans)))
     assert t0["ids"][at:at + len(needle)] == needle
+    sw = run_c5.switch_inputs(s)
+    assert sw["pairs"] == [(7, 9), (9, 7)]
+    assert sw["switch"][(7, 9)][:512] == sw["clean"][7][:512] and sw["switch"][(7, 9)][512:] == sw["clean"][9][512:]
+    assert sw["noise"][9][:512] == sw["clean"][9][:512] and sw["noise"][9][520:] == sw["clean"][9][520:]
+    assert set(sw["noise"][9][512:520]) <= set(sw["clean"][9][:512])          # noise comes from the context only
     with torch.no_grad():
         run_c5.phase_r(s, str(out))
-    rec = json.load(open(out / "recall.json"))
-    assert len(rec["rows"]) == 4 * 5 and all(np.isfinite(r["answer_logprob"]) for r in rec["rows"])
+    rec = json.load(open(out / "behavior.json"))
+    assert len(rec["recall"]) == 8 * 5 and len(rec["switch"]) == 5 and len(rec["noise"]) == 5
+    assert all(len(r["excess_curve"]) == 256 for r in rec["switch"]) and len(rec["noise"][0]["excess_curve"]) == 248
+    assert set(rec["switch"][0]["excess_binned"]) == {"1-16", "17-64", "65-256"}
+
+
+def test_token_losses_match_direct(tmp_path, monkeypatch):
+    s, out, spec = trained_run(tmp_path, monkeypatch)
+    ids = list(range(1, 900))
+    loss = run_c5.token_losses(s, ids, 500, 899)
+    with torch.no_grad():
+        h = s.decoder(torch.tensor([ids])).last_hidden_state[0]
+        lp = s.logits(h[499:898]).log_softmax(-1)
+        direct = -lp.gather(1, torch.tensor(ids[500:899])[:, None])[:, 0].double().numpy()
+    assert np.allclose(loss, direct, atol=1e-5)
+
+
+def test_binned():
+    c = np.arange(1, 2049, dtype=float)
+    b = run_c5.binned(c)
+    assert b["1-16"] == np.mean(np.arange(1, 17)) and b["1025-2048"] == np.mean(np.arange(1025, 2049))
+    b2 = run_c5.binned(c[32:], offset=32)          # noise: the curve starts 32 tokens after the seam
+    assert "1-16" not in b2 and "17-64" not in b2 and b2["33-64"] == np.mean(np.arange(33, 65))
 
 
 def test_admission_order(tmp_path):

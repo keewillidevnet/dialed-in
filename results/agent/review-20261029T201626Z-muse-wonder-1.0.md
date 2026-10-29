@@ -1,0 +1,19 @@
+Reviewed files: criteria/drafts/c8-glimmer-one-matrix-dial-v1.yaml, src/dialedin/run_c8.py, src/dialedin/analyze_c8.py, src/dialedin/metrics_c8.py, tests/test_c8.py
+
+Verdict: NOT READY
+
+1. Blocker, criteria/drafts/c8-glimmer-one-matrix-dial-v1.yaml, budget.pre_seal_smoke, line 240. The value is still SMOKE_RESULT. In src/dialedin/run_c8.py lines 105 to 117 and line 695, that string is a refused placeholder, so a file sealed in this state cannot start. Fix: run the smoke test, replace the whole value with the dated passed result and its key numbers, confirm the placeholder substring is absent, then seal.
+
+2. Major, criteria questions, lines 31 to 34, versus pass_criteria, lines 188 to 189, and src/dialedin/metrics_c8.py lines 10 and 21 to 25. The question says V2 must give 50 to 140 percent of FULL in at least 4 of 5 books. The actual book rule only requires both FULL and V2 to flatten and a book share of at least 0.30, with no upper bound. A V1 outcome could therefore be claimed although no book reaches 0.50, or although a book overshoots far beyond 1.40. Fix: rewrite the question to state the set level 0.50 to 1.40 rule plus the separate 0.30 book rule, or change book_agrees to the 0.50 to 1.40 range if that was intended.
+
+3. Major, criteria decisions, lines 222 to 223, versus src/dialedin/run_c8.py lines 622 to 624, 709 to 715, and 503 to 508. A Phase A retry after a failure record must need a written reason stamped on the record. The code demands a reason only for phaseA.FAILED records, passes the reason only to Phase B, and writes phaseA.json with no restart_reason field. A startup.FAILED record also does not trigger the reason requirement on continue, although continuing retries Phase A. Fix: require a reason for any earlier FAILED record on continue, and stamp that reason into phaseA.json or a dedicated retry record. Update the code hashes in the criteria after any code change.
+
+4. Major, criteria budget, line 231, versus src/dialedin/run_c8.py lines 137 to 153 and 316 to 326. The cap covers wall clock hours of every run process under the seal, but the ledger sums only lines written when a step completes, and a pass is recorded only after the forward pass finishes. Time in a load or pass that is killed is never written, so the next process undercounts usage against the 2.0 hour cap. Fix: write a ledger start record before each load and pass and account for elapsed time on restart, or add periodic ledger marks during long work.
+
+5. Minor, criteria pass_criteria, line 194, versus src/dialedin/analyze_c8.py lines 174 to 190. The spec says a partial look keeps its numbers under partial_diagnostic. The code only wraps the outcome object there, while tilts, curves, perplexity and bootstrap values remain top level fields, labelled only by the warning field and the PARTIAL output directory in main. Fix: either nest all partial numbers under partial_diagnostic, or amend the spec sentence to match the labelled top level diagnostic layout.
+
+6. Minor, criteria drive.phase_A, lines 136 to 137. It says that on Phase A failure C7 is not run. C7 is already complete, and the code stops C8. Fix: change C7 to C8 in that sentence.
+
+7. Minor, src/dialedin/analyze_c8.py, reproduction docstring, line 124. It says BASE runs C1 v5 on the same set B tokens. The criteria use set C at lines 59 and 140, and the code uses each book record set field. Fix: change set B to set C in the docstring, then update that file hash in the criteria analysis.code_sha256 field before sealing.
+
+8. Minor, criteria inputs.why_set_C, lines 62 to 63, versus fact sheet F104. The draft says C6 used set C at tokens 60,000 to 68,191, but the fact sheet reports the C6 result on 10 fresh books and 90 pairs, while set C in the draft has five books. The sentence does not distinguish a main C6 use from a reproduction use. Fix: state exactly which C6 part used that segment, or correct the segment and book set claim.

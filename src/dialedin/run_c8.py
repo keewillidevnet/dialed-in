@@ -97,6 +97,8 @@ def condition_modules(spec, names) -> dict:
         if missing or not mods or len(set(mods)) != len(mods):
             raise SystemExit(f"{c} modules not all in the adapter (or empty or repeated): {missing}")
         out[c] = [n for n in names if n in mods]
+        if out[c] != list(mods):            # the analysis compares records to the sealed list in order
+            raise SystemExit(f"{c} modules must be listed in adapter order: {out[c]}")
     if len({tuple(v) for c, v in out.items() if c != "BASE"}) != len(ORDER) - 1:
         raise SystemExit("two conditions switch on the same modules")
     return out
@@ -446,7 +448,7 @@ def cell(out) -> dict:
             "bin_power": out["bin_power"].tolist(), "n_below": out["n_below"]}
 
 
-def phase_a(s: Session, out_dir: str):
+def phase_a(s: Session, out_dir: str, restart_reason: str = None):
     """Setup checks, then linearity and power under every condition on book 74 at a = 0.1, N = 2 and 4096."""
     remaining = (PHASE_A_PASSES + n_books(s.spec) * passes_per_book(s.grid)) * s.spec["budget"]["seconds_per_pass_estimate"]
     s.ledger.check(remaining)
@@ -462,7 +464,8 @@ def phase_a(s: Session, out_dir: str):
                          + (["perplexity path"] if not logit_check["as_expected"] else []))
         if failed_checks:
             write_json(os.path.join(out_dir, "phaseA.json"),
-                       {"phase": "A", "finished_utc": now(), "adapter_checks": ad_check, "logits_check": logit_check,
+                       {"phase": "A", "finished_utc": now(), "restart_reason": restart_reason,
+                        "adapter_checks": ad_check, "logits_check": logit_check,
                         "stopped": f"setup checks failed: {failed_checks}", "outcome_if_stopped": "U",
                         "sham_differences": None, "rows": [], "chosen_a": None, "record": s.record(PHASE_A_BOOK, None)},
                        indent=2)
@@ -501,7 +504,9 @@ def phase_a(s: Session, out_dir: str):
     stopped = f"not linear or underpowered under {bad}" if bad else None
     wall_per_pass = (time.time() - t_phase) / PHASE_A_PASSES
     write_json(os.path.join(out_dir, "phaseA.json"),
-               {"phase": "A", "finished_utc": now(), "wall_seconds_per_pass": wall_per_pass, "book": PHASE_A_BOOK,
+               {"phase": "A", "finished_utc": now(), "restart_reason": restart_reason,
+                "earlier_failures": sorted(os.path.basename(p) for p in glob.glob(os.path.join(out_dir, "*.FAILED.*.json"))),
+                "wall_seconds_per_pass": wall_per_pass, "book": PHASE_A_BOOK,
                 "a": A, "adapter_checks": ad_check, "logits_check": logit_check, "stopped": stopped,
                 "outcome_if_stopped": "U" if stopped else None, "sham_differences": sham, "rows": rows,
                 "chosen_a": None if stopped else A, "seconds_per_pass_last": s.ledger.last_pass,
@@ -620,8 +625,9 @@ def admit(raw_root: str, out_dir: str, seal_hash: str, spec, restart_reason: str
     if mine["state"] == "stopped":
         raise SystemExit("This run was stopped by rule in Phase A; C8 is not run, as sealed.")
     if not os.path.exists(os.path.join(out_dir, "phaseA.json")) and \
-            glob.glob(os.path.join(out_dir, "phaseA.FAILED.*.json")) and not restart_reason:
-        raise SystemExit("Phase A failed before in this run. A retry needs --restart-reason; the record is kept.")
+            glob.glob(os.path.join(out_dir, "*.FAILED.*.json")) and not restart_reason:
+        raise SystemExit("This run has a failure record (startup or Phase A). Continuing retries Phase A and needs "
+                         "--restart-reason; the record is kept and the reason is stamped into phaseA.json.")
     return others
 
 
@@ -711,7 +717,7 @@ def main():
             raise
         try:
             if not os.path.exists(os.path.join(out_dir, "phaseA.json")):
-                phase_a(s, out_dir)
+                phase_a(s, out_dir, args.restart_reason)
             phase_b(s, out_dir, args.restart_reason)
             print(f"== C8 measurement complete: {os.path.relpath(out_dir, repo)}. Next: "
                   f"PYTHONPATH=src python3 -m dialedin.analyze_c8 --run-id {run_id}")

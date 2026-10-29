@@ -108,10 +108,16 @@ def book_tilts(curves: dict, grid, i):
 
 def group_diagnostic(books, grid, common) -> dict:
     """Reported, never gated (pre-registered): set-level tilts per condition and shares over (a) layer 2's heads,
-    (b) layers 3 to 51, (c) layers 6 to 51 (no adapter), fit over the main periods."""
-    groups = {"layer2": lambda l: l == 2, "layers3_51": lambda l: l >= 3, "layers6_51": lambda l: l >= 6}
+    (b) layers 3 to 51, (c) layers 5 to 51 (downstream of both V2 and V4), (d) layers 6 to 51 (no adapter), fit over
+    the main periods. A group with no measured layer is None."""
+    groups = {"layer2": lambda l: l == 2, "layers3_51": lambda l: l >= 3, "layers5_51": lambda l: l >= 5,
+              "layers6_51": lambda l: l >= 6}
     out = {}
+    measured = books[0]["record"]["layers_measured"]
     for name, fn in groups.items():
+        if not any(fn(l) for l in measured):
+            out[name] = None
+            continue
         t = {c: metrics_c2.tilt(grid, np.mean(np.stack([curve(b, grid, c, fn)[0] for b in books]), axis=0), common)
              for c in CONDITIONS}
         rel = {c: ((t[c] - t["BASE"]) / t["BASE"] if None not in (t[c], t["BASE"]) and t["BASE"] else None)
@@ -121,7 +127,7 @@ def group_diagnostic(books, grid, common) -> dict:
 
 
 def reproduction(books, grid, c1_run_dir) -> dict:
-    """BASE runs C1 v5's computation on the same set B tokens. Reported, expected 0, not a gate: the maximum relative
+    """BASE runs C1 v5's computation on the same set C tokens. Reported, expected 0, not a gate: the maximum relative
     difference of per-head target magnitudes, of the input component per period, and of the amplitude reference
     (C1 v5's median_norm) from C1 v5's raw files. Status "complete" only if every book and period was compared."""
     rel = lambda x, y: float(np.max(np.abs(np.asarray(x, dtype=np.float64) - np.asarray(y, dtype=np.float64))
@@ -183,6 +189,13 @@ def analyze(run_dir: str, spec: dict, seal_hash: str = None, code: dict = None, 
               "modules_on": {c: len(v["modules_on"]) for c, v in pa["record"]["conditions"].items()},
               "diagnostic_groups": group_diagnostic(books, grid, common),
               "reproduction_BASE_vs_C1v5": reproduction(books, grid, c1_run_dir)}
+    dg = result["diagnostic_groups"]
+    pick = lambda g, c: (dg.get(g) or {}).get("shares", {}).get(c)
+    result["secondary_downstream_shares"] = {
+        "V2_over_layers3_51": pick("layers3_51", "V2"), "V4_over_layers5_51": pick("layers5_51", "V4"),
+        "V2_over_layers5_51": pick("layers5_51", "V2"),
+        "note": "each module's share over the layers after it, and both over layers 5 to 51 (downstream of both); "
+                "reported, not gated"}
     vb = [x["shares"]["V2"] for x in per_book if x["shares"]["V2"] is not None]
     result["secondary_mean_book_share_V2"] = {"value": float(np.mean(vb)) if vb else None, "books": len(vb),
                                               "note": "Muse Wonder's proposed metric; reported, not gated"}
@@ -274,8 +287,12 @@ def main():
     if "share_V2" in c:
         print(f"   FULL tilt change {100 * c['full_change']:+.1f}%; share V2 {pct(c['share_V2'])} ({ci('share_V2')}); "
               f"control V4 {pct(c['share_V4'])} ({ci('share_V4')}); books agreeing {c['books_agree_V2']}/5")
-        print(f"   QKV2 {pct(c['share_QKV2'])} ({ci('share_QKV2')}); QK2 {pct(c['share_QK2'])}; V2 as a share of QKV2 "
-              f"{pct(c['share_V2_of_QKV2'])}; (V2 + QK2) / QKV2 {pct(c['additivity_V2_plus_QK2_over_QKV2'])}")
+        print(f"   QKV2 {pct(c['share_QKV2'])} ({ci('share_QKV2')}; replicates C7: {c['qkv2_replicates_c7']}); QK2 "
+              f"{pct(c['share_QK2'])}; V2 as a share of QKV2 {pct(c['share_V2_of_QKV2'])}; (V2 + QK2) / QKV2 "
+              f"{pct(c['additivity_V2_plus_QK2_over_QKV2'])}")
+        ds = result["secondary_downstream_shares"]
+        print(f"   downstream shares: V2 over layers 3 to 51 {pct(ds['V2_over_layers3_51'])}; V4 over layers 5 to 51 "
+              f"{pct(ds['V4_over_layers5_51'])}; V2 over layers 5 to 51 {pct(ds['V2_over_layers5_51'])}")
     rp = result["reproduction_BASE_vs_C1v5"]
     print(f"   BASE vs C1 v5 ({rp['status']}): max relative difference {rp.get('max_relative_difference')}; "
           f"perplexity ratios {', '.join(f'{k} x{v:.4f}' for k, v in result['perplexity_ratio_median'].items())}")

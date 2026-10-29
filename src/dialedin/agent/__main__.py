@@ -134,7 +134,7 @@ def propose(client, sheet, out_dir):
     print("== this is a draft for review: it becomes an experiment only after independent review and a human seal")
 
 
-def review(client, sheet, out_dir, files, repo):
+def review(client, sheet, out_dir, files, repo, max_tokens=64000):
     parts = []
     for f in files:
         text = open(os.path.join(repo, f)).read()
@@ -142,7 +142,7 @@ def review(client, sheet, out_dir, files, repo):
         parts.append(f"===== FILE {f} =====\n{numbered}")
     messages = [{"role": "system", "content": REVIEW},
                 {"role": "user", "content": "Fact sheet:\n" + sheet.text() + "\n\n" + "\n\n".join(parts)}]
-    text = client.chat(messages, temperature=0.2, max_tokens=24000)
+    text = client.chat(messages, temperature=0.2, max_tokens=max_tokens)
     path = os.path.join(out_dir, f"review-{stamp()}-{getattr(client, 'model', 'muse')}.md")
     with open(path, "w") as fh:
         fh.write(f"Reviewed files: {', '.join(files)}\n\n" + text.strip() + "\n")
@@ -153,6 +153,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("task", choices=["facts", "narrate", "propose", "review"])
     ap.add_argument("--files", nargs="+", default=[], help="for review: the draft spec and code files, repo-relative")
+    ap.add_argument("--max-tokens", type=int, default=64000, help="for review: reply limit, reasoning included")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--model", default=None, help="muse-spark-1.3 (default) or muse-wonder-1.0")
     ap.add_argument("--timeout", type=float, default=600.0, help="seconds to wait for one reply (reasoning can be slow)")
@@ -170,7 +171,7 @@ def main():
     if args.task == "review":
         if not args.files:
             raise SystemExit("review needs --files")
-        return review(client, sheet, out_dir, args.files, args.repo)
+        return review(client, sheet, out_dir, args.files, args.repo, args.max_tokens)
     (narrate if args.task == "narrate" else propose)(client, sheet, out_dir)
 
 

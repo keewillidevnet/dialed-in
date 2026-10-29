@@ -1,5 +1,5 @@
 """Tests for C8: outcome rule, six condition masks, Phase A and B on the toy model with a four-layer adapter, analysis,
-the reproduction check, admission and refusals. Forked from test_c7.py."""
+the reproduction check, admission, retry reasons and refusals. Forked from test_c7.py."""
 import copy
 import json
 
@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import torch
 
-from dialedin import analyze_c8 as analyze_c7, metrics_c8, run_c5, run_c8 as run_c7
+from dialedin import analyze_c8, metrics_c8, run_c5, run_c8
 from dialedin import pilot_c5 as P
 from dialedin.hooks import HeadProbe
 from dialedin.wave import WaveInjector
@@ -27,10 +27,10 @@ def make_adapter(tmp_path):
     out = tmp_path / "c5run"; out.mkdir()
     ledger = run_c5.Ledger(str(tmp_path / "ledger5"), "testseal0000", 3600)
     run_c5.train(spec, "testseal", {"f": "h"}, ledger, None, str(out), loaded=(texts, full, lm, lm.layers, tok, {"global_layers": [3]}))
-    return str(out / "adapter.pt"), run_c7.sha_file(str(out / "adapter.pt")), spec
+    return str(out / "adapter.pt"), run_c8.sha_file(str(out / "adapter.pt")), spec
 
 
-def c7_spec(path, sha, c5spec):
+def c8_spec(path, sha, c5spec):
     tr = c5spec["training"]
     return {"inputs": {"prompt_sets": {"B": {7: "y"}}, "text_sha256": c5spec["inputs"]["text_sha256"],
                        "length_tokens": c5spec["inputs"]["length_tokens"]},
@@ -43,17 +43,17 @@ def c7_spec(path, sha, c5spec):
 
 
 def session(tmp_path, monkeypatch, spec=None, sha=None, allow_unfilled=False):
-    monkeypatch.setattr(run_c7, "CHECK_LAYER", 5)          # after every adapted toy layer, as layer 10 is on Glimmer
-    monkeypatch.setattr(run_c7, "PHASE_A_BOOK", 7)
+    monkeypatch.setattr(run_c8, "CHECK_LAYER", 5)          # after every adapted toy layer, as layer 10 is on Glimmer
+    monkeypatch.setattr(run_c8, "PHASE_A_BOOK", 7)
     path, real_sha, c5spec = make_adapter(tmp_path)
     P.configure(8192)
-    spec = spec or c7_spec(path, sha or real_sha, c5spec)
+    spec = spec or c8_spec(path, sha or real_sha, c5spec)
     lm, full, texts, tok = toy_world(tmp_path)
-    s = object.__new__(run_c7.Session)
+    s = object.__new__(run_c8.Session)
     s.repo, s.spec, s.seal_hash, s.code = "", spec, "testseal", {"f": "h"}
-    s.ledger = run_c7.Ledger(str(tmp_path / "ledger7"), "testseal0000", 3600)
+    s.ledger = run_c8.Ledger(str(tmp_path / "ledger7"), "testseal0000", 3600)
     s.texts, s.tok, s.model, s.decoder, s.layers, s.platform = texts, tok, full, lm, lm.layers, {"global_layers": [3]}
-    run_c7.Session._setup(s, allow_unfilled)
+    run_c8.Session._setup(s, allow_unfilled)
     for hd in s.probe.handles:
         hd.remove()
     s.probe = HeadProbe(lm.layers, s.layer_ids, 4, s.t1)
@@ -67,22 +67,24 @@ def test_one_matrix_outcome():
     t = {"BASE": 0.14, "FULL": 0.10, "QKV2": 0.108, "V2": 0.118, "QK2": 0.128, "V4": 0.138}
     ok = [dict(t)] * 5
     o = metrics_c8.one_matrix_outcome(t, ok)                           # V2 share 0.55, V4 0.05
-    assert o["outcome"] == "V1" and abs(o["share_V2"] - 0.55) < 1e-9 and o["reason"] is None
+    assert o["outcome"] == "O1" and abs(o["share_V2"] - 0.55) < 1e-9 and o["reason"] is None and o["qkv2_replicates_c7"]
+    assert not metrics_c8.one_matrix_outcome(dict(t, QKV2=0.118), ok)["qkv2_replicates_c7"]          # QKV2 share 0.55
     assert abs(o["share_V2_of_QKV2"] - 0.55 / 0.8) < 1e-9 and abs(o["additivity_V2_plus_QK2_over_QKV2"] - 0.85 / 0.8) < 1e-9
-    assert metrics_c8.one_matrix_outcome(dict(t, V4=0.126), ok)["outcome"] == "V2S"     # control share 0.35
-    assert metrics_c8.one_matrix_outcome(dict(t, V4=0.154), ok)["outcome"] == "V2S"     # control opposes: -0.35
+    assert metrics_c8.one_matrix_outcome(dict(t, V4=0.126), ok)["outcome"] == "O2S"     # control share 0.35
+    assert metrics_c8.one_matrix_outcome(dict(t, V4=0.154), ok)["outcome"] == "O2S"     # control opposes: -0.35
     low = metrics_c8.one_matrix_outcome(dict(t, V2=0.122), ok)                          # share 0.45
-    assert low["outcome"] == "V0" and "outside" in low["reason"]
-    assert metrics_c8.one_matrix_outcome(dict(t, V2=0.083), ok)["outcome"] == "V0"     # share 1.43: overshoot
+    assert low["outcome"] == "O0" and "not a majority" in low["reason"]
+    over = metrics_c8.one_matrix_outcome(dict(t, V2=0.083), ok)                         # share 1.43: overshoot
+    assert over["outcome"] == "O0" and "overshoots" in over["reason"]
     weak = dict(t, V2=0.1385)
     assert not metrics_c8.book_agrees(weak) and metrics_c8.book_agrees(t)
-    assert metrics_c8.one_matrix_outcome(t, ok[:4] + [weak])["outcome"] == "V1"
+    assert metrics_c8.one_matrix_outcome(t, ok[:4] + [weak])["outcome"] == "O1"
     assert "books agree" in metrics_c8.one_matrix_outcome(t, ok[:3] + [weak, weak])["reason"]
     assert metrics_c8.one_matrix_outcome(dict(t, FULL=0.122), ok)["outcome"] == "U"    # FULL only -12.9%
     assert metrics_c8.one_matrix_outcome(dict(t, BASE=-0.01), ok)["outcome"] == "U"
     assert metrics_c8.one_matrix_outcome(dict(t, V4=None), ok)["outcome"] == "U"
     edge = metrics_c8.one_matrix_outcome(dict(t, V2=0.1198, V4=0.1282), ok)            # shares 0.505 and 0.295
-    assert edge["outcome"] == "V1"
+    assert edge["outcome"] == "O1"
 
 
 def test_condition_modules_and_spec_checks():
@@ -90,28 +92,31 @@ def test_condition_modules_and_spec_checks():
     q, k, v = (f"layers.2.self_attn.{m}" for m in ("q_proj", "k_proj", "v_proj"))
     spec = {"conditions": {"BASE": {"modules": "all"}, "FULL": {"modules": "all"}, "QKV2": {"modules": [q, k, v]},
                            "V2": {"modules": [v]}, "QK2": {"modules": [q, k]}, "V4": {"modules": ["layers.4.self_attn.v_proj"]}}}
-    on = run_c7.condition_modules(spec, names)
+    on = run_c8.condition_modules(spec, names)
     assert on["QKV2"] == [q, k, v] and on["V2"] == [v] and on["FULL"] == names and on["V4"] == ["layers.4.self_attn.v_proj"]
     bad = copy.deepcopy(spec); bad["conditions"]["V4"]["modules"] = ["layers.9.self_attn.v_proj"]
     with pytest.raises(SystemExit, match="V4"):
-        run_c7.condition_modules(bad, names)
+        run_c8.condition_modules(bad, names)
     same = copy.deepcopy(spec); same["conditions"]["QK2"]["modules"] = [v]
     with pytest.raises(SystemExit, match="same modules"):
-        run_c7.condition_modules(same, names)
-    good = {"conditions": {c: {"scale": run_c7.SCALES[c]} for c in run_c7.ORDER}}
-    run_c7.check_condition_spec(good)
+        run_c8.condition_modules(same, names)
+    order = copy.deepcopy(spec); order["conditions"]["QKV2"]["modules"] = [v, q, k]           # not in adapter order
+    with pytest.raises(SystemExit, match="adapter order"):
+        run_c8.condition_modules(order, names)
+    good = {"conditions": {c: {"scale": run_c8.SCALES[c]} for c in run_c8.ORDER}}
+    run_c8.check_condition_spec(good)
     bad = copy.deepcopy(good); bad["conditions"]["V2"]["scale"] = 1.5
     with pytest.raises(SystemExit, match="scales"):
-        run_c7.check_condition_spec(bad)
+        run_c8.check_condition_spec(bad)
     extra = copy.deepcopy(good); extra["conditions"]["REST"] = {"scale": 2.0}
     with pytest.raises(SystemExit, match="conditions"):
-        run_c7.check_condition_spec(extra)
+        run_c8.check_condition_spec(extra)
 
 
 def test_placeholders_refused():
-    run_c7.check_no_placeholders({"a": {"b": ["x", "fine"]}, "c": 1.0})
+    run_c8.check_no_placeholders({"a": {"b": ["x", "fine"]}, "c": 1.0})
     with pytest.raises(SystemExit, match="placeholder"):
-        run_c7.check_no_placeholders({"budget": {"pre_seal_smoke": "SMOKE_RESULT"}})
+        run_c8.check_no_placeholders({"budget": {"pre_seal_smoke": "SMOKE_RESULT"}})
 
 
 def test_masks_restore_exactly_and_checks_pass(tmp_path, monkeypatch):
@@ -130,17 +135,17 @@ def test_masks_restore_exactly_and_checks_pass(tmp_path, monkeypatch):
 
 def test_phases_and_analysis_end_to_end(tmp_path, monkeypatch):
     s, spec = session(tmp_path, monkeypatch)
-    monkeypatch.setattr(run_c7, "PHASE_A_N", (3, 768))
+    monkeypatch.setattr(run_c8, "PHASE_A_N", (3, 768))
     out = tmp_path / "run"; out.mkdir()
     with torch.no_grad():
-        run_c7.phase_a(s, str(out))
+        run_c8.phase_a(s, str(out))
     a = json.load(open(out / "phaseA.json"))
-    assert a["stopped"] is None and [r["condition"] for r in a["rows"]] == list(run_c7.ORDER)
+    assert a["stopped"] is None and [r["condition"] for r in a["rows"]] == list(run_c8.ORDER)
     (out / "book_B_7.ATTEMPT.20260101T000000000000Z.json").write_text("{}")      # an earlier attempt
     with pytest.raises(SystemExit, match="restart-reason"):
-        run_c7.phase_b(s, str(out))
+        run_c8.phase_b(s, str(out))
     with torch.no_grad():
-        run_c7.phase_b(s, str(out), restart_reason="test retry")
+        run_c8.phase_b(s, str(out), restart_reason="test retry")
     book = json.load(open(out / "book_B_7.json"))
     assert book["restart_reason"] == "test retry"
     assert sorted(book["per_condition"]) == sorted(metrics_c8.CONDITIONS) and book["sham_differences_close"] == 0
@@ -151,12 +156,17 @@ def test_phases_and_analysis_end_to_end(tmp_path, monkeypatch):
            "per_N": {str(N): {"target": book["per_condition"]["BASE"][str(N)]["target"],
                               "input_mag": book["per_condition"]["BASE"][str(N)]["input_mag"]} for N in GRID}}
     (c1 / "book_B_7.json").write_text(json.dumps(rec))
-    r = analyze_c7.analyze(str(out), spec, "testseal", {"f": "h"}, c1_run_dir=str(c1))
-    assert r["complete"] and r["C8"]["outcome"] in ("V1", "V2S", "V0", "U") and None not in r["tilts"].values()
+    r = analyze_c8.analyze(str(out), spec, "testseal", {"f": "h"}, c1_run_dir=str(c1))
+    assert r["complete"] and r["C8"]["outcome"] in ("O1", "O2S", "O0", "U") and None not in r["tilts"].values()
     rp = r["reproduction_BASE_vs_C1v5"]
     assert rp["status"] == "complete" and rp["max_relative_difference"] == 0.0 and rp["max_relative_difference_input_mag"] == 0.0
     assert r["tilts"]["FULL"] != r["tilts"]["BASE"] and r["modules_on"]["V2"] == 1 and r["modules_on"]["QKV2"] == 2
-    assert set(r["diagnostic_groups"]) == {"layer2", "layers3_51", "layers6_51"}
+    assert set(r["diagnostic_groups"]) == {"layer2", "layers3_51", "layers5_51", "layers6_51"}
+    assert r["diagnostic_groups"]["layers6_51"] is None                       # the toy has no layer 6: skipped, no warning
+    ds = r["secondary_downstream_shares"]
+    assert set(ds) >= {"V2_over_layers3_51", "V4_over_layers5_51", "V2_over_layers5_51"}
+    assert all(ds[k] is None or isinstance(ds[k], float) for k in ("V2_over_layers3_51", "V4_over_layers5_51", "V2_over_layers5_51"))
+    assert isinstance(ds["V2_over_layers3_51"], float)                   # the toy has layers 3 to 5
     assert r["bootstrap_resamples_drawn"] == 1000 and r["bootstrap_resamples_used"]["full_change"] == 1000
     assert set(r["bootstrap_95"]) == {"share_V2", "share_V4", "share_QKV2", "share_QK2", "full_change"}
     assert r["secondary_mean_book_share_V2"]["books"] in (0, 1)
@@ -164,70 +174,97 @@ def test_phases_and_analysis_end_to_end(tmp_path, monkeypatch):
     rec = copy.deepcopy(rec)                                                   # the record shares lists with book
     rec["per_N"][str(GRID[0])]["target"][0][0] *= 1.5
     (c1 / "book_B_7.json").write_text(json.dumps(rec))
-    assert abs(analyze_c7.reproduction([book], GRID, str(c1))["max_relative_difference"] - 1 / 3) < 1e-6
+    assert abs(analyze_c8.reproduction([book], GRID, str(c1))["max_relative_difference"] - 1 / 3) < 1e-6
     empty = tmp_path / "c1empty"; empty.mkdir()
-    rp = analyze_c7.reproduction([book], GRID, str(empty))
+    rp = analyze_c8.reproduction([book], GRID, str(empty))
     assert rp["status"] == "incomplete" and rp["books_missing"] == [7]
     # partial: a spec expecting a second book gives no outcome, numbers kept apart
     spec2 = copy.deepcopy(spec); spec2["inputs"]["prompt_sets"]["B"][9] = "z"
     with pytest.raises(SystemExit, match="Incomplete"):
-        analyze_c7.analyze(str(out), spec2)
-    rpart = analyze_c7.analyze(str(out), spec2, partial=True)
+        analyze_c8.analyze(str(out), spec2)
+    rpart = analyze_c8.analyze(str(out), spec2, partial=True)
     assert rpart["C8"]["outcome"] is None and "partial_diagnostic" in rpart["C8"] and "warning" in rpart
     # refusals: QKV2 modules not as sealed, an unclean sham, a wrong seal
     spec3 = copy.deepcopy(spec); spec3["conditions"]["V4"]["modules"] = ["layers.5.self_attn.o_proj"]
     with pytest.raises(SystemExit, match="V4 modules"):
-        analyze_c7.analyze(str(out), spec3)
+        analyze_c8.analyze(str(out), spec3)
     with pytest.raises(SystemExit, match="seal hash"):
-        analyze_c7.analyze(str(out), spec, "otherseal")
+        analyze_c8.analyze(str(out), spec, "otherseal")
     book["sham_differences"]["FULL"] = 3
     (out / "book_B_7.json").unlink(); (out / "book_B_7.json").write_text(json.dumps(book))
     with pytest.raises(SystemExit, match="sham"):
-        analyze_c7.analyze(str(out), spec)
+        analyze_c8.analyze(str(out), spec)
 
 
 def test_phase_a_stops_by_rule_and_budget(tmp_path, monkeypatch):
     s, spec = session(tmp_path, monkeypatch)
-    monkeypatch.setattr(run_c7, "PHASE_A_N", (3, 768))
+    monkeypatch.setattr(run_c8, "PHASE_A_N", (3, 768))
     out = tmp_path / "run"; out.mkdir()
     (out / "STARTED.json").write_text(json.dumps({"seal_sha256": "testseal", "utc": "2026"}))
-    monkeypatch.setattr(run_c7.metrics, "aggregate_snr", lambda *a: 0.0)        # underpowered under every condition
+    monkeypatch.setattr(run_c8.metrics, "aggregate_snr", lambda *a: 0.0)        # underpowered under every condition
     with torch.no_grad(), pytest.raises(SystemExit, match="underpowered"):
-        run_c7.phase_a(s, str(out))
+        run_c8.phase_a(s, str(out))
     assert json.load(open(out / "phaseA.json"))["stopped"]
-    assert run_c7.run_state(str(out), spec) == "stopped"
+    assert run_c8.run_state(str(out), spec) == "stopped"
     with pytest.raises(SystemExit, match="stopped"):
-        run_c7.admit(str(tmp_path), str(tmp_path / "new"), "testseal", spec, restart_reason="x")
+        run_c8.admit(str(tmp_path), str(tmp_path / "new"), "testseal", spec, restart_reason="x")
     with pytest.raises(SystemExit, match="Phase A check"):
-        run_c7.phase_b(s, str(out))
+        run_c8.phase_b(s, str(out))
     out2 = tmp_path / "run2"; out2.mkdir()
     s.ledger.cap_s = 1.0
     s.spec = dict(s.spec, budget={"max_gpu_hours": 1, "seconds_per_pass_estimate": 100})
     with pytest.raises(SystemExit, match="Budget cap"):
-        run_c7.phase_a(s, str(out2))
+        run_c8.phase_a(s, str(out2))
     assert not (out2 / "phaseA.json").exists()
 
 
 def test_setup_check_failure_writes_stopped_record(tmp_path, monkeypatch):
     s, spec = session(tmp_path, monkeypatch)
     out = tmp_path / "run"; out.mkdir()
-    monkeypatch.setattr(run_c7.Session, "adapter_checks", lambda self: {"as_expected": False})
+    monkeypatch.setattr(run_c8.Session, "adapter_checks", lambda self: {"as_expected": False})
     with pytest.raises(SystemExit, match="setup checks failed"):
-        run_c7.phase_a(s, str(out))
+        run_c8.phase_a(s, str(out))
     pa = json.load(open(out / "phaseA.json"))
     assert pa["stopped"] and pa["outcome_if_stopped"] == "U" and not list(out.glob("phaseA.FAILED.*"))
+
+
+def test_distinctness_failure_stops_the_run(tmp_path, monkeypatch):
+    s, spec = session(tmp_path, monkeypatch)
+    out = tmp_path / "run"; out.mkdir()
+    real = run_c8.Session._reference_input
+    monkeypatch.setattr(run_c8.Session, "_reference_input",
+                        lambda self: real(self) if self.condition in ("BASE", None) else real(self) * 0 + 1)
+    ad = s.adapter_checks()
+    assert not ad["all_conditions_distinct"] and not ad["as_expected"]
+
+
+def test_retry_reason_after_any_failure_and_stamped(tmp_path, monkeypatch):
+    raw = tmp_path / "raw"; raw.mkdir()
+    spec = {"inputs": {"prompt_sets": {"C": {7: "y"}}}}
+    run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec)
+    (raw / "c8v1-a" / "startup.FAILED.20260101T000000000000Z.json").write_text("{}")
+    with pytest.raises(SystemExit, match="restart-reason"):
+        run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, new=False)
+    run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, restart_reason="pod lost the GPU", new=False)
+    (tmp_path / "w").mkdir()
+    s, _ = session(tmp_path / "w", monkeypatch)
+    monkeypatch.setattr(run_c8, "PHASE_A_N", (3, 768))
+    with torch.no_grad():
+        run_c8.phase_a(s, str(raw / "c8v1-a"), restart_reason="pod lost the GPU")
+    pa = json.load(open(raw / "c8v1-a" / "phaseA.json"))
+    assert pa["restart_reason"] == "pod lost the GPU" and pa["earlier_failures"] == ["startup.FAILED.20260101T000000000000Z.json"]
 
 
 def test_continue_rules(tmp_path):
     raw = tmp_path / "raw"; raw.mkdir()
     spec = {"inputs": {"prompt_sets": {"B": {7: "y"}}}}
-    run_c7.admit(str(raw), str(raw / "c8v1-a"), "seal", spec)
+    run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec)
     (raw / "c8v1-a" / "phaseA.FAILED.20260101T000000000000Z.json").write_text("{}")
     with pytest.raises(SystemExit, match="restart-reason"):
-        run_c7.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, new=False)
-    run_c7.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, restart_reason="pod crashed", new=False)
+        run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, new=False)
+    run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, restart_reason="pod crashed", new=False)
     with pytest.raises(SystemExit, match="STARTED"):
-        run_c7.admit(str(raw), str(raw / "c8v1-zzz"), "seal", spec, new=False)
+        run_c8.admit(str(raw), str(raw / "c8v1-zzz"), "seal", spec, new=False)
 
 
 def test_wrong_and_unfilled_hash_refused(tmp_path, monkeypatch):
@@ -243,15 +280,15 @@ def test_wrong_and_unfilled_hash_refused(tmp_path, monkeypatch):
 def test_admission(tmp_path):
     raw = tmp_path / "raw"; raw.mkdir()
     spec = {"inputs": {"prompt_sets": {"B": {7: "y"}}}}
-    run_c7.admit(str(raw), str(raw / "c8v1-a"), "seal", spec)
+    run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec)
     with pytest.raises(SystemExit, match="restart-reason"):
-        run_c7.admit(str(raw), str(raw / "c8v1-b"), "seal", spec)
-    run_c7.admit(str(raw), str(raw / "c8v1-b"), "seal", spec, restart_reason="pod crashed")
+        run_c8.admit(str(raw), str(raw / "c8v1-b"), "seal", spec)
+    run_c8.admit(str(raw), str(raw / "c8v1-b"), "seal", spec, restart_reason="pod crashed")
     with pytest.raises(SystemExit, match="newer"):
-        run_c7.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, new=False)
-    run_c7.admit(str(raw), str(raw / "c8v1-b"), "seal", spec, new=False)
+        run_c8.admit(str(raw), str(raw / "c8v1-a"), "seal", spec, new=False)
+    run_c8.admit(str(raw), str(raw / "c8v1-b"), "seal", spec, new=False)
     (raw / "c8v1-b" / "book_B_7.json").write_text("{}")
     with pytest.raises(SystemExit, match="complete"):
-        run_c7.admit(str(raw), str(raw / "c8v1-c"), "seal", spec, restart_reason="again")
+        run_c8.admit(str(raw), str(raw / "c8v1-c"), "seal", spec, restart_reason="again")
     (raw / "c8v1-a" / "phaseA.json").write_text(json.dumps({"stopped": "not linear"}))
-    assert run_c7.run_state(str(raw / "c8v1-a"), spec) == "stopped"
+    assert run_c8.run_state(str(raw / "c8v1-a"), spec) == "stopped"

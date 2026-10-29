@@ -4,19 +4,35 @@
 #   Its question: does layer 2's v_proj alone, at scale 2, keep most of the full dial's tilt flattening at 32,768 tokens,
 #   while the same module in another layer does not? Its six conditions, 15 percent floor on the full effect, 4-of-5
 #   book rule and 0.30 cap on the control are kept.
-# Revisions in review (each with its reason):
-#   1. Share bar 0.50, not 0.60. The proposal cited v alone at 0.6378 [probe-loc-deep] as if it were a share of the full
-#      dial; it is a share of layer 2 attention's change, which was 0.8373 of the full dial [probe-loc], so v alone was
-#      about 0.53 of the full dial (8,192 tokens, set C, exploratory). 0.50 asks for a majority of the full effect from
-#      1 of 32 matrices; it was chosen after seeing that implied value, which sits near the bar.
+# Revisions to the proposal (each with its reason):
+#   1. Share bar 0.50, not 0.60. The proposal cited v alone at 0.6378 (fact F127 of the agent's fact sheet, quoted in
+#      results/agent/proposal-20261029T193320Z-muse-wonder-1.0.json) as if it were a share of the full dial;
+#      that is v's share of layer 2 attention's change. As a share of the full dial, the probe measured v alone at
+#      0.534 and q, k alone at 0.371 (results/raw/probe-loc-deep-20261029T075459Z/localize.json, fraction_of_full;
+#      set C, 8,192 tokens, periods 2 to 2,048, minimum whole-model SNR 2.18 to 2.84, below this file's validity bar
+#      of 3). 0.50 is the definition of a majority of the full effect from 1 of 32 matrices. It was chosen after
+#      seeing those probes, and it sits at the expected value: C7's set-level QKV2 share came in at 0.797 against the
+#      probes' 0.837 for layer 2's five attention modules at 8K (its gate and o added nothing there; deep probe), a
+#      ratio of about 0.95, which would put V2 near 0.51 here. The
+#      outcome is therefore genuinely uncertain, and the bootstrap interval of share(V2) is reported as the headline
+#      next to the outcome.
 #   2. Control layer 4's v_proj, not layer 3's. Layer 3 is a global layer (no position encoding, full attention);
-#      layer 2 and layer 4 are both local layers with the same 2,048-token window and both carry the adapter.
+#      layers 2 and 4 are both local layers with the same 2,048-token window and both carry the adapter.
 #   3. Text: set C, first 32,768 tokens, not tokens after 70,000. Book 120 has 94,774 tokens, too short for a
 #      32,768-token segment after 70,000 (a risk the proposal named). No adapter condition has been measured on set C's
 #      first 32,768 tokens; BASE reproduces C1 v5 there.
-#   4. Shares are set-level (as C7), from tilts fit over the periods valid under every condition; the proposal's per-book
-#      mean is reported as a secondary. The per-book rule uses C7's 0.30 book share, not 0.50: one book's tilt is noisier
-#      than the set's, and the set-level bar carries the claim.
+#   4. Shares are set-level (as C7), from tilts fit over the periods valid under every condition; the proposal's
+#      per-book mean is reported as a secondary. The per-book rule uses C7's 0.30 book share, not 0.50: one book's tilt
+#      is noisier than the set's, and the set-level bar carries the claim (in C7, book shares spread by about 0.02, so
+#      the book rule rarely binds once the set share is above about 0.35).
+# Reviewed before sealing by two reviewers working separately: an independent reviewer, and Muse Wonder
+# (results/agent/review-20261029T201626Z-muse-wonder-1.0.md). Applied from those reviews: the control's limits are
+# stated and downstream shares added (V4 can move only layer 4 and later, while about half of the whole-model change
+# sits in layer 2's own heads, which V2 changes directly; C7 diagnostic_groups); the bar's position at the expected
+# value is disclosed (revision 1); decision texts no longer claim more than the outcome shows; the question states
+# the set-level and book rules separately; any earlier failure record needs a written reason to continue, stamped
+# into phaseA.json; the ledger's limit on killed processes is stated; outcome codes start with O; module lists must
+# be in adapter order; stale C7 and set B text fixed.
 # Follows C7 (sealed; run c7v1-20261029T154201Z: outcome M1; layer 2 q, k, v alone gave 0.797 of the full dial's
 # change on set B). Every value is a proposal until Keenan seals this file.
 
@@ -30,12 +46,14 @@ status: draft
 questions:
   one_matrix: >
     At scale 2 on set C, does turning on only layer 2's v_proj (1 of the C5 adapter's 32 modules) give between 50 and
-    140 percent of the tilt change that all 32 give, in at least 4 of 5 books, while the same module in layer 4 moves
-    it by at most 30 percent of that change in either direction?
+    140 percent of the set-level tilt change that all 32 give, while the same module in layer 4 moves it by at most
+    30 percent of that change in either direction? A separate book rule also applies: in at least 4 of 5 books, FULL
+    and V2 both flatten the tilt and V2 gives at least 30 percent of FULL's change in that book.
   predictions: >
     FULL flattens the tilt by about a quarter, as on sets A and B (C5 -24.0, C7 -26.8 percent). QKV2 repeats C7, near
-    80 percent. V2 gives somewhat more than half (the probes imply about 53 percent at 8,192 tokens); QK2 gives
-    less (about 37 percent implied); V2 plus QK2 is close to QKV2. V4 gives little. Perplexity stays within 1 percent.
+    80 percent. V2 gives about half, near the 0.50 bar (the probe measured 0.534 at 8,192 tokens; scaled as C7 was,
+    about 0.51), so either outcome is plausible; QK2 gives less (the probe measured 0.371); V2 plus QK2 is close to
+    QKV2. V4 gives little, partly because it can move only layer 4 and later. Perplexity stays within 1 percent.
 
 platform:
   model: meta-models/Muse-Glimmer-30B
@@ -60,7 +78,7 @@ inputs:
   why_set_C: >
     No adapter condition has been measured on set C's first 32,768 tokens. The adapter trained on books 37106 and 174
     at tokens 40,960 to 47,103 only; the exploratory probes used set C at tokens 60,000 to 68,191; C6 used set C at
-    tokens 60,000 to 68,191 (losses only). C1 v5 measured set C's first 32,768 tokens on the base model, which BASE
+    tokens 60,000 to 68,191 (C6's main measurement used sets B and C there, losses only). C1 v5 measured set C's first 32,768 tokens on the base model, which BASE
     reproduces.
   token_counts_checked: 2026-10-26 for all 15 books (C5 spec), shortest 94,774 tokens (book 120)
   text_manifest: /workspace/data/books/MANIFEST.json
@@ -133,7 +151,7 @@ drive:
   phase_A: >
     On book 74, after the setup checks, under every condition (BASE, FULL, QKV2, V2, QK2, V4): one undriven pass, then A
     and 2A at N = 2 and 4096 (one sham, after BASE's undriven pass, which it is compared against). A condition passes if the 2A/A response ratio is
-    within 10 percent of 2 at both N and the whole-model SNR at A, N = 4096 is at least 3. If any fails, stop: C7 is
+    within 10 percent of 2 at both N and the whole-model SNR at A, N = 4096 is at least 3. If any fails, stop: C8 is
     not run, outcome U.
   controls:
     sham: zero wave, under every condition of every book, plus a closing sham per book; every head-output value must have the same bits as that condition's undriven pass (int16 view), or the run stops and the book is not written
@@ -188,18 +206,25 @@ pass_criteria:
   book_agrees: a book agrees if its BASE, FULL and V2 tilts are defined, FULL and V2 both flatten it, and (tilt(V2) - tilt(BASE)) / (tilt(FULL) - tilt(BASE)) in that book is at least 0.30
   sufficient: share(V2) between 0.50 and 1.40 inclusive (above 1.40 one module overshoots the whole adapter, and it is not counted), and at least 4 of the 5 books agree
   specific: the absolute value of share(V4) at most 0.30 (the matched control may neither carry nor oppose more than 30 percent of FULL's change)
-  outcome_V1_one_matrix_dial: sufficient and specific
-  outcome_V2S_sufficient_not_specific: sufficient, not specific
-  outcome_V0_not_one_matrix: every tilt defined, FULL flattens enough, and not sufficient (the reason is recorded)
-  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is labeled PARTIAL, its numbers are kept under partial_diagnostic, and it is never reported as C8
+  outcome_O1_one_matrix_majority: sufficient and specific
+  outcome_O2S_sufficient_not_specific: sufficient, not specific
+  outcome_O0_not_one_matrix: every tilt defined, FULL flattens enough, and not sufficient (the reason is recorded, as below the bar, an overshoot above 1.40, or too few books)
+  control_limits: >
+    V4 is the same module type and size one local layer later. It can move only layers 4 to 51, while V2 also changes
+    layer 2's own heads, which carry about half of the whole-model change (C7 diagnostic_groups: layer 2's heads fell
+    74 percent under FULL). So a small share(V4) rules out "any v_proj of the adapter does this", but it does not by
+    itself show that the effect is specific to layer 2's position; the downstream shares below speak to that.
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is written to a directory ending in PARTIAL with a warning field, its outcome object is kept under C8.partial_diagnostic with C8.outcome null, and it is never reported as C8
   every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished
   secondary: >
     Reported, never gated, pre-registered: FULL's relative tilt change (against C5's -24.0 and C7's -26.8 percent);
     share(QKV2) (a replication of C7 on another set); share(QK2); share(V2) / share(QKV2); (share(V2) + share(QK2)) /
     share(QKV2) (whether v and q, k add); per-book tilts and shares, and the mean of per-book V2 shares (Muse Wonder's
     proposed metric); median perplexity ratio per condition; set-level tilts, changes and shares over (a) layer 2's
-    heads, (b) layers 3 to 51, (c) layers 6 to 51, fit over the main periods; the BASE reproduction of C1 v5 (targets,
-    input component, amplitude reference; complete only if every book and period was compared).
+    heads, (b) layers 3 to 51, (c) layers 5 to 51, (d) layers 6 to 51, fit over the main periods, and from them the
+    downstream shares: share(V2) over layers 3 to 51, share(V4) over layers 5 to 51, and share(V2) over layers 5 to 51
+    (the region downstream of both modules); the BASE reproduction of C1 v5 (targets, input component, amplitude
+    reference; complete only if every book and period was compared). Headline: share(V2) with its bootstrap interval.
 
 uncertainty:
   bootstrap: >
@@ -210,9 +235,9 @@ uncertainty:
   not_covered: one adapter from one training seed; one probe direction; the bootstrap covers books only; the claim is about the trained C5 adapter's modules, not about v_proj in a model with no adapter
 
 decisions:
-  V1: one matrix of the dial carries a majority of its effect on the tilt, and the same matrix one local layer later does not; the dial's mechanism claim narrows to layer 2's v_proj
-  V2S: layer 2's v_proj is enough for a majority, but the matched control also moves the tilt by more than 30 percent of FULL's change; reported as not layer-specific
-  V0: one matrix does not carry a majority (or too few books agree, or it overshoots); the C7 claim about layer 2's q, k, v stands, the one-matrix claim does not; the reason is recorded
+  O1: layer 2's v_proj alone carries a majority of the dial's effect on the whole-model tilt, the largest single carrier tested, and a same-shaped update to layer 4's v_proj (same rank, same input and output size; its trained magnitude is not matched) does not; the rest of the effect lies elsewhere (layer 2's q and k, and other modules), reported with its share
+  O2S: layer 2's v_proj is enough for a majority, but layer 4's v_proj also moves the tilt by more than 30 percent of FULL's change in either direction; reported as not specific to layer 2's v_proj
+  O0: one matrix does not carry a majority, or overshoots, or too few books agree (the reason is recorded); the one-matrix claim is not supported. C7's claim about layer 2's q, k, v is described as replicated on set C only if share(QKV2) here is at least 0.60, and otherwise as not replicated
   U: inconclusive; reported as is
   no_rescue: other module sets, scales, layers, books, periods, amplitudes or analysis code cannot be used to rescue a result
   restarts: >
@@ -220,7 +245,9 @@ decisions:
     run writes STARTED.json before any GPU work and is refused if any earlier run under the seal is complete or was
     stopped by rule in Phase A; otherwise a new run needs a written reason (an infrastructure failure). A run is
     continued with --run-id; only the newest run may continue; a Phase A retry after a failure record, and every book
-    with an earlier attempt or failure record, need a written reason, stamped on the record. All records are kept.
+    with an earlier attempt or failure record, need a written reason, stamped on the record. Continuing a run that has
+    any failure record (startup or Phase A) and no phaseA.json needs a written reason, which is stamped into phaseA.json
+    with the list of earlier failure records. All records are kept.
     Before admission (so a failure leaves no run): seal and code hashes, condition names and scales, no placeholder
     left in this file, the adapter hash against this file and C5's training.json, and every text hash. The model load
     and platform preflight run after STARTED.json; a failure there is an infrastructure failure. The analysis
@@ -230,12 +257,18 @@ decisions:
 budget:
   max_gpu_hours: 2.0                # wall-clock hours of every run process under this seal, including model loads
   ledger: results/ledger/c8v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  ledger_limit: >
+    A step is written to the ledger when it ends, so a process killed during a step loses that step's time from the
+    count: at most one model load (84 to 94 s in this pod's C7 and probe logs; 134 s on the first load, CLAUDE.md) or
+    one pass (about 14 s) per killed process. With the estimate below,
+    the 2.0-hour cap leaves about 0.75 hours of headroom, more than that loss for any plausible number of restarts.
   seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
   estimate: >
     Phase A: 31 passes (per condition 1 undriven and 4 driven, plus 1 sham) and 11 short check passes at 2,048 tokens
     (1 reference, 8 adapter and condition, 2 logits). Phase B: 5 books x 55 passes (per condition 1 undriven, 1 sham
-    and 7 driven, plus 1 closing sham) = 275. 306 passes at C7's measured 13.3 to 13.7 s is about 1.15 hours, plus
-    perplexity on 36 undriven passes and the load, about 1.25 hours. Muse Wonder estimated 1.7 hours.
+    and 7 driven, plus 1 closing sham) = 275. 306 passes at about 13.5 s (C7's sealed smoke measured 13.31 to 13.46 s
+    per pass; C7's Phase A measured 13.7 wall seconds per pass, results/raw/c7v1-20261029T154201Z/phaseA.json) is
+    about 1.15 hours, plus perplexity on 36 undriven passes and the load, about 1.25 hours. Muse Wonder estimated 1.7.
   peak_gpu_memory: about C7's 76.8 GiB
   pre_seal_smoke: SMOKE_RESULT
 
@@ -249,9 +282,9 @@ analysis:
     src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
     src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
     src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
-    src/dialedin/metrics_c8.py: e816676ed2053e10d4618608f31abb0bdc7450c72cf1cf4fae59ea9123a79fb7
-    src/dialedin/run_c8.py: a9f6f20589867edb1a0fef2bf99526e76cb222fd7c26e67711374f195707f2bc
-    src/dialedin/analyze_c8.py: e94295edc639ee306b9956c1e997801079557b608f7c89e99dc0aa2edb43f344
+    src/dialedin/metrics_c8.py: 42882e5e94f30a6e304932e58d1a37493706848d3a5d1a4527f156f25a29aae3
+    src/dialedin/run_c8.py: 882e7d1ee9a460efc65ceeaec119b3cbc3b303024c96f4a97aa1306944d9e56f
+    src/dialedin/analyze_c8.py: 66f43e119102cdcd4414acfd2e3aba8aa0823a8b838b74fecf626cad44c1b71b
 outputs:
   raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the adapter, condition and perplexity-path checks; one book_C_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per condition the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter, condition modules and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
   derived: results/derived/<run_id>/c8_summary.json and c8_curves.png, citing every raw file used

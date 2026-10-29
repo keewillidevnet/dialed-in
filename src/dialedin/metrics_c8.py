@@ -31,7 +31,8 @@ def one_matrix_outcome(tilts: dict, book_tilts: list) -> dict:
     U: a tilt undefined, tilt(BASE) not positive, or FULL does not flatten by at least 15 percent.
     sufficient: 0.50 <= share(V2) <= 1.40 and at least 4 of 5 books agree.
     specific: |share(V4)| <= 0.30.
-    V1 one-matrix dial: sufficient and specific. V2S sufficient, not specific. V0 not sufficient.
+    O1 one-matrix majority: sufficient and specific. O2S sufficient, not specific. O0 not sufficient.
+    (Outcome codes start with O so they never read as the condition names V2 and V4.)
     """
     if any(tilts.get(c) is None for c in CONDITIONS):
         return {"outcome": "U", "reason": "a tilt is undefined", "tilts": dict(tilts)}
@@ -46,17 +47,20 @@ def one_matrix_outcome(tilts: dict, book_tilts: list) -> dict:
     in_range = MIN_SHARE_V2 <= sh["V2"] <= MAX_SHARE_V2
     sufficient = in_range and books >= MIN_BOOKS
     specific = abs(sh["V4"]) <= MAX_ABS_SHARE_V4
-    outcome = ("V1" if specific else "V2S") if sufficient else "V0"
+    outcome = ("O1" if specific else "O2S") if sufficient else "O0"
     reason = None
     if not sufficient:
+        why_range = (f"share(V2) {sh['V2']:.3f} above {MAX_SHARE_V2}: one module overshoots the whole adapter"
+                     if sh["V2"] > MAX_SHARE_V2 else f"share(V2) {sh['V2']:.3f} below {MIN_SHARE_V2}: not a majority")
         reason = "; ".join(r for r, bad in (
-            (f"share(V2) {sh['V2']:.3f} outside [{MIN_SHARE_V2}, {MAX_SHARE_V2}]", not in_range),
+            (why_range, not in_range),
             (f"{books} of 5 books agree, fewer than {MIN_BOOKS}", books < MIN_BOOKS)) if bad)
     elif not specific:
         reason = f"|share(V4)| {abs(sh['V4']):.3f} above {MAX_ABS_SHARE_V4}"
     return {"outcome": outcome, "reason": reason, "full_change": full_change,
             **{f"share_{c}": sh[c] for c in CONDITIONS[2:]}, "share_V2_in_range": bool(in_range),
             "books_agree_V2": books, "sufficient": bool(sufficient), "specific": bool(specific),
+            "qkv2_replicates_c7": bool(sh["QKV2"] >= 0.60),       # decision O0's sentence about C7, computed
             "share_V2_of_QKV2": sh["V2"] / sh["QKV2"] if sh["QKV2"] else None,
             "additivity_V2_plus_QK2_over_QKV2": (sh["V2"] + sh["QK2"]) / sh["QKV2"] if sh["QKV2"] else None,
             "tilts": dict(tilts)}

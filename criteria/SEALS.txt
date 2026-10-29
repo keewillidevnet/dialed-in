@@ -4,3 +4,4 @@
 2026-10-27T20:18:35Z 021ee5756f1beb724e320076043ff777bf7917c9857338f6aa2cac68a96cedff criteria/sealed/c2-glimmer-knob-tilt-v1.yaml
 2026-10-28T01:42:36Z 9cb0919523729fae4f45855ae501c07a5c609a5f97b1bf4034d61355e3fbfe4d criteria/sealed/c3-glimmer-head-dial-v1.yaml
 2026-10-28T06:58:04Z 68fc4ca289f2ee16a02eda0872fcd282d1b0e652e3e86d33f613a179168108d8 criteria/sealed/c4-glimmer-structure-and-text-v1.yaml
+2026-10-29T02:53:21Z 78dffbf9990e81c470fe9df53cc2cf49ba7edbd00a9598d811c4a7adb5ed5906 criteria/sealed/c5-glimmer-trained-dial-v1.yaml

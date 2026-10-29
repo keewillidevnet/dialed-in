@@ -1,6 +1,7 @@
 """Exploratory causal test for the C5 dial. Not sealed; nothing here gates or confirms anything.
 
-    PYTHONPATH=src python3 -m dialedin.probe_localize
+    PYTHONPATH=src python3 -m dialedin.probe_localize                 # layers and module types
+    PYTHONPATH=src python3 -m dialedin.probe_localize --set deep      # the five attention modules of layer 2
 
 Question: the mechanism probe (results/raw/probe-mech-20261029T065204Z) found the tilt change concentrated in the
 attention of layers 2 and 3. Is it caused there? Each condition sets the dial to 2 with only a subset of the 32 adapter
@@ -9,6 +10,8 @@ mean gain over every head in layers 2 to 51, one tone per pass at 0.1 x the medi
 8,192 tokens, directions 1 and 2, SDPA. Plus perplexity on tokens 2,049 to 8,191.
 
 Conditions: base (dial 0); all; L2 attention only; L2; L3; L2 and L3; L4 and L5; all but L2; attention only; MLP only.
+Deep set (--set deep): base; all; L2 attention; each of layer 2's attention modules alone (queries and keys together,
+values, output gate, output projection); and L2 attention with each of those left out.
 Reported per condition: tilt (from gains averaged over books and directions), change against base, and that change as
 a fraction of the full adapter's change. "Sufficient" reads off the subset-only rows, "necessary" off "all but L2".
 
@@ -56,6 +59,19 @@ CONDITIONS = {
     "attention_only": lambda n: is_attn(n),
     "mlp_only": lambda n: not is_attn(n),
 }
+
+
+def l2(*parts):
+    """Layer 2 attention modules whose name ends in one of parts (q_proj, k_proj, v_proj, gate_proj, o_proj)."""
+    return lambda n: layer_of(n) == 2 and is_attn(n) and n.rsplit(".", 1)[1] in parts
+
+
+L2_PARTS = {"qk": ("q_proj", "k_proj"), "v": ("v_proj",), "gate": ("gate_proj",), "o": ("o_proj",)}
+DEEP = {"all": CONDITIONS["all"], "L2_attention": CONDITIONS["L2_attention"]}
+DEEP.update({f"L2_{k}_only": l2(*v) for k, v in L2_PARTS.items()})
+DEEP.update({f"L2_attention_minus_{k}": l2(*[x for kk, vv in L2_PARTS.items() if kk != k for x in vv])
+             for k in L2_PARTS})
+SETS = {"layers": CONDITIONS, "deep": DEEP}
 
 
 class Mask:
@@ -135,6 +151,7 @@ def main():
     ap.add_argument("--repo", default=".")
     ap.add_argument("--weights", default="/workspace/weights/Muse-Glimmer-30B")
     ap.add_argument("--manifest", default="/workspace/data/books/MANIFEST.json")
+    ap.add_argument("--set", default="layers", choices=sorted(SETS))
     args = ap.parse_args()
     import yaml
     from .run_c6 import NullLedger, Session, write_json
@@ -154,19 +171,28 @@ def main():
     print(f"== load {time.time() - t0:.0f} s; adapter {s.adapter_sha[:12]}, {len(s.adapter_modules)} modules; "
           f"books {books}", flush=True)
     lg = lambda m: print(m, flush=True)
-    periods, out = run(decoder, layers, s.adapter_modules, s.params, ids, decoder.config.hidden_size, logits=s.logits, log=lg)
-    run_id = "probe-loc-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    conds = SETS[args.set]
+    if args.set == "deep":
+        for c, pred in conds.items():
+            if c not in ("all",) and not any(pred(n) for n in s.adapter_modules):
+                raise SystemExit(f"condition {c} matches no adapter module")
+    periods, out = run(decoder, layers, s.adapter_modules, s.params, ids, decoder.config.hidden_size, logits=s.logits,
+                       conditions=conds, log=lg)
+    run_id = ("probe-loc-" if args.set == "layers" else f"probe-loc-{args.set}-") + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out_dir = os.path.join(repo, "results", "raw", run_id)
     os.makedirs(out_dir)
     write_json(os.path.join(out_dir, "localize.json"),
                {"exploratory": True, "sealed": False, "what": __doc__.split("\n\n")[2].strip(), "books": books,
                 "start": START, "tokens": TOKENS, "seeds": list(SEEDS), "scale": SCALE, "periods": periods,
                 "adapter_file": spec["adapter"]["file"], "adapter_sha256": s.adapter_sha, "platform": platform,
-                "modules": s.adapter_modules, "conditions": out}, indent=1)
-    print("== condition              modules   tilt     change   share of full   perplexity   min SNR")
+                "set": args.set, "modules": s.adapter_modules, "conditions": out}, indent=1)
+    ref = out.get("L2_attention", {}).get("tilt")
+    base = out["base"]["tilt"]
+    print("== condition                    modules   tilt     change   share of full   share of L2 attn   perplexity   min SNR")
     for c, r in out.items():
         frac = "" if r["fraction_of_full"] is None or c == "base" else f"{100 * r['fraction_of_full']:.0f}%"
-        print(f"   {c:20s} {r['modules_on']:5d}   {r['tilt']:.4f}  {100 * r['change']:+6.1f}%  {frac:>12s}"
+        fl2 = "" if ref is None or ref == base or c == "base" else f"{100 * (r['tilt'] - base) / (ref - base):.0f}%"
+        print(f"   {c:28s} {r['modules_on']:5d}   {r['tilt']:.4f}  {100 * r['change']:+6.1f}%  {frac:>12s}  {fl2:>17s}"
               f"   x{r.get('perplexity_ratio', float('nan')):.4f}   {r['snr_min']:.1f}")
     print(f"== exploratory; written to {os.path.relpath(out_dir, repo)}/localize.json")
 

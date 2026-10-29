@@ -40,3 +40,15 @@ def test_localize_end_to_end(monkeypatch):
     assert out["all_but_L2"]["modules_on"] == len(names) - sum(1 for n in names if L.layer_of(n) == 2)
     assert out["all"]["tilt"] != out["base"]["tilt"] and abs(out["base"]["perplexity_ratio"] - 1) < 1e-12
     json.dumps(out)
+
+
+def test_deep_set_selects_the_right_modules():
+    names = [f"layers.{i}.self_attn.{m}" for i in (2, 3) for m in ("q_proj", "k_proj", "v_proj", "gate_proj", "o_proj")]
+    names += ["layers.2.mlp.gate_proj", "layers.2.mlp.up_proj"]
+    pick = lambda c: [n for n in names if L.DEEP[c](n)]
+    assert pick("L2_qk_only") == ["layers.2.self_attn.q_proj", "layers.2.self_attn.k_proj"]
+    assert pick("L2_gate_only") == ["layers.2.self_attn.gate_proj"]           # not the MLP's gate_proj
+    assert pick("L2_attention_minus_v") == ["layers.2.self_attn.q_proj", "layers.2.self_attn.k_proj",
+                                            "layers.2.self_attn.gate_proj", "layers.2.self_attn.o_proj"]
+    assert len(pick("L2_attention")) == 5 and len(pick("all")) == len(names)
+    assert len(L.DEEP) == 10

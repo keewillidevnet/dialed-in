@@ -1,0 +1,60 @@
+{
+  "title": "Test if layer 2 v alone is a minimal dial",
+  "question": "Does layer 2 v alone at scale 2 keep most of the full dial tilt flattening at 32,768 tokens on unused text, while layer 3 v does not?",
+  "prediction": "Layer 2 v alone will keep most of the full effect. In the exploratory 8K split, v alone had a share of 0.6378 [F127]. In the same split, q and k together had a share of 0.4425 [F126]. Layer 2 q, k, v alone had a share of 0.7971 [F113] in the sealed test. The layer 3 v control will stay weak.",
+  "intervention": "Switch on frozen C5 adapter subsets at scale 2 with no training. Measure tilt at 32,768 tokens for each book. Compare single modules and small sets against scale 0 and the full adapter.",
+  "conditions": [
+    "Dial scale 0 with all adapter modules off. This is the unmodified model baseline.",
+    "Dial scale 2 with all 32 adapter modules on. This is the full dial reference.",
+    "Dial scale 2 with layer 2 q, k, v only on.",
+    "Dial scale 2 with layer 2 v only on.",
+    "Dial scale 2 with layer 2 q and k only on.",
+    "Dial scale 2 with layer 3 v only on. This is the control condition."
+  ],
+  "control": "Dial scale 2 with layer 3 v only on. It is the same module type and the same module count as the layer 2 v test. It should stay weak if the effect is truly in layer 2 v.",
+  "books": "Set C, all 5 books. Use only text after token 70,000. Use one 32,768 token segment per book.",
+  "primary_metric": "For each book, share equals the tilt drop from scale 0 to a test condition divided by the tilt drop from scale 0 to the full dial at scale 2. The primary metric is the mean layer 2 v share across the 5 books.",
+  "pass_rule": "Pass if the full dial flattens tilt by at least 0.15 relative to scale 0. This floor is needed because shares are unstable when the reference effect is tiny. Pass also needs a mean layer 2 v share of at least 0.60. This bar is set because one module should keep a clear majority of the full effect. Pass also needs at least 4 of 5 books with a layer 2 v share of at least 0.50. This bar is set because the effect should not rest on one book. Pass also needs a mean control share of at most 0.30. This cap is set because a matched wrong layer module should keep only a minor part of the effect.",
+  "failure_meaning": "Failure means layer 2 v alone is not a sufficient minimal dial. The effect then needs q and k with v, or it spreads beyond one projection. A high control share would mean the effect is not layer specific. A weak full dial effect would mean this test cannot judge v.",
+  "gpu_hours_estimate": 1.7,
+  "risks": [
+    "A book may not have a clean 32,768 token segment after token 70,000.",
+    "Share ratios can swing if the full dial effect is weak on the new segment.",
+    "Single module shares can sum past the full effect if q, k, and v interact.",
+    "Results on one book set may not hold on other sets.",
+    "Tilt alone does not prove a useful change in normal text loss."
+  ],
+  "why_this_next": "This test turns an exploratory 8K split into a full length test on unused text. It can cut the dial from 32 modules to 1 module. It also checks layer specificity with a matched control. No other open test gives this much mechanism for this little time.",
+  "_checks": {
+    "missing_fields": [],
+    "numbers": {
+      "unverified_numbers": [
+        "32,768",
+        "3",
+        "3",
+        "32,768",
+        "3",
+        "3",
+        "70,000",
+        "32,768",
+        "0.60",
+        "4",
+        "0.50",
+        "0.30",
+        "1.7",
+        "32,768",
+        "70,000"
+      ],
+      "mismatched_citations": [],
+      "unknown_citations": [],
+      "citations_used": [
+        "F113",
+        "F126",
+        "F127"
+      ],
+      "ok": true
+    },
+    "within_budget": true
+  },
+  "_model": "muse-wonder-1.0"
+}

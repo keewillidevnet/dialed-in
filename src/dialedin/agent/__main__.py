@@ -4,6 +4,7 @@
     PYTHONPATH=src python3 -m dialedin.agent facts      # print the fact sheet (no API call)
     PYTHONPATH=src python3 -m dialedin.agent narrate    # Muse explains the results; every number checked
     PYTHONPATH=src python3 -m dialedin.agent propose    # Muse drafts the next pre-registered experiment
+    PYTHONPATH=src python3 -m dialedin.agent review --files <spec> <code> ...   # Muse reviews a draft before sealing
     add --model muse-wonder-1.0 to use Muse Wonder instead of Muse Spark (default muse-spark-1.3)
 
 Outputs go to results/agent/. Muse never seals criteria, edits sealed files, or runs the GPU: a
@@ -69,6 +70,17 @@ SCHEMA = {"type": "object", "additionalProperties": False,
                          "risks": {"type": "array", "items": {"type": "string"}}}}
 
 
+REVIEW = ("You are Muse, the AI scientist of the Dialed In lab, acting as an adversarial pre-registration reviewer. "
+          "Below are a draft experiment (a criteria file that will be sealed by hash before the run) and its code, plus "
+          "the lab's fact sheet of earlier results. Find problems BEFORE the experiment is sealed and run on a GPU: "
+          "anything that could crash after expensive GPU work, make the outcome rule mislead, let a result be "
+          "rescued after the fact, contradict between the spec and the code, or misstate an earlier result. Check the "
+          "arithmetic in the budget and in any implied numbers. Do not edit anything. Reply with a verdict (READY TO "
+          "SEAL, READY WITH MINOR FIXES, or NOT READY), then a numbered list of findings, each with severity (blocker, "
+          "major, minor), the file and the line or field, what is wrong, and a concrete fix. Report only what you can "
+          "point to in the text. Under 900 words. Plain sentences; never use em dashes.")
+
+
 def stamp():
     return time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
 
@@ -122,9 +134,25 @@ def propose(client, sheet, out_dir):
     print("== this is a draft for review: it becomes an experiment only after independent review and a human seal")
 
 
+def review(client, sheet, out_dir, files, repo):
+    parts = []
+    for f in files:
+        text = open(os.path.join(repo, f)).read()
+        numbered = "\n".join(f"{i + 1:4d}  {line}" for i, line in enumerate(text.splitlines()))
+        parts.append(f"===== FILE {f} =====\n{numbered}")
+    messages = [{"role": "system", "content": REVIEW},
+                {"role": "user", "content": "Fact sheet:\n" + sheet.text() + "\n\n" + "\n\n".join(parts)}]
+    text = client.chat(messages, temperature=0.2, max_tokens=24000)
+    path = os.path.join(out_dir, f"review-{stamp()}-{getattr(client, 'model', 'muse')}.md")
+    with open(path, "w") as fh:
+        fh.write(f"Reviewed files: {', '.join(files)}\n\n" + text.strip() + "\n")
+    print(text.strip()); print("== wrote", path)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("task", choices=["facts", "narrate", "propose"])
+    ap.add_argument("task", choices=["facts", "narrate", "propose", "review"])
+    ap.add_argument("--files", nargs="+", default=[], help="for review: the draft spec and code files, repo-relative")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--model", default=None, help="muse-spark-1.3 (default) or muse-wonder-1.0")
     ap.add_argument("--timeout", type=float, default=600.0, help="seconds to wait for one reply (reasoning can be slow)")
@@ -139,6 +167,10 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     client = MuseClient(log_path=os.path.join(out_dir, "calls.jsonl"), timeout=args.timeout,
                         **({"model": args.model} if args.model else {}))
+    if args.task == "review":
+        if not args.files:
+            raise SystemExit("review needs --files")
+        return review(client, sheet, out_dir, args.files, args.repo)
     (narrate if args.task == "narrate" else propose)(client, sheet, out_dir)
 
 

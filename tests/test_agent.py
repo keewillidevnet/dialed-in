@@ -125,3 +125,15 @@ def test_proposal_allows_design_numbers_but_checks_citations(tmp_path):
     out2 = tmp_path / "p2"; out2.mkdir()
     agent.propose(FakeClient([json.dumps(dict(prop, pass_rule=f"Pass if share reaches 0.5066 [{fid}]."))]), sh, str(out2))
     assert not json.load(open(next(out2.glob("proposal-*.json"))))["_checks"]["numbers"]["ok"]
+
+
+def test_review_sends_numbered_files(tmp_path):
+    write_results(tmp_path)
+    sh = facts.build(str(tmp_path))
+    (tmp_path / "spec.yaml").write_text("a: 1\nb: 2\n")
+    out = tmp_path / "rv"; out.mkdir()
+    fake = FakeClient(["READY TO SEAL. No findings."])
+    agent.review(fake, sh, str(out), ["spec.yaml"], str(tmp_path))
+    sent = fake.calls[0][0][1]["content"]
+    assert "===== FILE spec.yaml =====" in sent and "   2  b: 2" in sent
+    assert "READY TO SEAL" in open(next(out.glob("review-*.md"))).read()

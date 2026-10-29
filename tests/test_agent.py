@@ -72,10 +72,21 @@ def test_propose_checks_fields_and_budget(tmp_path):
     sh = facts.build(str(tmp_path))
     out = tmp_path / "out"; out.mkdir()
     prop = {k: "x" for k in agent.SCHEMA["required"]}
-    prop.update(conditions=["window 1024", "window 4096"], risks=["off-distribution"], gpu_hours_estimate=2.5)
-    agent.propose(FakeClient([json.dumps(prop)]), sh, str(out))
+    prop.update(conditions=["window 1024", "window 4096"], risks=["off-distribution"], gpu_hours_estimate=1.5)
+    agent.propose(FakeClient(["Here it is:\n```json\n" + json.dumps(prop) + "\n```"]), sh, str(out))   # fenced: tolerated
     saved = json.load(open(next(out.glob("proposal-*.json"))))
     assert saved["_checks"]["missing_fields"] == [] and saved["_checks"]["within_budget"]
+    out2 = tmp_path / "out2"; out2.mkdir()
+    agent.propose(FakeClient([json.dumps(dict(prop, gpu_hours_estimate=2.5))]), sh, str(out2))
+    assert not json.load(open(next(out2.glob("proposal-*.json"))))["_checks"]["within_budget"]
+
+
+def test_fact_sheet_marks_probes_exploratory():
+    repo = os.path.join(os.path.dirname(__file__), "..")
+    sh = facts.build(repo)
+    probe = [f for f in sh.facts if "probe-" in f["source"] or "headmap" in f["source"]]
+    assert all(f["label"].startswith("EXPLORATORY") for f in probe)
+    assert all(not f["label"].startswith("EXPLORATORY") for f in sh.facts if f["label"].startswith(("C5", "C6", "C7")))
 
 
 def test_no_anthropic_sdk_under_src():

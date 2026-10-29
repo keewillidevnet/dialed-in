@@ -38,9 +38,12 @@ class MuseClient:
                     time.sleep(5 * (attempt + 1))
                     continue
                 raise SystemExit(f"Muse API error {e.code}: {e.read()[:500]!r}")
-        text = out["choices"][0]["message"]["content"]
+        choice = out["choices"][0]
+        text = choice["message"]["content"] or ""
+        if choice.get("finish_reason") == "length":
+            raise SystemExit(f"Muse hit the token limit ({max_tokens}) before finishing; raise max_tokens")
         with open(self.log_path, "a") as fh:
             fh.write(json.dumps({"utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "model": self.model,
                                  "seconds": round(time.time() - t, 2), "messages": messages, "reply": text,
-                                 "usage": out.get("usage")}) + "\n")
+                                 "usage": out.get("usage"), "finish_reason": choice.get("finish_reason")}) + "\n")
         return text

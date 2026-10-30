@@ -87,6 +87,18 @@ td.id{font:12px var(--mono);white-space:nowrap}
 .chip.pos{color:var(--good)} .chip.neg{color:var(--muted)} .chip.warn{color:var(--warn)} .chip.run{color:var(--dial)} .chip.bad{color:var(--bad)}
 .who{font-size:12px;color:var(--muted)} .who.muse{color:var(--base);font-weight:500}
 .story{display:grid;gap:0;position:relative}
+.behave{display:grid;gap:14px;border-top:1px solid var(--rule);padding-top:18px}
+.bars{display:grid;gap:8px;max-width:640px}
+.brow{display:grid;grid-template-columns:minmax(0,15em) 1fr 4.2em;gap:10px;align-items:center;font-size:13px}
+.brow .track{height:14px;background:var(--faint);border-radius:2px;position:relative}
+.brow .fill{position:absolute;inset:0 auto 0 0;border-radius:2px}
+.texts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.texts{grid-template-columns:minmax(0,1fr)}}
+.texts figure{margin:0;padding:12px;border:1px solid var(--rule);border-radius:4px;background:var(--paper);display:grid;gap:6px}
+.texts figcaption{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.texts p{font:13px/1.5 var(--mono);white-space:pre-wrap;margin:0}
+.texts figure.hl{border-color:var(--dial)}
+.card.next{border-color:var(--dial);border-style:dashed}
 .ev{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--faint)}
 .ev:first-child{border-top:0}
 .ev .when{font:12px var(--mono);color:var(--muted)}
@@ -133,6 +145,7 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
   </div>
   <p class="note" id="dial-note"></p>
   <div class="src" id="dial-src"></div>
+  <div class="behave" id="behave"></div>
 </section>
 
 <section id="where" aria-labelledby="h-where">
@@ -151,6 +164,7 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
     <div style="display:grid;gap:16px;min-width:0">
       <div class="share" id="c7"></div>
       <div class="card" id="c8"></div>
+      <div class="card" id="c9"></div>
     </div>
   </div>
 </section>
@@ -166,14 +180,14 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
   <div class="src" id="ledger-src"></div>
   <div class="cols">
     <div style="display:grid;gap:10px;min-width:0">
-      <h3>C8: from Muse's proposal to a sealed run</h3>
+      <h3>C9: one full turn of the lab loop, from Muse's proposal to the result</h3>
       <div class="story" id="story"></div>
+      <div class="card next" id="next"></div>
     </div>
     <div style="display:grid;gap:10px;min-width:0">
       <h3>Muse Spark explains the record</h3>
       <blockquote id="narr"></blockquote>
       <div class="sources" id="narr-src"></div>
-      <div class="card" id="next"></div>
     </div>
   </div>
 </section>
@@ -201,6 +215,7 @@ $("facts").innerHTML=[
   `perplexity ×${dial.ppl.S2.toFixed(3)}`,
   `layer 2 q, k, v: ${(W.c7.share_QKV2*100).toFixed(1)}% of the effect`,
   ...(D.c8?[`layer 2 v alone: ${(D.c8.C8.share_V2*100).toFixed(1)}% (C8, ${D.c8.C8.outcome})`]:[]),
+  `without it the dial keeps ${(W.c9.retained_NOV2*100).toFixed(1)}% (C9, ${W.c9.outcome})`,
   `${L.rows.length} sealed specs`].map(s=>`<span>${s}</span>`).join("");
 
 /* ---------- 1. dial chart ---------- */
@@ -333,37 +348,53 @@ function c8card(){
 }
 $("c8").innerHTML=c8card();
 
+const c9=W.c9, c9ci=W.c9_ci;
+$("c9").innerHTML=`<span class="eyebrow">C9 · sealed · outcome <span class="chip pos">${esc(c9.outcome)}: necessary</span></span>
+  <h3>Is that matrix needed?</h3>
+  ${sbar("Full dial without layer 2 v (must keep at most 60%)",c9.retained_NOV2,c9ci.retained_NOV2,"var(--dial)",[0.6])}
+  ${sbar("Without layer 2's gate, control (must keep 80% or more)",c9.retained_NOG2,c9ci.retained_NOG2,"var(--base)",[0.8])}
+  ${sbar("Without layer 4 v",c9.retained_NOV4,c9ci.retained_NOV4,"var(--muted)")}
+  ${sbar("Layer 2 v alone (repeat of C8 on new text)",c9.retained_V2,c9ci.retained_V2,"var(--muted)")}
+  <p class="note">Alone it gives ${(c9.retained_V2*100).toFixed(0)}%; removing it costs ${((1-c9.retained_NOV2)*100).toFixed(0)}%. About half of the dial is this one matrix. All ${c9.books_ordered} of 5 books agree. The downstream check passed narrowly: without layer 4 v, layers 5 to 51 kept ${c9.downstream.retained_NOV4.toFixed(3)} against a bar of 0.80 (95% interval ${(c9ci.retained5_NOV4[0]).toFixed(2)} to ${(c9ci.retained5_NOV4[1]).toFixed(2)}).</p>
+  <div class="src">Source: ${esc(W.c9_src)}</div>`;
+
+const B=dial.behavior;
+const bmax=Math.max(...Object.values(B.rise))*1.15;
+const blab={S2:"Trained dial at 2",S4:"Trained dial at 4 (beyond any sealed run)",R2:"Random adapter, same size, at 2",R4:"Random adapter, same size, at 4"};
+$("behave").innerHTML=`<div class="head"><span class="eyebrow">Exploratory · not sealed</span><h3>Does it change what the model writes?</h3>
+  <p class="muted">${B.pairs} pairs of books: about 6,000 tokens of one, then 512 of another. How much harder is the new book to predict than with no switch, compared with the dial at 0? The trained dial makes the model hold on to the old book; a random change of the same size does not.</p></div>
+  <div class="bars">${Object.entries(B.rise).map(([c,v])=>`<div class="brow"><span>${blab[c]}</span><span class="track"><span class="fill" style="width:${Math.max(0,v)/bmax*100}%;background:${c[0]==="S"?"var(--dial)":"var(--base)"}"></span></span><span class="mono">${pct(v)}</span></div>`).join("")}</div>
+  ${B.show?`<p class="note">The same prompt (${esc(B.show.x)}, then ${esc(B.show.y)}), 48 tokens each, greedy; the pair was picked by a rule written into the probe before it ran. The random adapter leaves the words as they were; the trained dial rewrites them. No old-book names appeared in any of the ${B.pairs * 5} continuations, so the effect is measurable but not yet readable.</p>
+  <div class="texts">${[["S0","Dial at 0"],["S4","Trained dial at 4"],["R4","Random adapter at 4"]].map(([c,t])=>`<figure class="${c==="S4"?"hl":""}"><figcaption>${t}</figcaption><p>${esc(B.show.texts[c].trim())}</p></figure>`).join("")}</div>`:""}
+  <div class="src">Source: ${esc(B.src)} (every pair and continuation is in the file). Perplexity: dial 2 ×${B.ppl.S2.toFixed(3)}, dial 4 ×${B.ppl.S4.toFixed(3)}.</div>`;
+
 /* ---------- 3. lab loop ---------- */
-const runningC8=!D.c8;
-$("cycle").innerHTML=[["Muse Wonder proposes","muse"],["Muse Spark critiques, Wonder revises","muse"],["Independent review and Muse Wonder code review","muse"],["A person seals the spec","human"],["GPU run",runningC8?"now":""],["Muse Spark narrates the result","muse"]]
+$("cycle").innerHTML=[["Muse Spark narrates the results","muse"],["Muse Wonder proposes","muse"],["Muse Spark critiques, Wonder revises","muse"],["Independent review and Muse Wonder code review","muse"],["A person seals the spec","human"],["GPU run",""]]
   .map(([t,c],i,a)=>`<span class="step ${c}">${t}</span>${i<a.length-1?'<span class="arrow" aria-hidden="true">→</span>':'<span class="arrow" aria-hidden="true">↺</span>'}`).join("");
 const outChip=o=>{
   if(!o) return "";
-  const pos=/^(T|M1|O1)$/.test(o), warn=/^(L0|O2S)$/.test(o), bad=/^U/.test(o);
+  const pos=/^(T|M1|O1|N1)$/.test(o), warn=/^(L0|O2S)$/.test(o), bad=/^U/.test(o);
   return `<span class="chip ${pos?"pos":warn?"warn":bad?"bad":"neg"}">${esc(o)}</span>`;
 };
 $("ledger").innerHTML=`<thead><tr><th>Spec</th><th>Sealed</th><th>Proposed by</th><th>State</th><th>Outcome</th><th>What it showed</th></tr></thead><tbody>`+
   L.rows.map(r=>{
     let state=r.state, outcome=r.outcome, plain=L.plain[r.id]||"";
-    if(r.id.startsWith("c8-")){
-      if(D.c8){state="analyzed"; outcome=D.c8.C8.outcome; plain=D.c8.C8.reason?`Not passed: ${D.c8.C8.reason}.`:`Layer 2 v alone carries ${(D.c8.C8.share_V2*100).toFixed(1)}% of the dial's effect.`}
-      else if(D.running){state="running"; plain="Running on the pod now."}
-    }
     if(state==="sealed, not run") plain=plain||"Superseded by a later version before it ran.";
     const muse=/muse/.test(r.proposed_by);
     return `<tr><td class="id">${esc(r.id.replace("-glimmer",""))}</td><td class="mono">${esc(r.sealed_utc.slice(5,16).replace("T"," "))}</td>
       <td class="who ${muse?"muse":""}">${muse?"Muse Wonder":"the lab"}</td>
       <td>${state==="running"?'<span class="chip run">running</span>':esc(state)}</td><td>${outChip(outcome)}</td><td>${esc(plain)}</td></tr>`;
   }).join("")+"</tbody>";
-$("ledger-src").textContent=`Built from ${L.status_src} (as of ${stamp(L.status_utc)}), criteria/SEALS.txt and each experiment's summary file. Outcome codes are defined in each sealed spec.`;
+$("ledger-src").textContent=`Built from criteria/SEALS.txt, each sealed spec, each run's STARTED.json and each experiment's summary file when the page was built. Outcome codes are defined in each sealed spec.`;
 
 const rv=L.review;
 $("story").innerHTML=[
-  [stamp(L.proposal_utc),`<b>Muse Wonder proposes.</b> “${esc(L.proposal.question)}” <span class="src">${L.proposal_src}</span>`],
-  ["review",`<b>Review changes the design.</b> Four revisions, each with its reason in the sealed spec:<ul>${L.revisions.map(r=>`<li>${esc(r.text)}</li>`).join("")}</ul>`],
-  [stamp(L.review_utc),`<b>Muse Wonder reviews the code: ${esc(rv.verdict)}.</b> ${rv.items.length} findings, working separately from an independent reviewer:<ul>${rv.items.map(i=>`<li><span class="sev ${i.severity}">${i.severity}</span>${esc(i.label)}</li>`).join("")}</ul><span class="src">${L.review_src}</span>`],
+  [stamp(L.turn_src.match(/(\d{8}T\d{6}Z)/)[1]),`<b>Muse Wonder proposes.</b> One lab-loop turn: Spark narrated the results, then Wonder asked: “${esc(L.proposal.question)}” <span class="src">${esc(L.proposal_src)}</span>`],
+  ["critique",`<b>Muse Spark critiques: ${esc(L.critique.verdict||"")}.</b><ul>${L.critique.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>${L.critique.confirmed_numbers?"Spark also checked that every quoted number matches its fact. ":""}<b>Muse Wonder revises</b> with ${L.revision_notes.length} notes, accepting every point but one, which it turned down with a reason. <span class="src">${esc(L.critique_src)} · ${esc(L.revised_src)}</span>`],
+  ["review",`<b>Review changes the design again.</b> ${L.revisions.length} revisions, each with its reason in the sealed spec. The independent reviewer found that the proposed control could not touch layer 2's own heads (revision 7):<ul>${L.revisions.map(r=>`<li>${esc(r.text)}</li>`).join("")}</ul><span class="src">${esc(L.spec_src)}</span>`],
+  [stamp(L.review_utc),`<b>Muse Wonder reviews the code: ${esc(rv.verdict)}.</b> ${rv.items.length} findings, working separately from the independent reviewer; all fixed before sealing:<ul>${rv.items.map(i=>`<li><span class="sev ${i.severity}">${i.severity}</span>${esc(i.label)}</li>`).join("")}</ul><span class="src">${esc(L.review_src)}</span>`],
   [L.seal?L.seal.utc.slice(0,16).replace("T"," ")+" UTC":"",`<b>Sealed by a person.</b> <span class="mono">sha256 ${L.seal?L.seal.sha.slice(0,16):""}…</span> The run script refuses to start if the file changes.`],
-  ["GPU",D.c8?`<b>Result: ${esc(D.c8.C8.outcome)}${D.c8.C8.outcome==="O1"?", passed":""}.</b> Layer 2's v matrix alone gives ${(D.c8.C8.share_V2*100).toFixed(1)}% of the dial's effect${D.c8.ci&&D.c8.ci.share_V2?` (95% interval ${(D.c8.ci.share_V2[0]*100).toFixed(1)} to ${(D.c8.ci.share_V2[1]*100).toFixed(1)}%)`:""}; the matched control gives ${(D.c8.C8.share_V4*100).toFixed(1)}%. ${D.c8.C8.reason?esc(D.c8.C8.reason):""}<span class="src">${esc(D.c8.src)}</span>`:`<b>Running.</b> ${D.running?`Run <span class="mono">${esc(D.running)}</span>, `:""}6 conditions × 5 books on one RTX PRO 6000.`],
+  ["GPU",`<b>Result: ${esc(L.c9_outcome)}, passed.</b> Without layer 2's v the full dial keeps ${(L.c9_retained_NOV2*100).toFixed(1)}% of its effect (95% interval ${(L.c9_ci[0]*100).toFixed(1)} to ${(L.c9_ci[1]*100).toFixed(1)}%); without layer 2's gate it keeps ${(L.c9_retained_NOG2*100).toFixed(1)}%. <span class="src">${esc(L.c9_src)}</span>`],
 ].map(([w,h])=>`<div class="ev"><span class="when">${w}</span><div class="what">${h}</div></div>`).join("");
 
 const N=L.narration;
@@ -372,6 +403,6 @@ $("narr-src").innerHTML=`<span class="eyebrow">${N.verified?"Checked: every numb
   Object.entries(N.sources).map(([f,s])=>`<span><span class="cite">${f}</span> ${esc(s.label)} <span class="src">${esc(s.path)}</span></span>`).join("")+
   `<span class="src">Narration: ${L.narration_src}</span>`;
 
-$("next").innerHTML=D.next?`<span class="eyebrow">Next · proposed by ${esc(D.next.model||"Muse")} · awaiting a human seal</span><h3>${esc(D.next.title)}</h3><p class="note">${esc(D.next.question)}</p>${D.next.why?`<p class="note">${esc(D.next.why)}</p>`:""}<div class="src">${esc(D.next.src)}</div>`
+$("next").innerHTML=D.next?`<span class="eyebrow">Next · proposed by ${esc(D.next.model||"Muse")} after a second loop turn · not sealed</span><h3>C10, proposed: ${esc(D.next.title)}</h3><p class="note">${esc(D.next.question)}</p>${D.next.why?`<p class="note">${esc(D.next.why)}</p>`:""}<p class="note">Spark's critique led to ${D.next.revisions} revisions before it reached the human gate.${D.next.lab_note?` A lab note: C8 already measured layer 2's q, k, v at ${D.next.lab_note.value.toFixed(2)} of the full dial's change over layers 5 to 51 (set C), below this proposal's 0.60 bar, a number that was not on Muse's fact sheet.`:""}</p><div class="src">${esc(D.next.src)}${D.next.lab_note?` · ${esc(D.next.lab_note.src)}`:""}</div>`
   :`<span class="eyebrow">Next</span><h3>C9 is Muse's call</h3><p class="note">When C8 is analyzed, one loop turn has Spark narrate it, Wonder propose C9, Spark critique it and Wonder revise it. The proposal appears here, then waits for a person to seal it.</p>`;
 </script>

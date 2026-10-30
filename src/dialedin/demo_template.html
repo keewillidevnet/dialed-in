@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a bench instrument. Three panels read top to bottom: the dial, where it lives, the lab that found it. */
+/* Layout: a bench instrument. Three panels read top to bottom: the dial, where the dial acts, the lab that found it. */
 :root{
   --paper:#edf0f2; --panel:#f8f9fa; --ink:#15202a; --muted:#56636f; --rule:#cfd6dc; --faint:#dfe4e8;
   --dial:#b05a00; --dial-soft:#b05a0022; --base:#2f6688; --good:#2c7a4b; --warn:#9a6700; --bad:#b03636;
@@ -118,7 +118,7 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
 <header>
   <span class="eyebrow">Meta Global AI Developer Hackathon · Theme 2: Push the Frontier</span>
   <h1>Dialed In</h1>
-  <p class="lede">Muse Glimmer-30B listens unevenly. Slow patterns in a text pass through its attention heads more strongly than fast ones. We measured that lean, trained a dial that turns it down, traced the dial to one layer, and let Muse run the lab that asks what to test next.</p>
+  <p class="lede">We built a measurable control over a language model's internal frequency response, isolated a major contributor to that control, and ran the experiments through an AI scientist loop that tested its own proposals. A slow test signal passes through Muse Glimmer-30B's attention heads more strongly than a fast one. We call that the lean. A small trained dial turns it down, about half of the dial sits in one matrix, and Muse proposes and reviews what to test next.</p>
   <div class="facts" id="facts"></div>
 </header>
 
@@ -126,7 +126,7 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
   <div class="head">
     <span class="eyebrow">1 · The dial</span>
     <h2 id="h-dial">Turn the lean down</h2>
-    <p class="muted">We add a faint sine wave with a period of N tokens to the model's hidden states and read how strongly each head carries it. Gain climbs with the period: the model favors slow patterns. The dial is a small trained adapter. Each setting below was measured on five books.</p>
+    <p class="muted">We add a faint sine wave with a period of N tokens to the model's hidden states and read how strongly each head carries it. Gain climbs with the period: slow test signals get through more strongly than fast ones. This is a measurement with an injected probe; whether the model also favors long-range meaning in ordinary text is not yet shown. The dial is a small trained adapter, and flatter is not better: it is a control, with a small cost. Each setting below was measured on five books.</p>
   </div>
   <div class="cols">
     <div style="display:grid;gap:12px;min-width:0">
@@ -150,9 +150,9 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
 
 <section id="where" aria-labelledby="h-where">
   <div class="head">
-    <span class="eyebrow">2 · Where it lives</span>
-    <h2 id="h-where">One early layer does most of the work</h2>
-    <p class="muted">Each cell is one attention head, colored by its own lean. The adapter touches layers 2 to 5. Switching its parts on and off showed that three matrices in layer 2 carry most of the effect.</p>
+    <span class="eyebrow">2 · Where the dial acts</span>
+    <h2 id="h-where">One matrix carries about half of the dial</h2>
+    <p class="muted">Each cell is one attention head, colored by its own lean; the lean is spread across many layers. The adapter touches layers 2 to 5. Switching its parts on and off located where the dial acts: three matrices in layer 2 carry most of its effect, and one of them, layer 2's v, about half. This locates the dial, not the origin of the lean.</p>
   </div>
   <div class="cols">
     <div class="mapwrap">
@@ -349,20 +349,20 @@ function c8card(){
 $("c8").innerHTML=c8card();
 
 const c9=W.c9, c9ci=W.c9_ci;
-$("c9").innerHTML=`<span class="eyebrow">C9 · sealed · outcome <span class="chip pos">${esc(c9.outcome)}: necessary</span></span>
+$("c9").innerHTML=`<span class="eyebrow">C9 · sealed · outcome <span class="chip pos">${esc(c9.outcome)}: needed for about half</span></span>
   <h3>Is that matrix needed?</h3>
   ${sbar("Full dial without layer 2 v (must keep at most 60%)",c9.retained_NOV2,c9ci.retained_NOV2,"var(--dial)",[0.6])}
   ${sbar("Without layer 2's gate, control (must keep 80% or more)",c9.retained_NOG2,c9ci.retained_NOG2,"var(--base)",[0.8])}
   ${sbar("Without layer 4 v",c9.retained_NOV4,c9ci.retained_NOV4,"var(--muted)")}
   ${sbar("Layer 2 v alone (repeat of C8 on new text)",c9.retained_V2,c9ci.retained_V2,"var(--muted)")}
-  <p class="note">Alone it gives ${(c9.retained_V2*100).toFixed(0)}%; removing it costs ${((1-c9.retained_NOV2)*100).toFixed(0)}%. About half of the dial is this one matrix. All ${c9.books_ordered} of 5 books agree. The downstream check passed narrowly: without layer 4 v, layers 5 to 51 kept ${c9.downstream.retained_NOV4.toFixed(3)} against a bar of 0.80 (95% interval ${(c9ci.retained5_NOV4[0]).toFixed(2)} to ${(c9ci.retained5_NOV4[1]).toFixed(2)}).</p>
+  <p class="note">Alone it gives ${(c9.retained_V2*100).toFixed(0)}%; removing it costs ${((1-c9.retained_NOV2)*100).toFixed(0)}%. It is a major contributor, not the only route: the rest of the adapter still keeps about half of the effect without it. All ${c9.books_ordered} of 5 books agree. The downstream check passed narrowly: without layer 4 v, layers 5 to 51 kept ${c9.downstream.retained_NOV4.toFixed(3)} against a bar of 0.80 (95% interval ${(c9ci.retained5_NOV4[0]).toFixed(2)} to ${(c9ci.retained5_NOV4[1]).toFixed(2)}).</p>
   <div class="src">Source: ${esc(W.c9_src)}</div>`;
 
 const B=dial.behavior;
 const bmax=Math.max(...Object.values(B.rise))*1.15;
 const blab={S2:"Trained dial at 2",S4:"Trained dial at 4 (beyond any sealed run)",R2:"Random adapter, same size, at 2",R4:"Random adapter, same size, at 4"};
 $("behave").innerHTML=`<div class="head"><span class="eyebrow">Exploratory · not sealed</span><h3>Does it change what the model writes?</h3>
-  <p class="muted">${B.pairs} pairs of books: about 6,000 tokens of one, then 512 of another. How much harder is the new book to predict than with no switch, compared with the dial at 0? The trained dial makes the model hold on to the old book; a random change of the same size does not.</p></div>
+  <p class="muted">${B.pairs} pairs of books: about 6,000 tokens of one, then 512 of another. How much harder is the new book to predict than with no switch, compared with the dial at 0? With the trained dial, the new book is harder to predict after a switch, as if the model holds on to the old one; a random change of the same size does not do this. So the dial makes this task slightly worse.</p></div>
   <div class="bars">${Object.entries(B.rise).map(([c,v])=>`<div class="brow"><span>${blab[c]}</span><span class="track"><span class="fill" style="width:${Math.max(0,v)/bmax*100}%;background:${c[0]==="S"?"var(--dial)":"var(--base)"}"></span></span><span class="mono">${pct(v)}</span></div>`).join("")}</div>
   ${B.show?`<p class="note">The same prompt (${esc(B.show.x)}, then ${esc(B.show.y)}), 48 tokens each, greedy; the pair was picked by a rule written into the probe before it ran. The random adapter leaves the words as they were; the trained dial rewrites them. No old-book names appeared in any of the ${B.pairs * 5} continuations, so the effect is measurable but not yet readable.</p>
   <div class="texts">${[["S0","Dial at 0"],["S4","Trained dial at 4"],["R4","Random adapter at 4"]].map(([c,t])=>`<figure class="${c==="S4"?"hl":""}"><figcaption>${t}</figcaption><p>${esc(B.show.texts[c].trim())}</p></figure>`).join("")}</div>`:""}

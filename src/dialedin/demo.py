@@ -4,7 +4,7 @@
 
 Every number on the page is read here from a file under results/ or criteria/ and carries that file's path, so a judge
 can trace it. The page has three parts: the dial (C5 curves and costs, and the exploratory behavior probe), where the
-dial lives (head map, C7, C8, C9), and the lab loop (every sealed experiment from the live status of the seals and
+dial acts (head map, C7, C8, C9), and the lab loop (every sealed experiment from the live status of the seals and
 runs, Muse Spark's latest narration, the C9 story from Muse Wonder's proposal to the result, and the newest revised
 proposal from `agent next`).
 """
@@ -53,14 +53,14 @@ def plain_outcomes(repo):
     return {
         "c1-glimmer-frequency-response-v4": "Stopped by its own rule before measuring: no drive amplitude qualified.",
         "c1-glimmer-frequency-response-v5":
-            f"The lean is real. In all three book sets gain rises with period, and the shortest period keeps "
+            f"The lean is real for the probe signal. In all three book sets gain rises with period, and the shortest period keeps "
             f"{min(mins) * 100:.0f} to {max(mins) * 100:.0f}% of the peak.",
         "c2-glimmer-knob-tilt-v1":
             f"Scaling whole global or local layers moved the tilt by at most {max(c2d):.3f}, short of the bar.",
         "c3-glimmer-head-dial-v1": "Boosting the selected heads did no better than boosting random heads.",
         "c4-glimmer-structure-and-text-v1":
             f"Changing the window or the position encoding did not flatten the tilt cleanly. Shuffled text keeps "
-            f"{t['text']['shuffled_over_base'] * 100:.0f}% of it, so the lean comes from the model, not the prose.",
+            f"{t['text']['shuffled_over_base'] * 100:.0f}% of it, so the lean belongs to the model more than the prose.",
         "c5-glimmer-trained-dial-v1":
             f"The trained dial flattens the tilt by {abs(c5['relative_change']) * 100:.1f}% at scale 2, in order at every step and in "
             f"{c5['books_agree']} of 5 books, just short of the pre-registered bar. Perplexity x{c5['worst_ppl_ratio']:.3f}.",
@@ -73,7 +73,7 @@ def plain_outcomes(repo):
             f"One matrix, layer 2's v, gives {c8['share_V2'] * 100:.1f}% of the dial's effect alone; the same matrix in "
             f"layer 4 gives {c8['share_V4'] * 100:.1f}%.",
         "c9-glimmer-necessity-v1":
-            f"Without layer 2's v the full dial keeps only {c9['retained_NOV2'] * 100:.1f}% of its effect; without layer "
+            f"Layer 2's v is needed for about half: without it the full dial keeps only {c9['retained_NOV2'] * 100:.1f}% of its effect; without layer "
             f"2's gate it keeps {c9['retained_NOG2'] * 100:.1f}%. The downstream control passed narrowly "
             f"({c9['downstream']['retained_NOV4']:.3f} against a bar of 0.80).",
     }

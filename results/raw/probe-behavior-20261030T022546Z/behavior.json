@@ -1,0 +1,884 @@
+{
+ "exploratory": true,
+ "sealed": false,
+ "what": "Question. C5 (exploratory) and C6 (sealed, B0: +1.8 percent at scale 2, below its 5 percent bar, rising at every step,\n8 of 10 books) found that after a switch from book x to book y, the dial raises next-token loss on y. One reading: the\ndialed model holds on to the old book longer. This probe makes that visible and measures it against a control.",
+ "design": [
+  "Inputs: the 10 books of sets B and C, tokens 80,000 onward (no earlier run used them; the band-mute probe ended at\n78,191). Ten ordered pairs (x, y): each book is x once, the next book in the list is y.\n  switch prompt: x's tokens [80,000, 86,144), then y's tokens [86,144, 86,656) (6,144 of x, then 512 of y)\n  clean prompt:  y's tokens [80,000, 86,656)\nOld-book words: token ids that start a capitalized word of 3+ characters, occur at least 3 times in x's 6,144 tokens,\nand never occur in y's tokens [80,000, 90,000) (character names and places of x, at most 50, most frequent first).",
+  "Per pair and condition:\n  pull: the probability the model gives to old-book words, summed over that set and averaged over the 512 positions\n        after the seam (teacher-forced on y's real text). The same on the clean prompt is the floor (x never appears).\n  excess loss: mean next-token loss on y's 512 tokens, switch prompt minus clean prompt (C6's measure, shorter).\n  text: 48 tokens of greedy continuation of the switch prompt, decoded, and how many old-book words it uses.\n  perplexity: exp of the mean loss on the clean prompt's last 512 tokens, as a ratio to scale 0.\nConditions: S0, S2 (the sealed scale), S4 (beyond any sealed run; labeled as such), then a random adapter matched to\nthe trained one module by module in norm (run_c6.random_control, seed 1000) at scales 2 and 4.",
+  "The showcase rule, fixed here before the run: among pairs where S2 raises pull over S0 and the random adapter at 2\nmoves it by less than half as much, the pair with the largest S2 rise; and the same for S4 against random at 4. If no\npair qualifies, there is no showcase and that is reported. Output: results/raw/probe-behavior-<utc>/behavior.json.\n"
+ ],
+ "generate_warn_only": false,
+ "start": 80000,
+ "context": 6144,
+ "after": 512,
+ "generated_tokens": 48,
+ "conditions": {
+  "S0": 0.0,
+  "S2": 2.0,
+  "S4": 4.0,
+  "R2": 2.0,
+  "R4": 4.0
+ },
+ "random_seed": 1000,
+ "random_norms": [
+  {
+   "module": "layers.2.self_attn.q_proj",
+   "trained_norm": 0.7195274829864502,
+   "control_norm": 0.7195274233818054
+  },
+  {
+   "module": "layers.2.self_attn.k_proj",
+   "trained_norm": 0.23728422820568085,
+   "control_norm": 0.23728421330451965
+  },
+  {
+   "module": "layers.2.self_attn.v_proj",
+   "trained_norm": 0.27389347553253174,
+   "control_norm": 0.2738935351371765
+  },
+  {
+   "module": "layers.2.self_attn.o_proj",
+   "trained_norm": 0.7126713395118713,
+   "control_norm": 0.7126715183258057
+  },
+  {
+   "module": "layers.2.self_attn.gate_proj",
+   "trained_norm": 0.6881141662597656,
+   "control_norm": 0.6881141066551208
+  },
+  {
+   "module": "layers.2.mlp.gate_proj",
+   "trained_norm": 1.4205037355422974,
+   "control_norm": 1.4205045700073242
+  },
+  {
+   "module": "layers.2.mlp.up_proj",
+   "trained_norm": 1.3369427919387817,
+   "control_norm": 1.336944341659546
+  },
+  {
+   "module": "layers.2.mlp.down_proj",
+   "trained_norm": 0.9677810072898865,
+   "control_norm": 0.9677808880805969
+  },
+  {
+   "module": "layers.3.self_attn.q_proj",
+   "trained_norm": 0.5926643013954163,
+   "control_norm": 0.592664361000061
+  },
+  {
+   "module": "layers.3.self_attn.k_proj",
+   "trained_norm": 0.1303894817829132,
+   "control_norm": 0.1303895115852356
+  },
+  {
+   "module": "layers.3.self_attn.v_proj",
+   "trained_norm": 0.16835780441761017,
+   "control_norm": 0.16835781931877136
+  },
+  {
+   "module": "layers.3.self_attn.o_proj",
+   "trained_norm": 0.6998736262321472,
+   "control_norm": 0.6998737454414368
+  },
+  {
+   "module": "layers.3.self_attn.gate_proj",
+   "trained_norm": 0.6359432935714722,
+   "control_norm": 0.6359432339668274
+  },
+  {
+   "module": "layers.3.mlp.gate_proj",
+   "trained_norm": 1.461215615272522,
+   "control_norm": 1.461216688156128
+  },
+  {
+   "module": "layers.3.mlp.up_proj",
+   "trained_norm": 1.3011164665222168,
+   "control_norm": 1.3011168241500854
+  },
+  {
+   "module": "layers.3.mlp.down_proj",
+   "trained_norm": 0.842975914478302,
+   "control_norm": 0.8429763913154602
+  },
+  {
+   "module": "layers.4.self_attn.q_proj",
+   "trained_norm": 0.5494654178619385,
+   "control_norm": 0.5494654774665833
+  },
+  {
+   "module": "layers.4.self_attn.k_proj",
+   "trained_norm": 0.13638775050640106,
+   "control_norm": 0.13638775050640106
+  },
+  {
+   "module": "layers.4.self_attn.v_proj",
+   "trained_norm": 0.1429765373468399,
+   "control_norm": 0.1429765224456787
+  },
+  {
+   "module": "layers.4.self_attn.o_proj",
+   "trained_norm": 0.68668532371521,
+   "control_norm": 0.6866853833198547
+  },
+  {
+   "module": "layers.4.self_attn.gate_proj",
+   "trained_norm": 0.6148322820663452,
+   "control_norm": 0.6148322820663452
+  },
+  {
+   "module": "layers.4.mlp.gate_proj",
+   "trained_norm": 1.3619409799575806,
+   "control_norm": 1.3619420528411865
+  },
+  {
+   "module": "layers.4.mlp.up_proj",
+   "trained_norm": 1.3360331058502197,
+   "control_norm": 1.3360341787338257
+  },
+  {
+   "module": "layers.4.mlp.down_proj",
+   "trained_norm": 0.9535133242607117,
+   "control_norm": 0.9535131454467773
+  },
+  {
+   "module": "layers.5.self_attn.q_proj",
+   "trained_norm": 0.6037995219230652,
+   "control_norm": 0.6037995219230652
+  },
+  {
+   "module": "layers.5.self_attn.k_proj",
+   "trained_norm": 0.1408628225326538,
+   "control_norm": 0.1408628523349762
+  },
+  {
+   "module": "layers.5.self_attn.v_proj",
+   "trained_norm": 0.14766955375671387,
+   "control_norm": 0.14766955375671387
+  },
+  {
+   "module": "layers.5.self_attn.o_proj",
+   "trained_norm": 0.7086894512176514,
+   "control_norm": 0.7086897492408752
+  },
+  {
+   "module": "layers.5.self_attn.gate_proj",
+   "trained_norm": 0.633455753326416,
+   "control_norm": 0.6334556937217712
+  },
+  {
+   "module": "layers.5.mlp.gate_proj",
+   "trained_norm": 1.367776870727539,
+   "control_norm": 1.3677778244018555
+  },
+  {
+   "module": "layers.5.mlp.up_proj",
+   "trained_norm": 1.3705604076385498,
+   "control_norm": 1.3705612421035767
+  },
+  {
+   "module": "layers.5.mlp.down_proj",
+   "trained_norm": 0.9684447646141052,
+   "control_norm": 0.9684451818466187
+  }
+ ],
+ "adapter_sha256": "2b20e86e9af79b81dc881bbedbef350331a24ef8ee1d541183ba6bac035d9f20",
+ "platform": {
+  "dtype": "bfloat16",
+  "attention": "sdpa",
+  "revision": "cec94fcfd6512f2cfe708138c32533b346ea4f69",
+  "transformers": "5.21.0",
+  "torch": "2.8.0+cu128",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "global_layers": [
+   3,
+   7,
+   11,
+   15,
+   19,
+   23,
+   27,
+   31,
+   35,
+   39,
+   43,
+   47,
+   51
+  ],
+  "batch_size": 1,
+  "deterministic": true,
+  "tf32": false
+ },
+ "deterministic": "torch.use_deterministic_algorithms(True); greedy decoding",
+ "summary": {
+  "S0": {
+   "mean_pull": 0.0009521398267679615,
+   "pairs_pull_up_vs_S0": 0,
+   "mean_excess_loss": 0.66291444003582,
+   "median_perplexity_ratio": 1.0,
+   "old_words_in_text": 0
+  },
+  "S2": {
+   "mean_pull": 0.0009842922619100135,
+   "pairs_pull_up_vs_S0": 7,
+   "mean_excess_loss": 0.6990331202745438,
+   "median_perplexity_ratio": 1.0141435835215622,
+   "old_words_in_text": 0
+  },
+  "S4": {
+   "mean_pull": 0.0011119882976345253,
+   "pairs_pull_up_vs_S0": 6,
+   "mean_excess_loss": 0.7265047162771225,
+   "median_perplexity_ratio": 1.0344036250736637,
+   "old_words_in_text": 0
+  },
+  "R2": {
+   "mean_pull": 0.0009418091392944916,
+   "pairs_pull_up_vs_S0": 4,
+   "mean_excess_loss": 0.6662966817617416,
+   "median_perplexity_ratio": 0.9990298789644372,
+   "old_words_in_text": 0
+  },
+  "R4": {
+   "mean_pull": 0.0009430046715351636,
+   "pairs_pull_up_vs_S0": 3,
+   "mean_excess_loss": 0.6646278738975525,
+   "median_perplexity_ratio": 1.0045284393164562,
+   "old_words_in_text": 0
+  }
+ },
+ "showcase": {
+  "S2": "345->84",
+  "S4": "174->940"
+ },
+ "pairs": {
+  "1260->768": {
+   "x": 1260,
+   "y": 768,
+   "old_book_words": [
+    " Rochester",
+    " Fair",
+    " Grace",
+    " John",
+    " Pilot",
+    " Leah",
+    " Jane"
+   ],
+   "seam_text": " hand, and then observed, with perfect composure\u2014\n\n\u201cIt is hardly likely master would laugh, I should think, Miss, when he\nwas in such danger: You must have been dreaming.\u201d, he\ncouldn\u2019t exactly find that; but he discovered enough to encourage him\nto speak.\n\n\u201c\u2018You, and I,\u2019 he said, \u2018have each a great debt to settle with",
+   "conditions": {
+    "S0": {
+     "pull": 0.000964114791713655,
+     "pull_clean": 6.266381660680054e-06,
+     "excess_loss": 0.4671907424926758,
+     "clean_loss": 1.6782288551330566,
+     "text": " better not!\u2019 he said, when he saw me moving towards the window.\n\u2018If you do, I\u2019ll dash your brains out!\u2019\n\n\u201c\u2018I\u2019ll do it!\u2019 I answered, \u2018and you shall, too, if you like",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0010203794809058309,
+     "pull_clean": 1.0310821380699053e-05,
+     "excess_loss": 0.47672367095947266,
+     "clean_loss": 1.692535161972046,
+     "text": " better open the door, Heathcliff,\u2019 I said, \u2018and let him in; he\nis at the door now.\u2019\n\n\u201c\u2018I\u2019ll open it, and let him in, and then I\u2019ll shut it on him for",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0144091318100572
+    },
+    "S4": {
+     "pull": 0.0010317948181182146,
+     "pull_clean": 8.206045094993897e-06,
+     "excess_loss": 0.49211394786834717,
+     "clean_loss": 1.6989060640335083,
+     "text": " better go, Heathcliff,\u2019 I said, \u2018and not be seen here; for if\nyou are, you\u2019ll be hanged for sure.\u2019\n\n\u201c\u2018I\u2019ll go when I please,\u2019 he answered, \u2018and not before",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0208924634455268
+    },
+    "R2": {
+     "pull": 0.0009233950404450297,
+     "pull_clean": 5.930461156822275e-06,
+     "excess_loss": 0.4718073606491089,
+     "clean_loss": 1.6785064935684204,
+     "text": " better not!\u2019 he said, when he saw me moving towards the window.\n\u2018If you do, I\u2019ll dash your brains out!\u2019\n\n\u201c\u2018I\u2019ll do it!\u2019 I answered; \u2018and you shall, too, if you like",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0002776769804813
+    },
+    "R4": {
+     "pull": 0.0009234404424205422,
+     "pull_clean": 5.92819606026751e-06,
+     "excess_loss": 0.4665951728820801,
+     "clean_loss": 1.6877827644348145,
+     "text": " better not!\u2019 he said, when he saw me moving towards the window.\n\u2018If you do, I\u2019ll dash your brains out!\u2019\n\n\u201c\u2018I\u2019ll do it!\u2019 I answered; \u2018and you shall, too, if you like",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0095996935833633
+    }
+   }
+  },
+  "768->345": {
+   "x": 768,
+   "y": 345,
+   "old_book_words": [
+    " Catherine",
+    " Edgar",
+    " Heath",
+    " Earn",
+    " Joseph",
+    " Heights"
+   ],
+   "seam_text": " the other side of my table, leaning over\nit, and searching in my eyes for a sympathy with the burning hate that\ngleamed from his: as he both looked and felt like an assassin paper from her breast and tore it in two. Van Helsing stepped\nover and took the pieces from her. All the same, however, she went on\nwith the action of tearing, as though",
+   "conditions": {
+    "S0": {
+     "pull": 1.994989906961564e-05,
+     "pull_clean": 8.129286754865461e-08,
+     "excess_loss": 0.4382054805755615,
+     "clean_loss": 1.4400153160095215,
+     "text": " of the time was passed in a\nsort of quiet cheerfulness. She was evidently sinking fast, and we\nknew it, and yet we could not help hoping against hope. Van Helsing\nwas very grave, and I could see",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 3.323859709780663e-05,
+     "pull_clean": 1.0071200051697815e-07,
+     "excess_loss": 0.4470376968383789,
+     "clean_loss": 1.439464807510376,
+     "text": " of the time passed pleasantly.\nShe was evidently sinking fast, and we all knew it, and yet we could\nnot help hoping against hope. Van Helsing, who had been watching her\nclosely, said to me at last:\n\n",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.999449643002856
+    },
+    "S4": {
+     "pull": 4.2283281800337136e-05,
+     "pull_clean": 1.2742987109959358e-07,
+     "excess_loss": 0.4540444612503052,
+     "clean_loss": 1.4543590545654297,
+     "text": " of her was shown to him. She\nasked him to take her out of doors, and he carried her down the stairs\nand out into the garden. The Professor and I followed, and Quincey\nMorris came with us",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0144471035961893
+    },
+    "R2": {
+     "pull": 1.889093437057454e-05,
+     "pull_clean": 7.633681065044584e-08,
+     "excess_loss": 0.4481079578399658,
+     "clean_loss": 1.4417433738708496,
+     "text": " of the time was passed in\ncomparative cheerfulness. She was evidently sinking fast, and we all\nknew it, and yet we could not help hoping against hope. Van Helsing\nwatched her with a face of stern determination",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0017295518137357
+    },
+    "R4": {
+     "pull": 1.9395518393139355e-05,
+     "pull_clean": 9.383309418353747e-08,
+     "excess_loss": 0.44539666175842285,
+     "clean_loss": 1.4455156326293945,
+     "text": " of the time was passed in\ncomparative cheerfulness. She was evidently sinking fast, and we all\nknew it, and yet we could not help thinking that the presence of the\nman she loved was helping her to hold out",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0055154711334668
+    }
+   }
+  },
+  "345->84": {
+   "x": 345,
+   "y": 84,
+   "old_book_words": [
+    " Lucy",
+    " Van",
+    " Helsing",
+    " Professor",
+    " Then",
+    " Sew",
+    " September",
+    " Morris",
+    " Westen",
+    " Arthur",
+    " Was",
+    " One",
+    " Her",
+    " Jack"
+   ],
+   "seam_text": " remain with\nher all the time, and that seemed to comfort her. Towards dusk she fell\ninto a doze. Here a very odd thing occurred. Whilst still asleep she\ntook the a cloud of wonder and horror. The death\nof William, the execution of Justine, the murder of Clerval, and lastly\nof my wife; even at that moment I knew not",
+   "conditions": {
+    "S0": {
+     "pull": 0.002538951113820076,
+     "pull_clean": 7.70416420436959e-07,
+     "excess_loss": 1.0001108944416046,
+     "clean_loss": 0.31808993220329285,
+     "text": " My father and Ernest yet lived, but in\nimminent peril; the fiend was not yet satiated, and it was probable that\nhe would still be among us. I did not see my good friends, Lidenbro",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0027619546744972467,
+     "pull_clean": 1.2241049489603029e-06,
+     "excess_loss": 1.2682713568210602,
+     "clean_loss": 0.3380835950374603,
+     "text": " My father and Ernest yet lived, but how I dreaded to\npresent myself before them, or how I should meet the inquiries of the\nlatter, on the subject of my absent friend, which he had long ere this\nvent",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.020194874862167
+    },
+    "S4": {
+     "pull": 0.0030794921331107616,
+     "pull_clean": 2.1830087462149095e-06,
+     "excess_loss": 1.4592154920101166,
+     "clean_loss": 0.3471154272556305,
+     "text": " My father and Ernest were saved, but I could not\nsee them; I refused to see them; for his sake I shunned them. Yet it was\nnot in my nature to shrink from the sight of my father, and the",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0294508400436093
+    },
+    "R2": {
+     "pull": 0.0025690426118671894,
+     "pull_clean": 8.287991022370989e-07,
+     "excess_loss": 1.0175977647304535,
+     "clean_loss": 0.3182465136051178,
+     "text": " My father and Ernest yet lived, but in\nimminent peril; the fiend was not yet satiated, and it was probable that\nhe would still be among us. I did not see my father. I stood at the",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0001565936613326
+    },
+    "R4": {
+     "pull": 0.0025251409970223904,
+     "pull_clean": 1.0565858019617735e-06,
+     "excess_loss": 1.0339592695236206,
+     "clean_loss": 0.31390106678009033,
+     "text": " My father and Ernest yet lived; Victor and Elizabeth\nwere gone. I was received by Elizabeth\u2019s father with calmness and\nself-possession; he spared me the details of his own misery. I talked of\nher as",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.995819895636329
+    }
+   }
+  },
+  "84->25344": {
+   "x": 84,
+   "y": 25344,
+   "old_book_words": [
+    " Elizabeth",
+    " Victor",
+    " Paris",
+    " Just"
+   ],
+   "seam_text": "\ndistinct idea presented itself to my mind, but my thoughts rambled to\nvarious subjects, reflecting confusedly on my misfortunes and their\ncause. I was bewildered, in gray twilight into which the\nclouded sky and the heavy foliage had darkened the noontide, that he\nknew not whether it were a woman or a shadow. It may be",
+   "conditions": {
+    "S0": {
+     "pull": 1.1524907677085139e-05,
+     "pull_clean": 1.8849434582079994e-06,
+     "excess_loss": 0.6307860016822815,
+     "clean_loss": 0.9105303883552551,
+     "text": " the hour of the night. They could not yet speak\nof that which was uppermost in their minds. Dimmesdale marveled to see\nhow much of the old world, with its business and its strife, its\nvar",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 1.409857486578403e-05,
+     "pull_clean": 2.147283339581918e-06,
+     "excess_loss": 0.6304750442504883,
+     "clean_loss": 0.9311903715133667,
+     "text": " the hour of the night. They could not yet speak\nof that which was uppermost in their minds. It was too mysterious, too\nfull of awe, too much burdened with terrible secrets, to be touched\nupon lightly.",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0208748779664565
+    },
+    "S4": {
+     "pull": 1.521998638054356e-05,
+     "pull_clean": 2.2844756131235044e-06,
+     "excess_loss": 0.6372413635253906,
+     "clean_loss": 0.9649561643600464,
+     "text": " the hour of the night. They could not yet speak\nof that which was uppermost in their minds. It was too mysterious, too\nfull of awe, too soul-subduing. They sat in silence for a long while,\n",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.055934097857556
+    },
+    "R2": {
+     "pull": 1.2438878911780193e-05,
+     "pull_clean": 1.9266958588559646e-06,
+     "excess_loss": 0.628302812576294,
+     "clean_loss": 0.9111014604568481,
+     "text": " the hour of the night. They could not yet speak\nof that which was uppermost in their minds. Dimmesdale marveled to see\nhow much of the old world, with its business and its strife, its\nvar",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0005712351943101
+    },
+    "R4": {
+     "pull": 1.2702730600722134e-05,
+     "pull_clean": 1.8589001911095693e-06,
+     "excess_loss": 0.6309866905212402,
+     "clean_loss": 0.9175920486450195,
+     "text": " the hour of the night. They could not yet speak\nof that which was uppermost in their minds. Dimmesdale marveled to see\nhow much Hester was altered. She was of the same age; no, older than",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0070866526072382
+    }
+   }
+  },
+  "25344->37106": {
+   "x": 25344,
+   "y": 37106,
+   "old_book_words": [
+    " Pearl",
+    " And",
+    " Black",
+    " Man",
+    " Roger",
+    " Dim"
+   ],
+   "seam_text": "ing his eyes anxiously in the direction of the voice, he\nindistinctly beheld a form under the trees, clad in garments so\nsombre, and so little relieved from the warning was evidently thrown away; for five minutes later\nLaurie tore by the window on his own fleet horse, riding as if for his\nlife.\n\n\"Jo, run to the rooms, and",
+   "conditions": {
+    "S0": {
+     "pull": 0.0011748820543289185,
+     "pull_clean": 0.00022946970420889556,
+     "excess_loss": 0.5860769748687744,
+     "clean_loss": 1.9882588386535645,
+     "text": " tea spilled over the carpet, as Meg\nstared at him in amazement. \"Oh, Mr. Brooke, how kind you are! I am so\nglad! I am so glad!\" she cried, with a grateful",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0011356229661032557,
+     "pull_clean": 0.00023987857275642455,
+     "excess_loss": 0.5947036743164062,
+     "clean_loss": 2.0005807876586914,
+     "text": " tea was spilled, but Meg was too\ngrateful to notice it. She thanked him warmly, and said, \"I am sure\nmother will be glad to have you, and I know she will be safe with you",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0123981769894586
+    },
+    "S4": {
+     "pull": 0.0011396415065973997,
+     "pull_clean": 0.00021884343004785478,
+     "excess_loss": 0.5894408226013184,
+     "clean_loss": 2.0241270065307617,
+     "text": " tea was spilled, as Meg, with a\nscream of joy, flung her arms about his neck, and thanked him with\nkisses and caresses, which he received with a grave, but very\nsatisfied air",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0365191909580573
+    },
+    "R2": {
+     "pull": 0.0011328461114317179,
+     "pull_clean": 0.0002267421514261514,
+     "excess_loss": 0.5920255184173584,
+     "clean_loss": 1.9861598014831543,
+     "text": " tea spilled over the carpet, as Meg\nstared at him in amazement. She was so much surprised that she could\nonly say, \"Oh, Mr. Brooke! how kind of you! I am sure mother will be",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9979031642675418
+    },
+    "R4": {
+     "pull": 0.001113754347898066,
+     "pull_clean": 0.00022177152277436107,
+     "excess_loss": 0.5876532793045044,
+     "clean_loss": 1.9917939901351929,
+     "text": " tea spilled over the tray, as Meg\nturned to thank him with a grateful heart. She was so glad to have\nsome one to go with her mother, and so relieved to have the old\ngentleman spared the",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0035414074994453
+    }
+   }
+  },
+  "37106->74": {
+   "x": 37106,
+   "y": 74,
+   "old_book_words": [
+    " Meg",
+    " Laurie",
+    " March",
+    " Amy",
+    " Beth",
+    " Hannah",
+    " Miss"
+   ],
+   "seam_text": " anything to add\na little to the sum for her father.\n\n\"Now go, dear; but don't kill yourself driving at a desperate pace;\nthere is no need of that.\"\n\nMrs. March's &\nTOM\u201d had been found traced upon the rocky wall with candle-smoke, and\nnear at hand a grease-soiled bit of ribbon. Mrs. Thatcher recognized the\nribbon and cried",
+   "conditions": {
+    "S0": {
+     "pull": 0.002195841632783413,
+     "pull_clean": 1.7852988094091415e-05,
+     "excess_loss": 0.704010009765625,
+     "clean_loss": 1.8642590045928955,
+     "text": " like him, and there ain\u2019t\never been, and there ain\u2019t ever going to be again. He was the noblest\nboy in the world, and I\u2019m the one that made him so. I reckon Tom Sawyer",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.002211798680946231,
+     "pull_clean": 2.1468717022798955e-05,
+     "excess_loss": 0.7021706104278564,
+     "clean_loss": 1.878558874130249,
+     "text": " like him, and I\u2019m glad I\nknow him, and I\u2019m glad I\u2019ve got his picture in my room. I wish I had\nsomething of his that was his own. I wish I had his autograph. I\u2019ll",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0144026017735117
+    },
+    "S4": {
+     "pull": 0.002167031168937683,
+     "pull_clean": 2.168611899833195e-05,
+     "excess_loss": 0.683343768119812,
+     "clean_loss": 1.9235731363296509,
+     "text": " that would be glad to do it,\nI reckon. But I would. I would, if I could. I would, if I could!\u201d\n\nThe next day the widow came in the afternoon, and found Huck in a\n",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0611085162523068
+    },
+    "R2": {
+     "pull": 0.002115221694111824,
+     "pull_clean": 1.8711440134211443e-05,
+     "excess_loss": 0.7099984884262085,
+     "clean_loss": 1.8610364198684692,
+     "text": " like him, and there ain\u2019t\never been, and there ain\u2019t ever going to be again. He was the noblest\nboy in the world, and I\u2019m the one that made him so. I reckon Tom Sawyer",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9967826022284324
+    },
+    "R4": {
+     "pull": 0.0020549993496388197,
+     "pull_clean": 1.955344487214461e-05,
+     "excess_loss": 0.7019127607345581,
+     "clean_loss": 1.861308217048645,
+     "text": " like him, and I\u2019m glad I\nknow him, and I\u2019m glad I\u2019ve got his picture in my room, and I\u2019m glad I\ncan say I\u2019ve seen him, and I\u2019m glad I\u2019ve got a chance to",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9970535617503153
+    }
+   }
+  },
+  "74->120": {
+   "x": 74,
+   "y": 120,
+   "old_book_words": [
+    " Welsh",
+    " Spani",
+    " Mrs",
+    " Aunt",
+    " Pol",
+    " Wid",
+    " Douglas",
+    " Joe",
+    " Finn",
+    " Becky",
+    " Harper",
+    " Lord"
+   ],
+   "seam_text": " and pistol-shots sent their\nhollow reverberations to the ear down the sombre aisles. In one place,\nfar from the section usually traversed by tourists, the names \u201cBECKY line for the Pole Star and the jolly dollars. But, by thunder!\nIf it don\u2019t make me cold inside to think of Flint. This is one of HIS\njokes, and no",
+   "conditions": {
+    "S0": {
+     "pull": 0.000556157436221838,
+     "pull_clean": 0.0005594218382611871,
+     "excess_loss": 1.2114312648773193,
+     "clean_loss": 1.1457922458648682,
+     "text": "\u2019s dead, and you can\u2019t get\nno more out of him. You\u2019re on a wrong tack, mates, to be talking like\nthat. Who\u2019s for the rum?\u201d\n\n\u201cHere, hand \u2019round, hand \u2019round",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0005494829965755343,
+     "pull_clean": 0.000402488571126014,
+     "excess_loss": 1.2422900199890137,
+     "clean_loss": 1.163987636566162,
+     "text": "\u2019s dead, and you can\u2019t get\nround it. Why, you\u2019re scaring some of you. I\u2019ve seen a lot of men die,\nbut I never see one die so awful as Billy Bones did. That man was bad",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0183619354045197
+    },
+    "S4": {
+     "pull": 0.0004690171917900443,
+     "pull_clean": 0.000330624490743503,
+     "excess_loss": 1.2178335189819336,
+     "clean_loss": 1.2288458347320557,
+     "text": "\u2019s dead, and it\u2019s us that\nis living. This is a queer thing, mates, and no mistake; but we\u2019ll have\nto make a talk of it, and a quick one, too. It\u2019s plain enough that",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0866000366530852
+    },
+    "R2": {
+     "pull": 0.0005530278431251645,
+     "pull_clean": 0.0005205039051361382,
+     "excess_loss": 1.2092641592025757,
+     "clean_loss": 1.1426798105239868,
+     "text": "\u2019s dead, and you can\u2019t get\nround it. No, nor yet alive, neither. He\u2019s gone to Davy Jones, and a\ngood riddance. Now, shipmates, here\u2019s for a jolly cruise",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9968924032647435
+    },
+    "R4": {
+     "pull": 0.0005516689270734787,
+     "pull_clean": 0.0005185249610804021,
+     "excess_loss": 1.1883223056793213,
+     "clean_loss": 1.154458999633789,
+     "text": "\u2019s dead, and you can\u2019t get\nno more out of him. You\u2019re on a wrong tack, mates, to be talking like\nthat. Who\u2019s for the rum? Come, shipmates, and let\u2019s make a night",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0087044188119523
+    }
+   }
+  },
+  "120->174": {
+   "x": 120,
+   "y": 174,
+   "old_book_words": [
+    " Silver",
+    " Jim",
+    " Lives",
+    " George",
+    " John",
+    " Captain",
+    " Morgan",
+    " Flint",
+    " Spy"
+   ],
+   "seam_text": " direction of the island,\nand the compass read duly E.S.E. and by E.\n\n\u201cI thought so,\u201d cried the cook; \u201cthis here is a p\u2019inter. Right up there\nis our nowadays saying\nthings against one behind one\u2019s back that are absolutely and entirely\ntrue.\u201d\n\n\u201cIsn\u2019t he incorrigible?\u201d cried Dorian, leaning forward in his chair.\n\n\u201cI hope",
+   "conditions": {
+    "S0": {
+     "pull": 0.000973431917373091,
+     "pull_clean": 2.7430041882325895e-06,
+     "excess_loss": 0.509194016456604,
+     "clean_loss": 1.0239392518997192,
+     "text": " after dinner. A girl with lots of money and no brains\nis the ideal wife for a man like Dorian Gray. He will be able to use his\nown brains and hers too. He will never be bored, and she will",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0010432820999994874,
+     "pull_clean": 2.705736733332742e-06,
+     "excess_loss": 0.5273100137710571,
+     "clean_loss": 1.0377283096313477,
+     "text": " after dinner. A girl with lots of money and no brains\nis the ideal wife for a man like Dorian Gray. He will be able to use his\nown brains and hers too, which is a great advantage. Besides, it",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0138845652696127
+    },
+    "S4": {
+     "pull": 0.0014580381102859974,
+     "pull_clean": 2.5863323571684305e-06,
+     "excess_loss": 0.5619149208068848,
+     "clean_loss": 1.0568361282348633,
+     "text": " after dinner. A girl with lots of money, and no brains,\nthat is the ideal wife for a man like Mr. Gray. He will be able to do\nwhat he likes, and she will be able to do what she likes",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0334439612173376
+    },
+    "R2": {
+     "pull": 0.0009484791662544012,
+     "pull_clean": 3.3098567655542865e-06,
+     "excess_loss": 0.5104470252990723,
+     "clean_loss": 1.0207741260528564,
+     "text": " after dinner. A girl with lots of money and no brains\nis the ideal wife for a man with brains but no money. The world\nworships success. That is the only real aristocracy there is. I shall\nfind",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9968398778834129
+    },
+    "R4": {
+     "pull": 0.0009493305115029216,
+     "pull_clean": 3.2075952276500175e-06,
+     "excess_loss": 0.5120813846588135,
+     "clean_loss": 1.0212607383728027,
+     "text": " after dinner. A girl with lots of money and no brains\nis the ideal wife for a man like Dorian Gray. He will be able to use\nhis own brains and hers too. He will never be bored, and he will",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.9973250704897806
+    }
+   }
+  },
+  "174->940": {
+   "x": 174,
+   "y": 940,
+   "old_book_words": [
+    " Dor",
+    " Alan",
+    " Campbell",
+    " Lady",
+    " Gray",
+    " Nar",
+    " Don",
+    " And",
+    " Francis",
+    " His",
+    " How",
+    " Harry",
+    " Richmond",
+    " Fer"
+   ],
+   "seam_text": ",\u201d cried the old lady,\nshaking her head.\n\nLord Henry looked serious for some moments. \u201cIt is perfectly\nmonstrous,\u201d he said, at last, \u201cthe way people go about\ninstantly, recollecting his errand, and the presence in which he stood, he\nsuppressed every appearance of emotion, and turned to the hostile leader, who\nhad already advanced",
+   "conditions": {
+    "S0": {
+     "pull": 0.000988977262750268,
+     "pull_clean": 0.0005018843221478164,
+     "excess_loss": 0.5900788307189941,
+     "clean_loss": 1.8461859226226807,
+     "text": "to be cautious, we are not without hope that the humanity of the French\ncommander will be found equal to his valor.\u201d\n\n\u201cAh! monsieur, you are a soldier, and you speak as a soldier,\u201d said\nMontcal",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 0.0010244469158351421,
+     "pull_clean": 0.0004993247566744685,
+     "excess_loss": 0.630251407623291,
+     "clean_loss": 1.8472514152526855,
+     "text": "to respect the enemy, we are not disposed to yield to him the honor of\nbeing the first to propose a cessation of hostilities.\u201d\n\n\u201cAh! monsieur, you are too modest,\u201d said the marquis, with a\ng",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0010660604689354
+    },
+    "S4": {
+     "pull": 0.001657651737332344,
+     "pull_clean": 0.0005040366086177528,
+     "excess_loss": 0.6979912519454956,
+     "clean_loss": 1.8577438592910767,
+     "text": "to respect the enemy, we are not yet prepared to acknowledge the\nsuperiority of the French arms.\u201d\n\n\u201cAh! monsieur, you are a brave man, and a good officer; but you are\nyoung, and you have",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0116249876932453
+    },
+    "R2": {
+     "pull": 0.0010329593205824494,
+     "pull_clean": 0.0005535721429623663,
+     "excess_loss": 0.5837067365646362,
+     "clean_loss": 1.8520134687423706,
+     "text": "to be cautious, we are not without hope that the humanity of the French\ncommander will be found equal to his valor.\u201d\n\n\u201cAh! monsieur, you are a soldier, and you speak as a soldier,\u201d said\nMontcal",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0058445592988852
+    },
+    "R4": {
+     "pull": 0.001144270645454526,
+     "pull_clean": 0.0005532557261176407,
+     "excess_loss": 0.5858323574066162,
+     "clean_loss": 1.8520934581756592,
+     "text": "to be cautious, we are not without hope that the humanity of the French\ncommander will be found equal to his valor.\u201d\n\n\u201cAh! monsieur, you are a soldier, and you speak as a soldier,\u201d said\nMontcal",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.005925019453098
+    }
+   }
+  },
+  "940->1260": {
+   "x": 940,
+   "y": 1260,
+   "old_book_words": [
+    " Duncan",
+    " Hey",
+    " Alice",
+    " France",
+    " Mun",
+    " Haw",
+    " Mont",
+    " Major",
+    " Hor"
+   ],
+   "seam_text": " regarding him with the\ncalm but sullen attention which marked the expression of that subtle savage. A\nslight exclamation of surprise even burst from the lips of the young man, but\n\n\u201cI was not dreaming,\u201d I said, with some warmth, for her brazen coolness\nprovoked me. Again she looked at me; and with the same scrutinising and\nconscious",
+   "conditions": {
+    "S0": {
+     "pull": 9.756725194165483e-05,
+     "pull_clean": 1.7918125649885042e-07,
+     "excess_loss": 0.49206018447875977,
+     "clean_loss": 1.6691792011260986,
+     "text": "and a very significant one too, as I thought.\n\nI was not sorry to get rid of her; and I was glad when I found myself\nalone. I was not, however, at ease. I felt as if I were walking",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0
+    },
+    "S2": {
+     "pull": 4.8617632273817435e-05,
+     "pull_clean": 1.7848540778686584e-07,
+     "excess_loss": 0.4710977077484131,
+     "clean_loss": 1.6816978454589844,
+     "text": "and a very oracular one.\n\nI was not sorry to get rid of her; and I was glad to find myself once more\nin my own room, and in the power of reflecting at leisure on the\ncircumstances of the",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0125973305663507
+    },
+    "S4": {
+     "pull": 5.971304199192673e-05,
+     "pull_clean": 1.802766291802982e-07,
+     "excess_loss": 0.4719076156616211,
+     "clean_loss": 1.7039315700531006,
+     "text": "and a very oracular one.\n\nI was not sorry to see her go, for I was weary of her presence, and\ndisgusted with her manner. I had a great mind to tell master of her\nimpertinence",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.0353632889299895
+    },
+    "R2": {
+     "pull": 0.00011178979184478521,
+     "pull_clean": 1.7448596167923824e-07,
+     "excess_loss": 0.49170899391174316,
+     "clean_loss": 1.664461374282837,
+     "text": "and a very significant one.\n\nI was not sorry to see her go. I had no wish to prolong the interview.\nShe had given me a strange feeling of repulsion, and I was glad to get\nrid of her. I was glad",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 0.995293284620944
+    },
+    "R4": {
+     "pull": 0.00013534324534703046,
+     "pull_clean": 1.6623621945655032e-07,
+     "excess_loss": 0.49353885650634766,
+     "clean_loss": 1.6692404747009277,
+     "text": "and a very significant one.\n\nI was now convinced that she had been the perpetrator of the mischief\nof the night before, and that she had been watching me at the window\nwhen I looked out. I was also convinced that",
+     "old_words_in_text": 0,
+     "perplexity_ratio": 1.000061275452093
+    }
+   }
+  }
+ }
+}

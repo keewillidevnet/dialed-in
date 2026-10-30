@@ -1,3 +1,11 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
 <title>Dialed In</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -409,3 +417,6 @@ $("narr-src").innerHTML=`<span class="eyebrow">${N.verified?"Checked: every numb
 $("next").innerHTML=D.next?`<span class="eyebrow">Next · proposed by ${esc(D.next.model||"Muse")} after a second loop turn · not sealed</span><h3>C10, proposed: ${esc(D.next.title)}</h3><p class="note">${esc(D.next.question)}</p>${D.next.why?`<p class="note">${esc(D.next.why)}</p>`:""}<p class="note">Spark's critique led to ${D.next.revisions} revisions before it reached the human gate.${D.next.lab_note?` A lab note: C8 already measured layer 2's q, k, v at ${D.next.lab_note.value.toFixed(2)} of the full dial's change over layers 5 to 51 (set C), below this proposal's 0.60 bar, a number that was not on Muse's fact sheet.`:""}</p><div class="src">${esc(D.next.src)}${D.next.lab_note?` · ${esc(D.next.lab_note.src)}`:""}</div>`
   :`<span class="eyebrow">Next</span><h3>C9 is Muse's call</h3><p class="note">When C8 is analyzed, one loop turn has Spark narrate it, Wonder propose C9, Spark critique it and Wonder revise it. The proposal appears here, then waits for a person to seal it.</p>`;
 </script>
+
+</body>
+</html>

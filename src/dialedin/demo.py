@@ -234,14 +234,25 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", default=".")
     ap.add_argument("--out", default="demo/index.html")
+    ap.add_argument("--body-only", default=None, help="also write the page body alone to this path")
     args = ap.parse_args()
     repo = os.path.abspath(args.repo)
     data = build(repo)
     tpl = open(os.path.join(os.path.dirname(__file__), "demo_template.html")).read()
     html = tpl.replace("/*DATA*/null", json.dumps(data, separators=(",", ":")).replace("</", "<\\/"))
+    page = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
+            "<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}"
+            "body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n</head>\n<body>\n"
+            + html + "\n</body>\n</html>\n")
     out = os.path.join(repo, args.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    open(out, "w").write(html)
+    open(out, "w", encoding="utf-8").write(page)                 # a complete page that opens straight from disk
+    pages = os.path.join(repo, "docs", "index.html")              # the same page for GitHub Pages (main branch, /docs)
+    os.makedirs(os.path.dirname(pages), exist_ok=True)
+    open(pages, "w", encoding="utf-8").write(page)
+    if args.body_only:                                            # the page body alone, for hosts that add their own <head>
+        open(args.body_only, "w", encoding="utf-8").write(html)
     print(f"== written: {os.path.relpath(out, repo)} ({len(html) // 1024} KB); narration {data['loop']['narration_src']}; "
           f"next proposal {data['next']['src'] if 'next' in data else 'none yet'}")
 

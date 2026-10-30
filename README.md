@@ -4,7 +4,7 @@
 
 Entry for the Meta Global AI Developer Hackathon, Theme 2: Push the Frontier. Subject model: [Muse Glimmer-30B](https://huggingface.co/meta-models/Muse-Glimmer-30B). Lab scientist: Muse Spark and Muse Wonder on the Meta Model API.
 
-> **Open the demo:** `open demo/index.html` (no internet, no GPU). Drag the dial and watch the curve move.
+> **See the demo:** clone or download this repo, then double-click [`demo/index.html`](demo/index.html) to open it in your browser (from a terminal in the repo folder: `open demo/index.html` on a Mac, `start demo\index.html` on Windows). No GPU, no server. Drag the dial and watch the curve move.
 
 ---
 
@@ -82,7 +82,7 @@ Every prompt and reply is logged in [`results/agent/calls.jsonl`](results/agent/
 
 ## Try it
 
-**The demo page** is self-contained and built from the result files: `open demo/index.html`. Rebuild it with:
+**The demo page** is one self-contained file built from the result files: open `demo/index.html` in any browser. Rebuild it with:
 
 ```bash
 PYTHONPATH=src python3 -m dialedin.demo        # needs pyyaml

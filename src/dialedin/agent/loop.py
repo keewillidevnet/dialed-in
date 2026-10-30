@@ -25,12 +25,20 @@ LAB_CONSTRAINTS = """Lab constraints (fixed facts about the setup, not results):
   heads and can only change later layers. Layer 2's own heads carry a large part of the dial's change (C7 under the
   full dial: layer 2's heads -74 percent, layers 3 to 51 -13 percent), so a control placed in a later layer cannot
   reach them.
-- A measurement uses the first 32,768 tokens of a book (or another 32,768-token segment), with an 8,192-token burn-in.
-  The shortest of the 15 books has 94,774 tokens, so a 32,768-token segment must start at or before token 62,006.
-  First 32,768 tokens already measured with the adapter: set A (C5), set B (C7), set C (C8). Exploratory probes used
-  tokens 60,000 to 68,191 (set C; C6 used sets B and C there) and the band-mute probe 70,000 to 78,191 (sets A and B).
+- A measurement uses a 32,768-token segment of a book, with an 8,192-token burn-in. The shortest of the 15 books has
+  94,774 tokens, so a 32,768-token segment must start at or before token 62,006.
+  Text already used (do not reuse it for a tilt measurement): the first 32,768 tokens of sets A (C5), B (C7) and C
+  (C8); set A tokens 32,768 to 65,535 (C9); sets B and C tokens 60,000 to 68,191 (C6 and the exploratory probes);
+  sets A and B tokens 70,000 to 78,191 (band-mute probe); sets B and C tokens 80,000 to 89,999 (behavior probe).
+  The adapter trained on books 1260, 345, 37106 and 174 at tokens 40,960 to 47,103; never measure there.
+  Unused text long enough for a segment: tokens 90,000 onward in the books that are long enough (each set A book has
+  at least 173,244 tokens; check the others in the smoke run).
 - Cost: one 32,768-token pass takes about 13.5 s; per book and condition, 9 passes (undriven, sham, 7 periods).
 - Shares: say what the share is a share of. A share of layer 2 attention's change is not a share of the full dial.
+- Heads are read at the input of each layer's o_proj. An adapter on o_proj changes only o_proj's output, after that
+  read point, so switching it changes later layers' heads but never its own layer's heads (C9's review caught this).
+- Already settled, do not re-propose: layer 2's v_proj is enough alone for about half of the dial (C8, set C) and
+  needed for about half (C9, set A, against a same-layer gate control and a layer 4 v control).
 - The C5 adapter has 32 modules in layers 2 to 5 (q, k, v, gate and o projections and the MLP's three), rank 8."""
 
 CRITIQUE = ("You are Muse, acting as the lab's design critic. Below is a proposed experiment, the lab constraints and the "

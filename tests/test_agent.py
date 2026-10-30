@@ -181,3 +181,19 @@ def test_loop_status_reads_the_trail(tmp_path):
     rows = loop.status(str(tmp_path))
     assert rows[0]["outcome"] == "O1" and rows[0]["state"] == "analyzed" and rows[0]["proposed_by"].startswith("muse-wonder")
     assert rows[0]["muse_reviews"] == ["results/agent/review-1-muse-wonder-1.0.md"] and rows[0]["runs"] == ["c8v1-20261029T220000Z"]
+
+
+def test_fact_ids_are_permanent(tmp_path):
+    """A label keeps its id when facts are added before it; new labels take new numbers; persist writes the registry."""
+    write_results(tmp_path)
+    first = facts.build(str(tmp_path), persist=True)
+    ids = {f["label"]: f["id"] for f in first.facts}
+    assert os.path.exists(tmp_path / "results" / "agent" / "fact_ids.json")
+    reg = json.load(open(tmp_path / "results" / "agent" / "fact_ids.json"))["ids"]
+    reg = {"an older fact that is no longer on the sheet": 1, **{k: v + 1 for k, v in reg.items()}}
+    json.dump({"ids": reg}, open(tmp_path / "results" / "agent" / "fact_ids.json", "w"))
+    again = facts.build(str(tmp_path))
+    assert all(f["id"] == f"F{reg[f['label']]}" for f in again.facts)        # read from the registry, not the order
+    sh = facts.Sheet({"a": 3})
+    assert sh.add("b", 1.0, "x") == "F4" and sh.add("a", 2.0, "x") == "F3" and sh.new_labels == ["b"]
+    assert facts.build(str(tmp_path)).new_labels == []                        # read-only build writes nothing

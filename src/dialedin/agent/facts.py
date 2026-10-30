@@ -1,6 +1,12 @@
 """The fact sheet: every number Muse may use, read from results/derived/*/c*_summary.json, each with its source.
 
 Muse sees only this sheet, never raw files, so every number it writes can be checked against a cited fact.
+
+Fact ids are permanent. results/agent/fact_ids.json maps each fact's label to its number; a label keeps its number for
+good, and a new label gets the next unused number, so an id cited in an earlier proposal or narration still names the
+same fact after new results are added. The registry was seeded on 2026-10-30 from the sheet the agent used for the
+C9 proposal (C1 to C8 and the exploratory probes, F1 to F162); outputs written before 2026-10-30T00:51Z used an
+earlier numbering, and their own Sources lists name each fact's file.
 """
 import glob
 import json
@@ -16,12 +22,22 @@ def _latest(repo, pattern):
     return paths[-1] if paths else None
 
 
+REGISTRY = os.path.join("results", "agent", "fact_ids.json")
+
+
 class Sheet:
-    def __init__(self):
+    def __init__(self, registry: dict = None):
         self.facts = []
+        self.ids = dict(registry or {})            # label -> number, permanent
+        self.new_labels = []
 
     def add(self, label, value, source):
-        fid = f"F{len(self.facts) + 1}"
+        if label not in self.ids:
+            self.ids[label] = max(self.ids.values(), default=0) + 1
+            self.new_labels.append(label)
+        fid = f"F{self.ids[label]}"
+        if any(f["id"] == fid for f in self.facts):
+            raise ValueError(f"fact label used twice on one sheet: {label}")
         self.facts.append({"id": fid, "label": label, "value": value, "source": source})
         return fid
 
@@ -37,8 +53,32 @@ class Sheet:
         return [f["value"] for f in self.facts if isinstance(f["value"], (int, float)) and not isinstance(f["value"], bool)]
 
 
-def build(repo: str = ".") -> Sheet:
-    sh = Sheet()
+def load_registry(repo: str) -> dict:
+    p = os.path.join(repo, REGISTRY)
+    return json.load(open(p))["ids"] if os.path.exists(p) else {}
+
+
+def save_registry(repo: str, sheet: "Sheet"):
+    """Writes the registry with every label it has ever held; ids are never removed or renumbered."""
+    p = os.path.join(repo, REGISTRY)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    tmp = p + ".tmp"
+    with open(tmp, "w") as fh:
+        json.dump({"note": "fact label -> permanent fact number (F<number>); see src/dialedin/agent/facts.py",
+                   "ids": dict(sorted(sheet.ids.items(), key=lambda kv: kv[1]))}, fh, indent=1)
+    os.replace(tmp, p)
+
+
+def build(repo: str = ".", persist: bool = False) -> Sheet:
+    """persist: write new labels' numbers into the registry (the agent does; read-only callers do not)."""
+    sh = Sheet(load_registry(repo))
+    _build(sh, repo)
+    if persist and sh.new_labels:
+        save_registry(repo, sh)
+    return sh
+
+
+def _build(sh, repo):
     p = _latest(repo, "c1v5-*/c1_summary.json")
     if p:
         r = json.load(open(p)); rel = os.path.relpath(p, repo); c = r["C1"]
@@ -88,7 +128,7 @@ def build(repo: str = ".") -> Sheet:
                        f"{rel}#{diag}.max_relative_difference")
     _c4_to_c7(sh, repo)
     _exploratory(sh, repo)
-    return sh
+    _c9_and_after(sh, repo)
 
 
 def _c4_to_c7(sh, repo):
@@ -235,3 +275,48 @@ def _exploratory(sh, repo):
                    f"{rel}#summary.relative_change")
             sh.add(f"EXPLORATORY band mute: loss change on far-repeat tokens, muting the {band}-range heads", rc[band]["far_repeat"],
                    f"{rel}#summary.relative_change.{band}.far_repeat")
+
+
+def _c9_and_after(sh, repo):
+    """Added after the registry was seeded, so these take new numbers and nothing earlier moves."""
+    p = _latest(repo, "c9v1-*/c9_summary.json")
+    if p:
+        r = json.load(open(p)); rel = os.path.relpath(p, repo); c = r["C9"]
+        sh.add("C9 necessity outcome (proposed by Muse Wonder in a lab-loop turn; sealed rules: N1 necessary in both "
+               "windows, N1L in the main window only, N0 not shown necessary, R0 C8 did not replicate, U undefined)",
+               c["outcome"], f"{rel}#C9.outcome")
+        if "retained_NOV2" in c:
+            sh.add("C9 full dial: relative tilt change on set A tokens 32,768 to 65,535 at scale 2", c["full_change"],
+                   f"{rel}#C9.full_change")
+            boot = r.get("bootstrap_95") or {}
+            for k, lab in (("V2", "layer 2 v_proj alone"), ("NOV2", "the full dial without layer 2 v_proj"),
+                           ("NOG2", "the full dial without layer 2's output gate (control)"),
+                           ("NOV4", "the full dial without layer 4 v_proj")):
+                sh.add(f"C9 share of the full change kept by {lab}, layers 2 to 51", c[f"retained_{k}"], f"{rel}#C9.retained_{k}")
+                ci = boot.get(f"retained_{k}")
+                if ci and k in ("V2", "NOV2"):
+                    sh.add(f"C9 retained_{k}, 95 percent interval low", ci[0], f"{rel}#bootstrap_95.retained_{k}")
+                    sh.add(f"C9 retained_{k}, 95 percent interval high", ci[1], f"{rel}#bootstrap_95.retained_{k}")
+            sh.add("C9 books keeping less without layer 2 v_proj than without layer 2's gate (of 5)", c["books_ordered"],
+                   f"{rel}#C9.books_ordered")
+            sh.add("C9 layer 2 v_proj alone minus what removing it loses (near 0 means its part adds without overlap)",
+                   c["gap_sufficiency_minus_necessity"], f"{rel}#C9.gap_sufficiency_minus_necessity")
+            d = c["downstream"]
+            if "retained_NOV2" in d:
+                sh.add("C9 downstream (layers 5 to 51): full dial relative tilt change", d["full_change"], f"{rel}#C9.downstream.full_change")
+                sh.add("C9 downstream: share kept without layer 2 v_proj", d["retained_NOV2"], f"{rel}#C9.downstream.retained_NOV2")
+                sh.add("C9 downstream: share kept without layer 4 v_proj (control, bar 0.80)", d["retained_NOV4"],
+                       f"{rel}#C9.downstream.retained_NOV4")
+                ci = boot.get("retained5_NOV4")
+                if ci:
+                    sh.add("C9 downstream retained without layer 4 v_proj, 95 percent interval low", ci[0], f"{rel}#bootstrap_95.retained5_NOV4")
+    pr = (sorted(glob.glob(os.path.join(repo, "results", "raw", "probe-behavior-*", "behavior.json"))) or [None])[-1]
+    if pr:
+        r = json.load(open(pr)); rel = os.path.relpath(pr, repo); sm = r["summary"]
+        base = sm["S0"]["mean_excess_loss"]
+        for c, lab in (("S2", "the trained dial at scale 2"), ("S4", "the trained dial at scale 4 (beyond any sealed run)"),
+                       ("R2", "a random adapter of matched size at scale 2"), ("R4", "a random adapter of matched size at scale 4")):
+            sh.add(f"EXPLORATORY behavior probe (10 book pairs, sets B and C from token 80,000): relative rise in loss on "
+                   f"the new book after a switch, {lab}", sm[c]["mean_excess_loss"] / base - 1, f"{rel}#summary.{c}")
+        sh.add("EXPLORATORY behavior probe: old-book names in all generated text, every condition", sum(v["old_words_in_text"] for v in sm.values()),
+               f"{rel}#summary")

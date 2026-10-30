@@ -1,0 +1,44 @@
+{
+  "title": "Downstream reach of layer 2 q, k, v",
+  "question": "Does layer 2 q, k, v flatten tilt beyond layer 2, in heads that it can only reach through later layers?",
+  "prediction": "Layer 2 q, k, v alone will keep most of the full dial tilt change over layers 5 to 51. Removing layer 2 q, k, v from the full dial will lose most of that change. Layer 4 q, k, v alone will keep little of that change. Each share here is a share of the full dial tilt change over layers 5 to 51 only.",
+  "intervention": "Use the frozen adapter and the tilt harness on a 32,768 token segment for each book. Switch on only the named modules at scale 2. Keep the drive, text, and head reading fixed across conditions. The first 8,192 tokens of each segment are burn in and only the remaining 24,576 tokens are scored. Before the main run, use a smoke run to confirm that each measured segment is long enough, is fresh text, and does not overlap the adapter training book and token ranges. Five conditions, 5 books, and 9 passes per book and condition fit in the time estimate.",
+  "conditions": [
+    "Dial scale 0, the unmodified model baseline.",
+    "Full dial at scale 2, all 32 modules on.",
+    "Layer 2 q, k, v only at scale 2.",
+    "Full dial at scale 2 with layer 2 q, k, v switched off.",
+    "Layer 4 q, k, v only at scale 2."
+  ],
+  "control": "Layer 4 q, k, v only is the control. It has the same three module types, the same module count, and the same rank as the layer 2 test. Layer 4 is a local layer like layer 2. The measured window starts at layer 5, so both the layer 2 and layer 4 interventions can reach every measured head. Layer 4 is the closest possible local control upstream of the measured window. The path is not matched, because a layer 2 effect must pass through global layer 3 to reach layer 5 while a layer 4 effect does not, and the distances to layer 5 also differ. This path difference limits any claim that the contrast isolates layer identity alone.",
+  "books": "Use book set A with 5 books. Measure tokens 90,000 to 122,767 in each book, which is a 32,768 token segment. The first 8,192 tokens, tokens 90,000 to 98,191, are burn in and only tokens 98,192 to 122,767 are scored. This range is fresh and lies within every set A book. In the smoke run, confirm that each book is long enough for the full segment and that no measured segment overlaps the adapter training ranges on books 1260, 345, 37106 and 174 at tokens 40,960 to 47,103.",
+  "primary_metric": "For each book, compute tilt over heads in layers 5 to 51 only, using only the scored tokens after burn in. A condition share is the tilt drop from dial scale 0 to that condition divided by the tilt drop from dial scale 0 to the full dial. Both drops use the same layers 5 to 51 heads. Report the mean share across the 5 books and the book level shares. This share is a share of the full dial change over layers 5 to 51 only. Also report each book full drop and the mean full drop so the denominator can be judged.",
+  "pass_rule": "Apply a no call guard before any pass or fail judgment. For each book, define the relative full drop as the tilt drop from dial scale 0 to the full dial divided by the tilt at dial scale 0 over layers 5 to 51. The result is inconclusive if any book has a relative full drop below 0.02, if any book has a full drop at or below zero, or if the mean relative full drop across the 5 books is below 0.03. If the guard passes, pass needs the mean layer 2 q, k, v share to be at least 0.60, because 0.60 is a clear majority of the downstream full change. Pass also needs the mean share without layer 2 q, k, v to be at most 0.40, because 0.40 means most of the downstream change is gone. Pass also needs the mean layer 4 q, k, v share to be at most 0.30, because 0.30 is at most half of the required layer 2 share. Pass also needs at least 4 of 5 books with the layer 2 share above the layer 4 share, because 4 of 5 guards against one book driving the mean. Pass also needs at least 4 of 5 books with the share without layer 2 q, k, v at most 0.40 and below the layer 2 only share in the same book. Pass also needs precision across the 5 books. Compute a 95 percent t interval for the mean of each book level share. Pass needs the lower bound of the layer 2 interval to be above the upper bound of the layer 4 interval and the width of the layer 2 interval to be at most 0.40.",
+  "failure_meaning": "Failure means the large overall share is mainly a direct layer 2 head effect, or the downstream effect is not specific to layer 2. A result stopped by the no call guard is inconclusive and is not a failure. A result that fails the precision rule or the book level rules is not a pass and does not support a downstream claim. The lab should not call layer 2 q, k, v a model wide dial site yet.",
+  "gpu_hours_estimate": 1.1,
+  "risks": [
+    "The downstream full tilt change is small, so shares may be noisy when a book has a near zero denominator, even with the no call guard.",
+    "Layer 2 and layer 4 differ in distance to layer 5, and a layer 2 effect must pass through global layer 3 while a layer 4 effect does not, so the contrast does not isolate layer identity alone.",
+    "With only 5 books, the interval for a mean share may be wide and may fail the precision rule even when the mean looks large.",
+    "Five books from one set limit how far the result can be generalized.",
+    "A tilt result alone does not prove a loss or behavior change."
+  ],
+  "why_this_next": "Layer 2 q, k, v alone had a share of 0.7971 [F113] over all heads. That share can be dominated by layer 2 own heads. Layer 2 v alone had a share of 0.3816 [F138] over layers 3 to 51, so the downstream reach of q, k, v together is still open. The full dial downstream change over layers 5 to 51 was -0.05161 [F175], so that window is measurable but small. This test separates a direct own head effect from a propagated effect in one run.",
+  "revision_notes": [
+    "Fixed critique point 1 by adding a no call guard that requires a minimum relative full drop in every book and in the mean, with an inconclusive result if the guard fails.",
+    "Fixed critique point 2 by adding a book level necessity rule that requires at least 4 of 5 books to show the share without layer 2 q, k, v at most 0.40 and below the layer 2 only share in the same book.",
+    "Fixed critique point 3 by adding a precision rule that requires the 95 percent interval for the layer 2 share to lie above the interval for the layer 4 share and to have width at most 0.40.",
+    "Fixed critique point 4 by stating that the first 8,192 tokens of the 32,768 token segment are burn in and only the remaining tokens are scored.",
+    "Fixed critique point 5 by adding a smoke run check that the measured segments avoid the adapter training book and token ranges.",
+    "Fixed critique point 6 by keeping layer 4 as the closest possible local control and stating the unmatched path through global layer 3 and the distance difference as a limit on specificity claims.",
+    "No critique point was rejected."
+  ],
+  "_checks": {
+    "missing_fields": [],
+    "numbers_ok": true,
+    "mismatched_citations": [],
+    "unknown_citations": []
+  },
+  "_revises": "proposal-20261030T043046Z-muse-wonder-1.0.json",
+  "_model": "muse-wonder-1.0"
+}

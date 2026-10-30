@@ -1,0 +1,13 @@
+{
+  "started_utc": "2026-10-30T04:27:12Z",
+  "models": {
+    "narrator": "muse-spark-1.3",
+    "designer": "muse-wonder-1.0",
+    "critic": "muse-spark-1.3"
+  },
+  "narration": "./results/agent/narration-20261030T042838Z-muse-spark-1.3.md",
+  "proposal": "./results/agent/proposal-20261030T043046Z-muse-wonder-1.0.json",
+  "critique": "./results/agent/critique-20261030T043114Z-muse-spark-1.3.md",
+  "revised_proposal": "./results/agent/proposal-20261030T043221Z-muse-wonder-1.0-revised.json",
+  "human_gate": "Draft a spec from the revised proposal, have it reviewed independently and by Muse (agent review --files ...), seal it with scripts/seal.sh, then start the run on the pod."
+}

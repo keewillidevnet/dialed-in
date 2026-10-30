@@ -200,6 +200,7 @@ $("facts").innerHTML=[
   `flatter by ${Math.abs(dial.relative_change*100).toFixed(1)}%`,
   `perplexity ×${dial.ppl.S2.toFixed(3)}`,
   `layer 2 q, k, v: ${(W.c7.share_QKV2*100).toFixed(1)}% of the effect`,
+  ...(D.c8?[`layer 2 v alone: ${(D.c8.C8.share_V2*100).toFixed(1)}% (C8, ${D.c8.C8.outcome})`]:[]),
   `${L.rows.length} sealed specs`].map(s=>`<span>${s}</span>`).join("");
 
 /* ---------- 1. dial chart ---------- */
@@ -326,7 +327,8 @@ function c8card(){
     ${sbar("Layer 2 v alone (needs 50 to 140%)",c.share_V2??null,ci.share_V2,"var(--dial)",[0.5])}
     ${sbar("Layer 4 v, control (must stay within 30%)",c.share_V4!=null?Math.abs(c.share_V4):null,null,"var(--base)",[0.3])}
     ${sbar("Layer 2 q, k, v (repeat of C7 on new text)",c.share_QKV2??null,ci.share_QKV2,"var(--muted)")}
-    ${c.full_change!=null?`<p class="note">Full dial on this set: ${pct(c.full_change)}. Books agreeing on v alone: ${c.books_agree_V2} of 5.</p>`:""}
+    ${c.full_change!=null?`<p class="note">Full dial on this set: ${pct(c.full_change)}. Books agreeing on v alone: ${c.books_agree_V2} of 5.${r.ppl?` Perplexity: v alone \u00d7${r.ppl.V2.toFixed(3)}, full dial \u00d7${r.ppl.FULL.toFixed(3)}.`:""}</p>`:""}
+    ${r.downstream?`<p class="note">The control can only reach layers 4 and later. Over layers 5 to 51, downstream of both, v alone still gives ${(r.downstream.V2_over_layers5_51*100).toFixed(0)}% and the control ${(r.downstream.V4_over_layers5_51*100).toFixed(0)}%. Position matters, not only the matrix type.</p>`:""}
     <div class="src">Source: ${esc(r.src)}</div>`;
 }
 $("c8").innerHTML=c8card();
@@ -361,7 +363,7 @@ $("story").innerHTML=[
   ["review",`<b>Review changes the design.</b> Four revisions, each with its reason in the sealed spec:<ul>${L.revisions.map(r=>`<li>${esc(r.text)}</li>`).join("")}</ul>`],
   [stamp(L.review_utc),`<b>Muse Wonder reviews the code: ${esc(rv.verdict)}.</b> ${rv.items.length} findings, working separately from an independent reviewer:<ul>${rv.items.map(i=>`<li><span class="sev ${i.severity}">${i.severity}</span>${esc(i.label)}</li>`).join("")}</ul><span class="src">${L.review_src}</span>`],
   [L.seal?L.seal.utc.slice(0,16).replace("T"," ")+" UTC":"",`<b>Sealed by a person.</b> <span class="mono">sha256 ${L.seal?L.seal.sha.slice(0,16):""}…</span> The run script refuses to start if the file changes.`],
-  ["GPU",D.c8?`<b>Result: ${esc(D.c8.C8.outcome)}.</b> ${esc(D.c8.C8.reason||"")} <span class="src">${esc(D.c8.src)}</span>`:`<b>Running.</b> ${D.running?`Run <span class="mono">${esc(D.running)}</span>, `:""}6 conditions × 5 books on one RTX PRO 6000.`],
+  ["GPU",D.c8?`<b>Result: ${esc(D.c8.C8.outcome)}${D.c8.C8.outcome==="O1"?", passed":""}.</b> Layer 2's v matrix alone gives ${(D.c8.C8.share_V2*100).toFixed(1)}% of the dial's effect${D.c8.ci&&D.c8.ci.share_V2?` (95% interval ${(D.c8.ci.share_V2[0]*100).toFixed(1)} to ${(D.c8.ci.share_V2[1]*100).toFixed(1)}%)`:""}; the matched control gives ${(D.c8.C8.share_V4*100).toFixed(1)}%. ${D.c8.C8.reason?esc(D.c8.C8.reason):""}<span class="src">${esc(D.c8.src)}</span>`:`<b>Running.</b> ${D.running?`Run <span class="mono">${esc(D.running)}</span>, `:""}6 conditions × 5 books on one RTX PRO 6000.`],
 ].map(([w,h])=>`<div class="ev"><span class="when">${w}</span><div class="what">${h}</div></div>`).join("");
 
 const N=L.narration;

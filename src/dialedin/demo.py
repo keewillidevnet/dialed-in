@@ -164,7 +164,7 @@ def build(repo):
     if c8:
         d = json.load(open(c8[-1]))
         data["c8"] = {"src": os.path.relpath(c8[-1], repo), "C8": d["C8"], "ci": d.get("bootstrap_95"),
-                      "ppl": d.get("perplexity_ratio_median")}
+                      "ppl": d.get("perplexity_ratio_median"), "downstream": d.get("secondary_downstream_shares")}
     nxt = latest(repo, "results/agent/proposal-*-revised.json")
     if nxt:
         p = j(repo, nxt)

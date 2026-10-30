@@ -1,0 +1,43 @@
+{
+  "title": "Is layer 2 v necessary in the full dial for downstream and main tilt",
+  "question": "Is layer 2 v_proj necessary inside the full dial, not only sufficient alone, for tilt in layers 5 to 51 where a layer 4 control can also act, and for the main tilt in layers 2 to 51 against a same layer control, on a set A segment that was not used for the first tilt segment or for the exploratory window at tokens 60000 to 68191?",
+  "prediction": "Layer 2 v_proj alone gave a share of 0.5725 [F125] of the full dial tilt change. Layer 2 q and k alone gave a share of 0.3591 [F134]. Layer 2 q, k and v gave a share of 0.7754 [F131]. Layer 4 v_proj alone gave a share of 0.004357 [F128]. Over layers 3 to 51, layer 2 v_proj alone gave a share of 0.3816 [F138]. Over layers 5 to 51, layer 4 v_proj alone gave a share of 0.06066 [F139]. Within layer 2 attention in exploratory work, the output projection alone gave a share of -0.07018 [F146]. I predict that removing layer 2 v_proj from the full dial will lose a large part of the change on both layer windows, while removing layer 4 v_proj or layer 2 o_proj will not.",
+  "intervention": "Run the frozen adapter at dial scale 2 with chosen module subsets on. The adapter has 32 modules [F88]. Measure tilt over attention heads in layers 2 to 51 from each pass set and compute the restricted tilt over layers 5 to 51 from the same pass sets. Use no training.",
+  "conditions": [
+    "Dial scale 0 with no modules on. This is the unmodified baseline.",
+    "Dial scale 2 with all 32 modules on. This is the full dial.",
+    "Dial scale 2 with only layer 2 v_proj on. This checks single module sufficiency on the new segment and is scored by the replication gates.",
+    "Dial scale 2 with all modules except layer 2 v_proj on. This has 31 modules on and tests necessity.",
+    "Dial scale 2 with all modules except layer 4 v_proj on. This has 31 modules on and is the same type control for the layers 5 to 51 metric.",
+    "Dial scale 2 with all modules except layer 2 o_proj on. This has 31 modules on and is the positional control for the layers 2 to 51 metric."
+  ],
+  "control": "Omitting layer 4 v_proj is the same type control for the layers 5 to 51 metric. It removes one v_proj module from a local layer, like layer 2, and both omissions can affect layers 5 to 51. Omitting layer 2 o_proj is the positional control for the layers 2 to 51 metric. It removes one attention projection module in the same layer as layer 2 v_proj, so it has the same layer level reach to layer 2 heads. If layer 2 v_proj is specifically necessary, both controls should keep most of the full dial change on their matched metrics.",
+  "books": "Use the same 5 books in set A that were used in C5 [F96]. The fact sheet gives no literal book IDs, so this reference defines the books without inventing IDs. Use tokens 32768 to 65535 from each book as one 32768 token segment. This segment is disjoint from the first 32768 tokens measured earlier. For set A, this segment does not overlap the exploratory window at tokens 60000 to 68191 and does not overlap the band mute window at tokens 70000 to 78191.",
+  "primary_metric": "Primary metric. For each book, compute the retained share over layers 5 to 51. It is the baseline tilt minus the condition tilt, divided by the baseline tilt minus the full dial tilt, with all tilts restricted to layers 5 to 51. Average the share over the 5 books. The share is a share of the full dial tilt change over layers 5 to 51 on the same segment. Secondary metric. Compute the same retained share over layers 2 to 51 for the main tilt. The secondary metric is used only for the comparison between omitting layer 2 v_proj and omitting layer 2 o_proj, which share the same layer position.",
+  "pass_rule": "Replication gates must be met first. The baseline tilt minus the full dial tilt must be greater than 0 over layers 5 to 51 and also greater than 0 over layers 2 to 51. The mean share for layer 2 v_proj alone must be between 0.20 and 1.40 over layers 5 to 51 and between 0.40 and 1.40 over layers 2 to 51. If a gate fails, the run is not scored for necessity. Pass requires the mean retained share without layer 2 v_proj to be at most 0.70 over layers 5 to 51, which means at least 30 percent of the full downstream change is lost. Pass requires the mean retained share without layer 4 v_proj to be at least 0.80 over layers 5 to 51, which means at least 80 percent of the full downstream change is kept. Pass requires the mean retained share without layer 2 v_proj to be at most 0.60 over layers 2 to 51, which means at least 40 percent of the full main change is lost. Pass requires the mean retained share without layer 2 o_proj to be at least 0.80 over layers 2 to 51, which means at least 80 percent of the full main change is kept. Pass also requires at least 4 of 5 books to retain less without layer 2 v_proj than without layer 4 v_proj over layers 5 to 51, and at least 4 of 5 books to retain less without layer 2 v_proj than without layer 2 o_proj over layers 2 to 51.",
+  "failure_meaning": "If a replication gate fails, failure means the full dial or the single module effect does not hold on this segment, so the earlier localization may not generalize to new text and necessity is not judged. If the replication gates pass but the necessity bars fail, failure means layer 2 v_proj is sufficient alone but not specifically necessary in the full dial, because the other modules can carry the effect without it. If only one layer window meets its bars, the necessity claim is limited to that window and is not scored as a full pass.",
+  "gpu_hours_estimate": 1.3,
+  "risks": [
+    "The books are the same books used in C5, so only the token segment is new and book level generalization is not tested.",
+    "Module effects can overlap, so shares from single module runs need not add to the full dial share.",
+    "A mean share near a threshold can give a weak call even when most books agree.",
+    "The layers 5 to 51 denominator can be small and noisy. The relative tilt change at scale 2 over layers 6 to 51 only was -0.02664 [F98], which shows that the downstream change can be much smaller than the main change.",
+    "No single control can match both the v_proj type and the layer 2 position, so the design uses one control for each match and a claim must pass both."
+  ],
+  "why_this_next": "Sufficiency is known, but necessity inside the full dial is not tested. This run tests necessity and segment generalization in one design with a type matched control and a position matched control. It uses only frozen modules and the existing tilt harness.",
+  "revision_notes": [
+    "Point 1 accepted. The primary metric is now restricted to layers 5 to 51 for the layer 2 versus layer 4 comparison, and a same layer control that omits layer 2 o_proj was added for the layers 2 to 51 comparison.",
+    "Point 2 accepted. The books were changed from set C to set A and the segment was kept at tokens 32768 to 65535, which is disjoint from the first 32768 tokens and, for set A, does not overlap the exploratory window at tokens 60000 to 68191.",
+    "Point 3 accepted. Explicit replication gates were added for the full dial difference and for the single layer 2 v_proj share, and condition 3 is now scored by those gates before necessity is judged.",
+    "Point 4 accepted in substance but the literal listing of book IDs is rejected. The fact sheet contains no literal book IDs, and the set C books from C8 would conflict with the switch to set A required by point 2, so the books are specified without inventing IDs as the same 5 set A books used in C5 [F96].",
+    "Point 5 required no change. Quoted prior results keep their fact IDs, and the budget was recomputed for 6 conditions and raised to 1.3 gpu hours."
+  ],
+  "_checks": {
+    "missing_fields": [],
+    "numbers_ok": true,
+    "mismatched_citations": [],
+    "unknown_citations": []
+  },
+  "_revises": "proposal-20261030T005422Z-muse-wonder-1.0.json",
+  "_model": "muse-wonder-1.0"
+}

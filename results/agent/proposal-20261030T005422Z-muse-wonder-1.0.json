@@ -1,0 +1,63 @@
+{
+  "title": "Is layer 2 v necessary in the full dial",
+  "question": "Is layer 2 v_proj necessary inside the full dial, not only sufficient alone, on text not used for the first tilt segment?",
+  "prediction": "Layer 2 v_proj alone gave a share of 0.5725 [F125] of the full dial tilt change. Layer 2 q and k alone gave 0.3591 [F134]. Layer 2 q, k and v gave 0.7754 [F131]. Layer 4 v_proj alone gave 0.004357 [F128]. I predict that removing layer 2 v_proj from the full dial will lose a large part of the change, while removing layer 4 v_proj will not.",
+  "intervention": "Run the frozen adapter at dial scale 2 with chosen module subsets on. Measure tilt over attention heads in layers 2 to 51. Use no training.",
+  "conditions": [
+    "Dial scale 0 with no modules on. This is the unmodified baseline.",
+    "Dial scale 2 with all 32 modules on. This is the full dial.",
+    "Dial scale 2 with only layer 2 v_proj on. This checks single module sufficiency on the new segment.",
+    "Dial scale 2 with all modules except layer 2 v_proj on. This has 31 modules on and tests necessity.",
+    "Dial scale 2 with all modules except layer 4 v_proj on. This has 31 modules on and is the control."
+  ],
+  "control": "Omitting layer 4 v_proj is the control. It removes one v_proj module from a local layer, like layer 2. It keeps the same number of modules on. If layer 2 v_proj is specifically necessary, this control should keep most of the full dial change.",
+  "books": "Use book set C with 5 books. Use tokens 32768 to 65535 from each book as one 32768 token segment.",
+  "primary_metric": "For each book, compute the retained share. It is the baseline tilt minus the condition tilt, divided by the baseline tilt minus the full dial tilt. Tilts are over layers 2 to 51. Average the share over the 5 books. The share is a share of the full dial tilt change on the same segment.",
+  "pass_rule": "Pass if the mean retained share without layer 2 v_proj is at most 0.60, because 0.60 means at least 40 percent of the full change is lost. Pass also needs the mean retained share for the control to be at least 0.80, because 0.80 means at least 80 percent of the full change is kept. Pass also needs at least 4 of 5 books to retain less without layer 2 v_proj than without layer 4 v_proj, because 4 of 5 needs agreement beyond a bare majority.",
+  "failure_meaning": "Failure means layer 2 v_proj is sufficient alone but not specifically necessary in the full dial. The other modules can then carry the effect without it. If the full dial or the single module check also fails on this segment, failure instead means the earlier localization may not hold on new text.",
+  "gpu_hours_estimate": 1.1,
+  "risks": [
+    "The new segment tail overlaps a token range used by earlier exploratory probes, so the segment is not fully pristine.",
+    "Module effects can overlap, so shares from single module runs need not add to the full dial share.",
+    "A mean share near a threshold can give a weak call even when most books agree.",
+    "Tilt over layers 2 to 51 weights early heads heavily, so this test speaks to the main tilt measure more than to downstream spread alone."
+  ],
+  "why_this_next": "Sufficiency is known, but necessity inside the full dial is not tested. This run tests necessity and segment generalization in one design. It uses only frozen modules and the existing tilt harness.",
+  "_checks": {
+    "missing_fields": [],
+    "numbers": {
+      "unverified_numbers": [
+        "4",
+        "4",
+        "51",
+        "31",
+        "4",
+        "31",
+        "4",
+        "32768",
+        "65535",
+        "32768",
+        "51",
+        "0.60",
+        "0.60",
+        "40",
+        "80",
+        "4",
+        "4",
+        "4",
+        "51"
+      ],
+      "mismatched_citations": [],
+      "unknown_citations": [],
+      "citations_used": [
+        "F125",
+        "F128",
+        "F131",
+        "F134"
+      ],
+      "ok": true
+    },
+    "within_budget": true
+  },
+  "_model": "muse-wonder-1.0"
+}

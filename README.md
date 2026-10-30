@@ -4,6 +4,8 @@
 
 Entry for the Meta Global AI Developer Hackathon, Theme 2: Push the Frontier. Subject model: [Muse Glimmer-30B](https://huggingface.co/meta-models/Muse-Glimmer-30B). Lab scientist: Muse Spark and Muse Wonder on the Meta Model API.
 
+<p align="center"><img src="docs/figures/the-dial.gif" alt="Turning the dial from 0× to 2× and back: the fast end of the curve rises, the lean flattens by up to 24%, perplexity rises by at most 0.8%" width="760"></p>
+
 > **Open the demo:** `open demo/index.html` (no internet, no GPU). Drag the dial and watch the curve move.
 
 ---
@@ -15,6 +17,10 @@ Audio engineers test a speaker by playing tones through it, from deep bass to hi
 We did the same thing to a language model. Instead of sound, we slip a faint, repeating "wave" into the model's internal signal and watch how strongly its 1,600 attention heads pick it up. A fast wave repeats every 2 words. A slow one repeats every 4,096.
 
 **What we found:** Muse Glimmer-30B lets slow waves through much more strongly than fast ones. The fastest wave gets through at about a third of the strength of the slowest, on all fifteen books we tested. We call that the **lean**.
+
+The lean is mostly a property of the model's 39 sliding-window layers, which only look back 2,048 tokens. Its 13 global layers, which see the whole text, are much flatter: the fastest wave keeps about 65% there against about 30% in the sliding-window layers, and the three book sets draw nearly the same line.
+
+![The model's fingerprint: fast waves fade in the sliding-window layers, much less in the global layers](docs/figures/fingerprint.png)
 
 **What we built:** no built-in setting could change the lean, so we trained a small add-on with a single **dial**. Turn it up and the fast waves get through more.
 
@@ -43,7 +49,13 @@ Every experiment below was written down in full, with its pass/fail bar, and **s
 
 Each row traces to a summary file: [C1](results/derived/c1v5-20261027T152040Z/c1_summary.json), [C2](results/derived/c2v1-20261027T201901Z/c2_summary.json), [C3](results/derived/c3v1-20261028T014250Z/c3_summary.json), [C4](results/derived/c4v1-20261028T065820Z/c4_summary.json), [C5](results/derived/c5v1-20261029T025343Z/c5_summary.json), [C6](results/derived/c6v2-20261029T060851Z/c6_summary.json), [C7](results/derived/c7v1-20261029T154201Z/c7_summary.json), [C8](results/derived/c8v1-20261029T222946Z/c8_summary.json), [C9](results/derived/c9v1-20261030T023935Z/c9_summary.json). Outcome codes are defined in each [sealed spec](criteria/sealed/).
 
-**Can you see it in what the model writes?** Measurably, not yet readably. In an exploratory test, with the dial at 2× the model held on to the previous book longer after a switch: the new book got 5.4% harder to predict, and 9.6% at 4×. A random add-on of the same size changed it by under 1%. Give all three the same prompt and the random add-on leaves the words exactly as they were, while the trained dial rewrites them ([probe file](results/raw/probe-behavior-20261030T022546Z/behavior.json)).
+**Can you see it in what the model writes?** Measurably, not yet readably. In an exploratory test on 10 pairs of books, the dialed model tended to hold on to the previous book after a switch: the new book got harder to predict in 7 of 10 pairs at 2× (median +2.0%, mean +5.4%) and 8 of 10 at 4× (median +2.3%, mean +9.6%). The means lean on one large pair. A random add-on of the same size barely moved it (medians +0.5% and +0.2%). Given the same prompt, the random add-on can leave the words exactly as they were while the trained dial rewrites them. No names from the old book ever showed up in the generated text ([probe file](results/raw/probe-behavior-20261030T022546Z/behavior.json)).
+
+![After a switch between books, the trained dial tends to make the new book harder to predict; a random change of the same size barely does](docs/figures/behavior.png)
+
+**A bonus map.** Measuring each head on its own shows that heads listen at very different timescales: half of them follow patterns within about 32 tokens, and 1 in 10 listens past about 600. Some layers lean short, others long (exploratory; [head map](results/derived/headmap-c1v5-20261027T152040Z/headmap.json)).
+
+![Each attention head listens at its own timescale](docs/figures/heads.png)
 
 ---
 

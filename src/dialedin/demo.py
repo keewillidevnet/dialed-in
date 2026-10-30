@@ -218,6 +218,10 @@ def behavior_panel(beh, titles) -> dict:
            "rise": {c: sm[c]["mean_excess_loss"] / base - 1 for c in ("S2", "S4", "R2", "R4")},
            "ppl": {c: sm[c]["median_perplexity_ratio"] for c in ("S2", "S4", "R2", "R4")},
            "old_words": sum(v["old_words_in_text"] for v in sm.values())}
+    per = {c: sorted(p["conditions"][c]["excess_loss"] / p["conditions"]["S0"]["excess_loss"] - 1
+                     for p in beh["pairs"].values()) for c in ("S2", "S4", "R2", "R4")}
+    out["median"] = {c: (v[len(v) // 2 - 1] + v[len(v) // 2]) / 2 if len(v) % 2 == 0 else v[len(v) // 2] for c, v in per.items()}
+    out["up"] = {c: sum(x > 0 for x in v) for c, v in per.items()}
     k = beh["showcase"].get("S4")
     if k:
         pr = beh["pairs"][k]

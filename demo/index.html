@@ -36,6 +36,7 @@ section{background:var(--panel);border:1px solid var(--rule);border-radius:6px;p
 @media (max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
 .src{font:11px var(--mono);color:var(--muted);word-break:break-all}
 svg text{fill:var(--muted);font:11px var(--mono)}
+svg text.halo{paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
 /* dial */
 .chart{width:100%;height:auto;display:block}
 .slider{display:grid;gap:6px}
@@ -132,14 +133,15 @@ footer{font-size:12px;color:var(--muted);display:grid;gap:6px}
     <div style="display:grid;gap:12px;min-width:0">
       <svg class="chart" id="curve" viewBox="0 0 640 340" role="img" aria-label="Gain against period at the selected dial setting"></svg>
       <div class="slider">
-        <label class="eyebrow" for="scale">Dial setting (adapter scale)</label>
+        <label class="eyebrow" for="scale">Dial strength (adapter scale)</label>
         <input id="scale" type="range" min="0" max="4" step="1" value="0">
         <div class="ticks" id="ticks"></div>
+        <p class="note">Orange: the selected strength. Dashed blue: the dial at 0. Thin gray: the other measured strengths. Each line is one setting; the slider picks which one is drawn in orange.</p>
       </div>
     </div>
     <div class="readout">
       <div class="meter"><span class="eyebrow">Tilt (slope of log gain on log period)</span><span class="v dial" id="r-tilt"></span><span class="note" id="r-change"></span></div>
-      <div class="meter"><span class="eyebrow">Cost: perplexity on the same text</span><span class="v" id="r-ppl"></span><span class="note">Ratio to the dial at 0. 1.000 means no cost.</span></div>
+      <div class="meter"><span class="eyebrow">Cost: perplexity on the same text</span><span class="v" id="r-ppl"></span><span class="note">Compared with the dial at 0; ×1.000 means no cost.</span></div>
       <div class="books"><span class="eyebrow">Tilt per book (blue tick: dial at 0)</span><div id="books" class="books"></div></div>
     </div>
   </div>
@@ -205,7 +207,7 @@ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const pct=(x,d=1)=>(x>=0?"+":"−")+Math.abs(x*100).toFixed(d)+"%";
 const stamp=s=>s?`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)} ${s.slice(9,11)}:${s.slice(11,13)} UTC`:"";
-const SCALES=["S0","S0.5","S1","S1.5","S2"], LBL=["0","0.5","1","1.5","2"];
+const SCALES=["S0","S0.5","S1","S1.5","S2"], LBL=["0×","0.5×","1×","1.5×","2×"];
 const dial=D.dial, W=D.where, L=D.loop;
 
 /* header facts */
@@ -228,23 +230,23 @@ const path=a=>a.map((v,i)=>`${i?"L":"M"}${xs(grid[i]).toFixed(1)},${ys(v).toFixe
 function drawAxes(){
   let s="";
   for(const v of [0.3,0.4,0.5,0.6,0.7,0.8,1.0]) if(v>=ymin&&v<=ymax)
-    s+=`<line x1="${X0}" x2="${X1}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--faint)"/><text x="${X0-8}" y="${ys(v)+4}" text-anchor="end">${v.toFixed(1)}</text>`;
+    s+=`<line x1="${X0}" x2="${X1}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--faint)"/><text x="${X0-8}" y="${ys(v)+4}" text-anchor="end">${(v*100).toFixed(0)}%</text>`;
   for(const N of grid) s+=`<line x1="${xs(N)}" x2="${xs(N)}" y1="${Y1}" y2="${Y1+5}" stroke="var(--rule)"/><text x="${xs(N)}" y="${Y1+19}" text-anchor="middle">${N}</text>`;
   s+=`<text x="${(X0+X1)/2}" y="${Y1+36}" text-anchor="middle">period N (tokens per cycle), log scale</text>`;
-  s+=`<text x="14" y="${(Y0+Y1)/2}" text-anchor="middle" transform="rotate(-90 14 ${(Y0+Y1)/2})">gain, relative to N = ${grid[grid.length-1]}</text>`;
+  s+=`<text x="14" y="${(Y0+Y1)/2}" text-anchor="middle" transform="rotate(-90 14 ${(Y0+Y1)/2})">signal strength, % of the slowest wave</text>`;
   return s;
 }
 const svg=$("curve");
 svg.innerHTML=drawAxes()+SCALES.map(k=>`<path d="${path(norm(k))}" fill="none" stroke="var(--rule)" stroke-width="1.2"/>`).join("")+
   `<path d="${path(norm("S0"))}" fill="none" stroke="var(--base)" stroke-width="1.6" stroke-dasharray="5 4"/>`+
-  `<text x="${xs(grid[1])+8}" y="${ys(norm("S0")[1])+18}" style="fill:var(--base)">dial at 0 (dashed)</text>`+
-  `<path id="live" fill="none" stroke="var(--dial)" stroke-width="3" stroke-linejoin="round"/><g id="dots"></g><text id="lab0" style="fill:var(--dial);font-weight:500"></text>`;
+  `<text x="${xs(grid[1])+8}" y="${ys(norm("S0")[1])+18}" class="halo" style="fill:var(--base)">dial at 0 (dashed)</text>`+
+  `<path id="live" fill="none" stroke="var(--dial)" stroke-width="3" stroke-linejoin="round"/><g id="dots"></g><text id="lab0" class="halo" style="fill:var(--dial);font-weight:500"></text>`;
 let cur=norm("S0").slice(), target=cur.slice(), raf=null;
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 function paint(){
   $("live").setAttribute("d",path(cur));
   $("dots").innerHTML=cur.map((v,i)=>`<circle cx="${xs(grid[i])}" cy="${ys(v)}" r="4" fill="var(--dial)"/>`).join("");
-  const t=$("lab0"); t.setAttribute("x",xs(grid[0])); t.setAttribute("y",ys(cur[0])-12);
+  const t=$("lab0"); t.setAttribute("x",xs(grid[0])+2); t.setAttribute("y",ys(cur[0])-44);
   t.textContent=`${(cur[0]*100).toFixed(0)}% at N = 2`;
 }
 function animate(){

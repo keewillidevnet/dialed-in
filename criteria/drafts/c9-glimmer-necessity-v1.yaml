@@ -301,7 +301,18 @@ budget:
     run measured 13.6 wall seconds per pass and about 740 s per book, and used 1.15 hours in all
     (results/raw/c8v1-20261029T222946Z); C9 is expected to take the same, about 1.2 hours. Muse Wonder estimated 1.3.
   peak_gpu_memory: about C8's 76.8 GiB
-  pre_seal_smoke: SMOKE_RESULT
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-30 with run_c9.py sha256 37e8733c8b902ecee809d0723e6e18574d077154c010480e392c66a75653e3b1
+    (python3 -m dialedin.run_c9 --smoke): load 80 s; preflight passed (revision cec94fcfd651, transformers 5.21.0,
+    torch 2.8.0+cu128, deterministic, TF32 off); adapter 32 modules, sha256 as above; set A books 1342, 2701, 1400,
+    145 and 1184 have 173,244, 309,743, 254,673, 434,512 and 657,201 tokens (each needs 65,536); adapter and condition
+    checks all true (BASE equals the unadapted model bit for bit; FULL, V2, NOV2, NOV4 and NOG2 each change it and all
+    differ from each other; FULL and BASE restored bit for bit; modules on: FULL 32, V2 1, NOV2 31, NOV4 31, NOG2 31);
+    perplexity path max |logit difference| 0 of max |logit| 19.88; on book 1342's segment under BASE and NOV2,
+    undriven, sham and driven passes at N = 2 and 4096 took 13.20 to 13.49 s each, peak 74.3 GiB (BASE) and 76.8 GiB
+    (NOV2), all outputs finite; 3 shams with 0 differing values; BASE perplexity on book 1342's segment 1.536. No
+    gains, tilts or NOV2 perplexity were printed. FULL, V2, NOV4 and NOG2 were not smoked; C8 ran FULL and V2 at 32,768
+    tokens on this pod at the same peak.
   smoke_code_note: run_c9.py is the same file the smoke ran; metrics_c9.py and analyze_c9.py are as hashed below
 
 analysis:

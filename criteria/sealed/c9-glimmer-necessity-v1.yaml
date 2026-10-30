@@ -1,0 +1,333 @@
+# C9: is layer 2's v_proj necessary inside the dial? v1 (confirmatory)
+# DRAFT. Proposed by Muse Wonder (muse-wonder-1.0 on the Meta Model API) in one turn of the lab loop, critiqued there
+# by Muse Spark and revised by Wonder, then revised in review before sealing.
+#   Turn record: results/agent/turn-20261030T005705Z.json. Proposal: results/agent/proposal-20261030T005422Z-muse-wonder-1.0.json;
+#   Spark's critique: results/agent/critique-20261030T005457Z-muse-spark-1.3.md (verdict FIXABLE, four points);
+#   Wonder's revision: results/agent/proposal-20261030T005705Z-muse-wonder-1.0-revised.json (prompts and replies in
+#   results/agent/calls.jsonl).
+#   Its question: C8 showed layer 2's v_proj is enough alone for a majority of the dial's tilt change; is it also
+#   necessary, so that the full dial without it loses a large part of the change, while the full dial without a
+#   matched module does not? Kept from the revision: the conditions BASE, FULL, V2, and the full dial without layer
+#   2's v or layer 4's v (its third, without layer 2's o, is replaced: revision 7); the two read windows (layers 2 to 51, and layers 5 to 51, which both
+#   layer 2's and layer 4's modules can reach); the pairing of each control with its window (Spark's point 1); set A,
+#   tokens 32,768 to 65,535 (Spark's point 2); the replication gates on V2 alone (Spark's point 3); every bar
+#   (0.60 and 0.80 main, 0.70 and 0.80 downstream, 4 of 5 books, the 15 percent floor) and the 2.0-hour order of cost.
+# Revisions to the revised proposal (each with its reason):
+#   1. Shares are set-level, from the set-mean curve, as in C7 and C8; the proposal's mean of per-book shares is
+#      reported as a secondary. A single book's tilt is noisier than the set's, and a ratio of two noisy differences
+#      per book is unstable.
+#   2. The downstream window is judged only when the full dial flattens it by at least 2.5 percent; otherwise the
+#      outcome says so (N1L at most). In C8 the full dial flattened layers 5 to 51 by only 4.6 percent on set C
+#      (results/derived/c8v1-20261029T222946Z/c8_summary.json, diagnostic_groups.layers5_51), so a share there divides
+#      by a small difference. The 2.5 percent floor is about half of that, chosen here for this reason.
+#   3. The per-book rule applies to the main window only, for the same reason; downstream per-book values are reported.
+#   4. The books are listed by id (Spark's point 4; the fact sheet held no ids, so Wonder named the set instead).
+#   5. Outcome codes and their meanings are written out (N1, N1L, N0, R0, U), and what each control can and cannot show.
+#   6. Expected values are stated next to every bar (predictions, below), from C8 and the deep probe. Every prediction
+#      passes every bar: a pass is expected, and the test mainly guards against a large surprise on new text.
+#   7. The same-layer control drops layer 2's output gate (gate_proj), not its o_proj. The heads are read at o_proj's
+#      input, and an adapter on o_proj changes only o_proj's output, so dropping it leaves layer 2's own heads exactly as
+#      under FULL; in C8 those heads carried a large part of the main change (layer 2's heads -74.1 percent, layers 3 to
+#      51 -13.1, all -26.4). That control would pass by where the heads are read. The gate acts before the read point,
+#      so it reaches layer 2's heads as v does. Found by the independent review of this draft.
+#   8. All 15 text hashes are sealed, as in C5 and C8 (the loader requires 15); only set A is measured.
+# Reviewed before sealing by two reviewers working separately: an independent reviewer (revisions 7 and 8, the honest
+# statement of expected passes in revision 6, the NOV4 noise note, the C5 pilot disclosure, a stale docstring, and each
+# window resampled on its own), and Muse Wonder (results/agent/review-20261030T014157Z-muse-wonder-1.0.md: the question
+# now states each window's gate and the per-book flattening rule as the code applies them; a run with no book file is
+# refused; the partial directory is named as the code names it; a stopped setup record lists earlier failures; its
+# first point, the smoke placeholder, is filled after the pod smoke run).
+# Follows C8 (sealed; run c8v1-20261029T222946Z: outcome O1; layer 2's v_proj alone gave 0.573 of the full dial's change
+# on set C, 95 percent 0.562 to 0.582; layer 4's v_proj 0.004). Every value is a proposal until Keenan seals this file.
+
+id: c9-glimmer-necessity-v1
+version: 1
+drafted: 2026-10-30
+follows: c8-glimmer-one-matrix-dial-v1 (sealed, run complete, outcome O1)
+proposed_by: muse-wonder-1.0 (results/agent/proposal-20261030T005705Z-muse-wonder-1.0-revised.json, after Muse Spark's critique), revised in review
+status: draft
+
+questions:
+  necessity: >
+    At scale 2, on set A tokens 32,768 to 65,535, does the full C5 dial without layer 2's v_proj keep at most 60
+    percent of the full dial's set-level tilt change over layers 2 to 51, while the full dial without layer 2's output
+    gate, gate_proj (same layer), keeps at least 80 percent, with at least 4 of 5 books in which FULL flattens the
+    tilt and the dial keeps less without layer 2's v than without layer 2's gate? This main question is judged only
+    if C8's sufficiency result replicates here (V2 alone keeps 0.40 to 1.40 of the change over layers 2 to 51).
+    Separately, over layers 5 to 51: does the dial without layer 2's v keep at most 70 percent while the dial without
+    layer 4's v (same module type) keeps at least 80 percent? This downstream question is judged only if FULL flattens
+    layers 5 to 51 by at least 2.5 percent and V2 alone keeps 0.20 to 1.40 there; if not, the outcome is at most N1L.
+  predictions: >
+    FULL flattens the main tilt by about a quarter (C5 -24.0, C7 -26.8, C8 -26.4 percent) and layers 5 to 51 by about
+    5 percent (C8 -4.6). V2 alone keeps about 0.57 (C8). Without layer 2's v, the dial keeps between about 0.43 (if
+    v's contribution were entirely its own: 1 - 0.573) and about 0.58 (if v's own part is what it adds on top of q and
+    k: 1 - (0.775 - 0.359), C8's QKV2 and QK2 shares, which overlap by about 20 percent). The deep probe points the
+    same way: layer 2's attention kept 0.837 of the full dial's change with all five of its modules and 0.386 without
+    v, so dropping v cost about 0.45, which would leave about 0.55 here (exploratory: set C, 8,192 tokens, minimum
+    whole-model SNR 2.2, below this file's bar of 3). Every estimate is below the 0.60 bar, so a pass is expected; the
+    informative number is how much is lost, read from retained(NOV2) and its interval. Without layer 2's gate it keeps
+    about all of the change (the deep probe: dropping the gate from layer 2 attention kept 0.833 of the full dial's
+    change against 0.837 with it, results/raw/probe-loc-deep-20261029T075459Z/localize.json). Downstream, without layer 2's v it keeps about 0.52
+    (1 - C8's 0.478 over layers 5 to 51) and without layer 4's v about 0.94 (1 - 0.061). These pass too. Perplexity stays within 1.5
+    percent of BASE.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  segment_start_token: 32768
+  start: token 32,768 of the main text, after the Project Gutenberg header is stripped (token ids 32,768 to 65,535 of the stripped text)
+  special_tokens: none (no BOS); input = token ids [32768, 65536) of the stripped text; the model sees no earlier text
+  prompt_sets:
+    A: {1342: Pride and Prejudice, 2701: Moby Dick, 1400: Great Expectations, 145: Middlemarch, 1184: The Count of Monte Cristo}
+  why_this_text: >
+    No tilt has been measured on set A at tokens 32,768 to 65,535: C1 v5, C4 and C5 measured set A's first 32,768
+    tokens; the band-mute probe used set A at tokens 70,000 to 78,191; C5's pilot used Moby Dick at tokens 98,304 to
+    139,263, and C5's recipe was tuned on pilots that trained and evaluated on that book. The adapter never trained on set A (C5 trained on books 1260, 345, 37106 and 174 only). C5's exploratory
+    behavior tests read losses, not tilts, on set A inside this segment (recall contexts from token 40,000; topic
+    switch at tokens 53,856 to 62,047), and nothing in C9's design was chosen from them. Same books as C5, so only the
+    token segment is new; book-level generalization is not tested here (C8 tested set C).
+  token_counts_checked: 2026-10-26 for all 15 books (C5 spec), shortest 94,774 tokens (book 120, set C), so every set A book has at least 65,536; the smoke run prints each count
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest; all 15 sealed as in C5 and C8, set A measured
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+
+adapter:
+  file: results/raw/c5v1-20261029T025343Z/adapter.pt
+  sha256: 2b20e86e9af79b81dc881bbedbef350331a24ef8ee1d541183ba6bac035d9f20   # as C6 v2 and C8; the runner refuses to start, before STARTED.json, unless the file, this value and results/raw/c5v1-20261029T025343Z/training.json adapter_sha256 all agree
+  family: all
+  layers: [2, 3, 4, 5]
+  rank: 8
+  alpha: 16.0
+  frozen: no training; the adapter is loaded as C5 trained it
+
+conditions:
+  BASE: {scale: 0.0, modules: all}  # Glimmer itself; every module's branch is skipped at scale 0
+  FULL: {scale: 2.0, modules: all}  # all 32 modules on
+  V2:
+    scale: 2.0
+    modules: [layers.2.self_attn.v_proj]
+  NOV2:
+    scale: 2.0
+    modules: {all_except: [layers.2.self_attn.v_proj]}   # 31 modules on
+  NOV4:
+    scale: 2.0
+    modules: {all_except: [layers.4.self_attn.v_proj]}   # 31 modules on
+  NOG2:
+    scale: 2.0
+    modules: {all_except: [layers.2.self_attn.gate_proj]}   # 31 modules on; the attention output gate, not the MLP's
+  switching: >
+    A module is off when its B factor is set to zero; its branch then adds exactly zero. Switching a condition copies
+    each on module's saved B back, so every condition sees the trained values bit for bit (checked). The scale is the
+    shared C5 dial value. all_except names modules to switch off; every other adapter module is on. Every non-BASE
+    condition switches on a different set of modules (checked).
+  order_per_book: BASE, FULL, V2, NOV2, NOV4, NOG2; each gets its own undriven pass (with perplexity) and sham
+  setup_checks: >
+    At the start of Phase A, on the first 2,048 tokens of book 1342 (from the start of the stripped text), layer 10's
+    o_proj input: BASE must equal the unadapted model's (recorded before the adapter is attached) bit for bit; every
+    other condition must differ from BASE and from every other condition; FULL again after the masked conditions must
+    equal the first FULL bit for bit, and BASE again the first BASE. Perplexity path: under BASE, the logits must
+    match the full model's own logits to within 0.5 percent of the largest absolute logit. If a check fails,
+    phaseA.json is written and C9 is not run, outcome U.
+  perplexity: >
+    On every undriven pass, exp of the mean next-token loss over predictions of the segment's tokens 8,193 to 32,767
+    (as C5 and C8). Per condition, the median over books of the ratio to BASE. Reported, not gated.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every segment position t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from that condition's own undriven pass (the adapter sits in later layers, so this is the same under every condition, and is recorded)
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1342's segment, after the setup checks, under every condition (BASE, FULL, V2, NOV2, NOV4, NOG2): one
+    undriven pass, then A and 2A at N = 2 and 4096 (one sham, after BASE's undriven pass, which it is compared
+    against). A condition passes if the 2A/A response ratio is within 10 percent of 2 at both N and the whole-model
+    SNR at A, N = 4096 is at least 3. If any fails, stop: C9 is not run, outcome U.
+  controls:
+    sham: zero wave, under every condition of every book, plus a closing sham per book; every head-output value must have the same bits as that condition's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: not applicable; no earlier run measured this segment, so BASE has no earlier record to match
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), layers 2 to 51 as in C1 v5
+  response: driven minus undriven head output, per head, per token, computed in float32
+  window: >
+    One window for every N: segment positions [8192, 32768), W = 24576. Every period N divides W,
+    so the target bin k0 = W / N is a whole number (smallest k0 = 6 at N = 4096). The
+    first 8192 positions are a burn-in, four times the sliding window.
+  operator: >
+    Per head dimension: remove the least-squares line a + b t over the window, multiply by
+    a periodic Hann window, and take the Fourier sum at each analysis frequency. The same
+    operator is applied to the input drive, so a pass-through head has gain 1 (tested to 1e-5 in float32).
+    Line removal biases gain by under 0.1 percent on this grid (tested).
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction (what bfloat16 actually stored); the nominal component of w_t is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: >
+    Integer bins k in (0, W / 2], excluding every bin within 1 of a multiple of k0 (DC
+    included): the up to 8 nearest below k0 and the 8 nearest above. At N = 4096 only 3 lie
+    below (k = 2, 3, 4); at least 3 are required. At N = 2 the target is
+    the Nyquist bin, so the 16 nearest below are used. Hann leakage from any harmonic reaches
+    only its two neighbor bins, which are excluded.
+  floor_rule: >
+    Two-sided floor = the larger of the median over the bins below k0 and the median over
+    the bins above k0 (at N = 2, the median of all 16). Smooth drift leaks mostly into low
+    bins, so a floor taken only above k0 would let drift pass as signal at long N (tested
+    with log, inverse, square, square-root and exponential drifts: all stay below SNR 1).
+  noise_floor_per_head: two-sided floor of the head's noise-bin magnitudes (diagnostics only)
+  snr: >
+    Whole-model SNR per book and N: sqrt(sum over all 1,600 measured heads of target power,
+    divided by the two-sided floor of the noise-bin power summed over all heads).
+  validity: >
+    Per condition, a period counts for the set only if the median over the set's five books of
+    the whole-model SNR is at least 3. Invalid periods are excluded from the tilt for
+    that condition and listed in the output.
+  curves:
+    main: per book, mean gain over all heads in layers 2 to 51 (whole), per N; per set, the mean over its five books of each book's curve
+    downstream: the same over the heads in layers 5 to 51 only
+    per_condition: every curve is computed separately for each condition
+
+tilt:
+  definition: the least-squares slope of ln(set-mean gain) against ln(N) (metrics_c2.tilt, sealed with C2), fit over the periods valid under every condition (validity from the whole-model SNR, as above); a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  main: from the main curves (heads in layers 2 to 51), the whole-model tilt of C1 to C8
+  downstream: from the downstream curves (heads in layers 5 to 51), over the same periods as the main tilt; the same as C8's diagnostic_groups.layers5_51
+  book_tilts: each book's main and downstream tilts per condition from its own curves, over the periods valid in that book under every condition (same 5-period minimum)
+
+pass_criteria:
+  retained: for a condition X and a window, (tilt(X) - tilt(BASE)) / (tilt(FULL) - tilt(BASE)), set-level tilts; the fraction of the full dial's change that X keeps
+  outcome_U: any of the six main tilts undefined, main tilt(BASE) not positive, or (tilt(FULL) - tilt(BASE)) / tilt(BASE) above -0.15 over the main window (the floor of C8)
+  replication_gate_main: retained(V2) over the main window between 0.40 and 1.40 inclusive; if not, outcome R0 and necessity is not judged
+  main_passes: retained(NOV2) at most 0.60, retained(NOG2) at least 0.80, and at least 4 of 5 books order them (in a book, FULL flattens the main tilt and NOV2 keeps less of that book's change than NOG2)
+  downstream_judged: every downstream tilt defined, downstream tilt(BASE) positive, FULL flattens the downstream tilt by at least 2.5 percent, and retained(V2) over layers 5 to 51 between 0.20 and 1.40 inclusive
+  downstream_passes: judged, retained(NOV2) over layers 5 to 51 at most 0.70, and retained(NOV4) over layers 5 to 51 at least 0.80
+  outcome_N1_necessary_in_both_windows: main passes and downstream passes
+  outcome_N1L_necessary_in_main_window_only: main passes; downstream fails or is not judged (the reason is recorded)
+  outcome_N0_not_shown_necessary: replication gate met, main window fails (the reason is recorded, as NOV2 keeping too much, NOG2 keeping too little, or too few books)
+  outcome_R0_no_replication: every main tilt defined, FULL flattens enough, V2 alone outside 0.40 to 1.40 over the main window
+  control_limits: >
+    NOG2 drops a module in the same layer that acts before the read point (the gate multiplies the head outputs that
+    o_proj receives), so it can reach layer 2's own heads as NOV2 can; it matches position, not type. The deep probe
+    expects it to keep about all of the change, so passing it shows only that not every layer 2 attention module that
+    reaches the heads is needed. (Layer 2's o_proj was not used: its adapter changes only o_proj's output, after the
+    read point, so dropping it cannot touch layer 2's heads.) NOV4 drops the same module type one local layer later; it can move only layers 4 to 51,
+    so it is compared with NOV2 only over layers 5 to 51, which both can reach. It is expected to keep about 0.94
+    there; a fail would most likely come from noise in a small denominator (C8's FULL moved layers 5 to 51 by a tilt
+    difference of about 0.007), not from layer 4's v. Neither control matches both type and
+    position; no single module does. The claim is about the trained C5 adapter's modules, not about v_proj in a model
+    with no adapter.
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is written to results/derived/<run_id>-PARTIAL-<UTC timestamp>/ with a warning field (a run with no book file is refused), its outcome object is kept under C9.partial_diagnostic with C9.outcome null, and it is never reported as C9
+  every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished
+  secondary: >
+    Reported, never gated, pre-registered: FULL's relative change over both windows (against C8's -26.4 and -4.6
+    percent); retained(NOV4) over the main window; V2 alone minus what removing it loses, retained(V2) - (1 -
+    retained(NOV2)), over the main window (zero if v's part adds without overlap); per-book tilts and retained shares
+    in both windows, and the mean of per-book retained shares for NOV2, NOV4 and NOG2 in both windows (Muse Wonder's
+    proposed metric); median perplexity ratio per condition; set-level tilts and retained shares over (a) layer 2's
+    heads, (b) layers 3 to 51, (c) layers 5 to 51, (d) layers 6 to 51. Headline: retained(NOV2) over the main window
+    with its bootstrap interval.
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts in both windows. Report 95 percent percentile intervals of FULL's relative change in
+    both windows, retained(V2), retained(NOV2), retained(NOV4) and retained(NOG2) over the main window, and
+    retained(V2), retained(NOV2) and retained(NOV4) over layers 5 to 51. Main shares are taken only from resamples where
+    FULL flattens the main tilt by at least 15 percent, downstream shares only where it flattens layers 5 to 51 by at
+    least 2.5 percent. Each window is judged on its own: a resample drops a window's numbers only when that window has
+    an undefined tilt or tilt(BASE) not positive (both windows use the periods valid in that resample). The number of
+    resamples used is reported per quantity.
+  not_covered: one adapter from one training seed; one probe direction; the bootstrap covers books only; one book set (set A, the books C5 measured), so book-level generalization rests on C8's set C
+
+decisions:
+  N1: inside the full dial, layer 2's v_proj is necessary for a large part of the change in both windows. Without it the dial keeps at most 60 percent over layers 2 to 51 and at most 70 percent over layers 5 to 51, while dropping layer 2's output gate (same layer) or layer 4's v_proj (same type) keeps at least 80 percent of their window's change. With C8, layer 2's v_proj is both enough for a majority and needed for a large part
+  N1L: necessary over layers 2 to 51 against the same-layer control, not shown over layers 5 to 51 (the reason is recorded); the claim stays with layer 2's window
+  N0: not shown to be necessary (the reason is recorded); the other modules can carry the change without it, or the same-layer control also loses too much, or too few books agree
+  R0: C8's sufficiency result does not hold on this segment; necessity is not judged; reported as a failure of C8 to replicate on new text
+  U: inconclusive; reported as is
+  no_rescue: other module sets, scales, layers, books, segments, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    One complete run per sealed version, and one runner process at a time (a lock file in results/ledger/). A new
+    run writes STARTED.json before any GPU work and is refused if any earlier run under the seal is complete or was
+    stopped by rule in Phase A; otherwise a new run needs a written reason (an infrastructure failure). A run is
+    continued with --run-id; only the newest run may continue; a Phase A retry after a failure record, and every book
+    with an earlier attempt or failure record, need a written reason, stamped on the record. Continuing a run that has
+    any failure record (startup or Phase A) and no phaseA.json needs a written reason, which is stamped into phaseA.json
+    with the list of earlier failure records. All records are kept.
+    Before admission (so a failure leaves no run): seal and code hashes, condition names and scales, no placeholder
+    left in this file, the adapter hash against this file and C5's training.json, and every text hash. The model load
+    and platform preflight run after STARTED.json; a failure there is an infrastructure failure. The analysis
+    refuses to run if more than one run under the seal is complete, requires phaseA.json (not stopped, condition
+    modules as sealed), and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 2.0                # wall-clock hours of every run process under this seal, including model loads
+  ledger: results/ledger/c9v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  ledger_limit: >
+    A step is written to the ledger when it ends, so a process killed during a step loses that step's time from the
+    count: at most one model load (71 s in C8's smoke) or one pass (about 14 s) per killed process. With the estimate
+    below, the 2.0-hour cap leaves about 0.75 hours of headroom.
+  seconds_per_pass_estimate: 14     # used only for the Phase A preflight; Phase B uses the measured pass time
+  estimate: >
+    The same pass count as C8: Phase A 31 passes and 11 short check passes; Phase B 5 books x 55 passes = 275. C8's
+    run measured 13.6 wall seconds per pass and about 740 s per book, and used 1.15 hours in all
+    (results/raw/c8v1-20261029T222946Z); C9 is expected to take the same, about 1.2 hours. Muse Wonder estimated 1.3.
+  peak_gpu_memory: about C8's 76.8 GiB
+  pre_seal_smoke: >
+    PASSED on the pod 2026-10-30 with run_c9.py sha256 37e8733c8b902ecee809d0723e6e18574d077154c010480e392c66a75653e3b1
+    (python3 -m dialedin.run_c9 --smoke): load 80 s; preflight passed (revision cec94fcfd651, transformers 5.21.0,
+    torch 2.8.0+cu128, deterministic, TF32 off); adapter 32 modules, sha256 as above; set A books 1342, 2701, 1400,
+    145 and 1184 have 173,244, 309,743, 254,673, 434,512 and 657,201 tokens (each needs 65,536); adapter and condition
+    checks all true (BASE equals the unadapted model bit for bit; FULL, V2, NOV2, NOV4 and NOG2 each change it and all
+    differ from each other; FULL and BASE restored bit for bit; modules on: FULL 32, V2 1, NOV2 31, NOV4 31, NOG2 31);
+    perplexity path max |logit difference| 0 of max |logit| 19.88; on book 1342's segment under BASE and NOV2,
+    undriven, sham and driven passes at N = 2 and 4096 took 13.20 to 13.49 s each, peak 74.3 GiB (BASE) and 76.8 GiB
+    (NOV2), all outputs finite; 3 shams with 0 differing values; BASE perplexity on book 1342's segment 1.536. No
+    gains, tilts or NOV2 perplexity were printed. FULL, V2, NOV4 and NOG2 were not smoked; C8 ran FULL and V2 at 32,768
+    tokens on this pod at the same peak.
+  smoke_code_note: run_c9.py is the same file the smoke ran; metrics_c9.py and analyze_c9.py are as hashed below
+
+analysis:
+  runner: src/dialedin/run_c9.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/pilot_c5.py: 673d18eeda98c3c7316fb92f6cc942d119bf20eff6db1262ff0a5bf9393ad38d
+    src/dialedin/metrics_c9.py: 40b34d9fc6786c867ff05d2df193707a3ba7e3a0b1e798911a641eae8460ae85
+    src/dialedin/run_c9.py: 37e8733c8b902ecee809d0723e6e18574d077154c010480e392c66a75653e3b1
+    src/dialedin/analyze_c9.py: a5727dc3edc4bc6fb1d7b0d04a3ea7de42eb780d0585d6b07a88a1ec0e1457ea
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the adapter, condition and perplexity-path checks; one book_A_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; per condition the amplitude reference, perplexity and sham count; a record of seal, code, platform, adapter, condition modules, segment and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c9_summary.json and c9_curves.png, citing every raw file used

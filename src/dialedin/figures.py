@@ -63,39 +63,51 @@ def the_dial(repo, out):
 
 
 def where(repo, out):
+    """C7 to C9: about half of the dial's effect sits in one matrix, layer 2's v."""
     plt = setup()
     c7, c8, c9 = (json.load(open(os.path.join(repo, p))) for p in (C7, C8, C9))
-    on = [("Layer 2 q, k, v (3 of 32 parts)   C7, books set B", c7["C7"]["share_QKV2"], c7["bootstrap_95"]["share_QKV2"], GRAY),
-          ("Layer 2 v alone (1 of 32)   C8, set C", c8["C8"]["share_V2"], c8["bootstrap_95"]["share_V2"], ORANGE),
-          ("Layer 2 v alone (1 of 32)   C9, set A", c9["C9"]["retained_V2"], c9["bootstrap_95"]["retained_V2"], ORANGE),
-          ("Layer 4 v alone, control   C8, set C", c8["C8"]["share_V4"], c8["bootstrap_95"]["share_V4"], BLUE)]
-    off = [("All but layer 2 v   C9, set A", c9["C9"]["retained_NOV2"], c9["bootstrap_95"]["retained_NOV2"], ORANGE),
-           ("All but layer 2's gate, control   C9", c9["C9"]["retained_NOG2"], c9["bootstrap_95"]["retained_NOG2"], BLUE),
-           ("All but layer 4 v, control   C9", c9["C9"]["retained_NOV4"], c9["bootstrap_95"]["retained_NOV4"], BLUE)]
-    fig, axes = plt.subplots(2, 1, figsize=(11, 7.8), dpi=160, gridspec_kw={"height_ratios": [4, 3], "hspace": 0.55})
-    for ax, rows, title in ((axes[0], on, "Switch ONE part on: how much of the dial's effect do you get?"),
-                            (axes[1], off, "Switch ONE part off: how much of the dial's effect is left?")):
+    on = [("Layer 2 q, k, v (3 of 32 parts)", "C7, set B", c7["C7"]["share_QKV2"], c7["bootstrap_95"]["share_QKV2"], GRAY),
+          ("Layer 2 v alone (1 of 32)", "C8, set C", c8["C8"]["share_V2"], c8["bootstrap_95"]["share_V2"], ORANGE),
+          ("Layer 2 v alone (1 of 32)", "C9, set A", c9["C9"]["retained_V2"], c9["bootstrap_95"]["retained_V2"], ORANGE),
+          ("Layer 4 v alone, control", "C8, set C", c8["C8"]["share_V4"], c8["bootstrap_95"]["share_V4"], BLUE)]
+    off = [("All but layer 2 v", "C9, set A", c9["C9"]["retained_NOV2"], c9["bootstrap_95"]["retained_NOV2"], ORANGE),
+           ("All but layer 2's gate, control", "C9, set A", c9["C9"]["retained_NOG2"], c9["bootstrap_95"]["retained_NOG2"], BLUE),
+           ("All but layer 4 v, control", "C9, set A", c9["C9"]["retained_NOV4"], c9["bootstrap_95"]["retained_NOV4"], BLUE)]
+    panels = [("Turn on only this part: how much of the effect do you get?", on, 1, "On its own: about half"),
+              ("Turn off only this part: how much of the effect is left?", off, 0, "Without it: about half left")]
+    fig = plt.figure(figsize=(12, 8.6), dpi=160)
+    left = 0.045                                     # every heading starts on this edge
+    fig.text(left, 0.935, "One matrix carries about half the dial", fontsize=24, fontweight="bold", color=INK, va="top")
+    fig.text(left, 0.875, "Layer 2's value matrix (v) is 1 of the dial's 32 parts.  100% = the full dial (all 32 parts at 2×).",
+             fontsize=12.5, color=MUTED, va="top")
+    for (head, rows, key, note), top in zip(panels, (0.77, 0.375)):
+        fig.text(left, top + 0.012, head, fontsize=14, fontweight="bold", color=INK, va="bottom")
+        h = 0.068 * len(rows)
+        ax = fig.add_axes([0.335, top - h - 0.01, 0.475, h])
+        tr = ax.get_yaxis_transform()
         ys = list(range(len(rows)))[::-1]
-        for y, (lab, v, ci, col) in zip(ys, rows):
-            ax.barh(y, v * 100, color=col, height=0.62)
-            if ci:
-                ax.plot([ci[0] * 100, ci[1] * 100], [y, y], color=INK, lw=1.5)
-            ax.text(max(v, ci[1] if ci else v) * 100 + 1.5, y, f"{v * 100:.0f}%", va="center", fontsize=12,
-                    fontweight="bold", color=INK)
-        ax.set_yticks(ys, [r[0] for r in rows], fontsize=11, color=INK)
-        ax.set_xlim(0, 108)
+        for y, (lab, tag, v, ci, col) in zip(ys, rows):
+            ax.barh(y, max(v * 100, 0.4), color=col, height=0.62)
+            ax.plot([ci[0] * 100, ci[1] * 100], [y, y], color=INK, lw=1.6, solid_capstyle="butt")
+            ax.text(max(v, ci[1]) * 100 + 1.6, y, f"{v * 100:.0f}%", va="center", fontsize=13, fontweight="bold", color=INK)
+            ax.text(-0.025, y, lab, transform=tr, ha="right", va="center", fontsize=12, color=INK)
+            ax.text(-0.025, y - 0.36, tag, transform=tr, ha="right", va="center", fontsize=9, color=MUTED,
+                    family="DejaVu Sans Mono")
+        ax.text(1.0, ys[key], note, va="center", fontsize=11, fontweight="bold", color="white")   # inside the key bar
+        ax.axvline(100, color=MUTED, lw=1, ls=":")
+        ax.set_xlim(-3, 108)
+        ax.set_ylim(-0.6, len(rows) - 0.4)
+        ax.set_yticks([])
+        ax.set_xticks([0, 20, 40, 60, 80, 100])
         ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0f}%"))
-        ax.set_xlabel("share of the full dial's effect on the tilt", fontsize=10)
         ax.grid(axis="x", color=RULE, lw=1)
         ax.set_axisbelow(True)
-        ax.tick_params(axis="y", length=0)
-        ax.set_title(title, loc="left", fontsize=12.5, color=INK, fontweight="bold")
-        ax.axvline(100, color=MUTED, lw=1, ls=":")
-    fig.suptitle("About half of the dial is one matrix, layer 2's v:\nenough alone for about half, and needed for about half",
-                 x=0.02, ha="left", fontsize=15, fontweight="bold", color=INK)
-    fig.text(0.02, 0.025, "100% = the full dial (all 32 parts at 2×). Black lines: 95% intervals over 5 books. Each experiment "
-             "used a different set of 5 books.\nSources: " + ", ".join((C7, C8, C9)), fontsize=8, color=MUTED)
-    fig.subplots_adjust(left=0.36, right=0.97, top=0.85, bottom=0.14)
+        ax.spines["left"].set_visible(False)
+        ax.tick_params(axis="x", length=0, pad=6)
+    fig.text(left, 0.055, "Orange: layer 2 v. Blue: controls. Gray: layer 2's q, k and v together.  "
+             "Black lines: 95% intervals over 5 books; each experiment used its own 5 books.", fontsize=10, color=MUTED, va="bottom")
+    fig.text(left, 0.012, f"Sources: {C7}, {C8},\n         {C9}", fontsize=8, color=MUTED, va="bottom",
+             family="DejaVu Sans Mono", linespacing=1.5)
     fig.savefig(out)
     plt.close(fig)
 

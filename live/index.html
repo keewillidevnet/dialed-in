@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dialed In Live</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: header with live status; curve + readouts; head grid; dial under both. Same palette as demo/index.html */
+:root{
+  --bg:#141a24; --panel:#1d2634; --line:#2c3749; --fg:#e8ecf2; --muted:#8e99ab;
+  --dial:#f5c542; --base:#7fb2d9; --gray:#5d6a7e; --live:#5fd38d; --off:#ff5a5f;
+  --sans:"Geist", system-ui, sans-serif; --mono:"Space Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 40px;display:flex;flex-direction:column;gap:18px}
+.eyebrow,.k{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+h1{margin:4px 0 0;font-size:clamp(30px,5vw,48px);font-weight:800;letter-spacing:-.02em}
+.status{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.06em;padding:8px 12px;border:1px solid var(--line);display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--off)}
+.status.live .dot{background:var(--live);box-shadow:0 0 10px var(--live)}
+.status.live{color:var(--live);border-color:var(--live)}
+.panel{background:var(--panel);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.reads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.big{font-family:var(--mono);font-weight:700;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.big.y{color:var(--dial)}
+.note{font-size:13px;color:var(--muted);line-height:1.45}
+canvas{display:block;width:100%;height:auto;background:#161e2a;border:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.04em;background:transparent;color:var(--fg);border:1px solid var(--line);padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.on{background:var(--dial);color:#141a24;border-color:var(--dial)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--dial);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--dial)}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.ticks span.on{color:var(--dial);font-weight:700}
+.flag{font-family:var(--mono);font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Dialed In · live</div>
+      <h1>The dial, live on Glimmer</h1>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span id="statusText">OFFLINE · START live/server.py</span></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="h-curve">
+      <div class="k" id="h-curve">Signal strength by period · <span id="layerName">layer 2</span> heads, averaged</div>
+      <svg id="chart" viewBox="0 0 600 330" role="img" aria-label="Live gain curve against period"></svg>
+      <div class="reads">
+        <div><div class="k">Tilt, live</div><div class="big y" id="tilt">·</div></div>
+        <div><div class="k">Tilt vs dial at 0</div><div class="big" id="flat">·</div></div>
+        <div><div class="k">Fast wave (N=2)</div><div class="big" id="g2">·</div></div>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="h-heads">
+      <div class="row" style="justify-content:space-between">
+        <div class="k" id="h-heads">Each head, carrying the probe</div>
+        <div class="row" id="pbtns"></div>
+      </div>
+      <canvas id="heads" width="900" height="760" aria-label="One small wave per attention head, sized by measured gain"></canvas>
+      <div class="note">Wave height is the head's measured gain at the selected period, relative to the strongest head on the slowest wave with the dial at 0. Gray heads carry almost none of it.</div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <label class="k" for="dial">Dial strength (adapter scale)</label>
+    <input id="dial" type="range" min="0" max="2" step="0.05" value="0">
+    <div class="ticks" id="ticks"><span class="on">0×</span><span>0.5×</span><span>1×</span><span>1.5×</span><span>2×</span></div>
+    <div class="row"><button id="sweep" type="button">▶ SWEEP 0 → 2×</button><span class="note" id="meta">Waiting for the server.</span></div>
+    <div class="flag">LIVE READOUT, NOT A SEALED RESULT: one text window, one read layer, measured as you turn the dial. The sealed numbers are on demo/index.html and in results/derived.</div>
+  </section>
+</div>
+
+<script>
+const WS_URL = new URLSearchParams(location.search).get('ws') || 'ws://127.0.0.1:8765';
+const $ = (id) => document.getElementById(id);
+const fmtPct = (v) => (v * 100).toFixed(0) + '%';
+let hello = null, frame = null, ws = null, sel = 0;          // sel = index into periods (0 = N 2)
+
+// ---------- curve ----------
+const svg = $('chart'), NS = 'http://www.w3.org/2000/svg';
+const M = { l: 46, r: 14, t: 14, b: 40 }, W = 600, H = 330, yMin = 0.2;
+const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+let PER = [2, 4, 16, 64, 256, 1024, 4096];
+const xs = (N) => M.l + (Math.log2(N) - 1) / 11 * (W - M.l - M.r);
+const ys = (g) => M.t + (-Math.log(Math.max(g, yMin))) / (-Math.log(yMin)) * (H - M.t - M.b);
+[0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1].forEach(g => { el('line', { x1: M.l, x2: W - M.r, y1: ys(g), y2: ys(g), stroke: '#2c3749' }); el('text', { x: M.l - 6, y: ys(g) + 4, 'text-anchor': 'end' }).textContent = Math.round(g * 100) + '%'; });
+PER.forEach(N => { el('text', { x: xs(N), y: H - M.b + 16, 'text-anchor': 'middle' }).textContent = N; });
+el('text', { x: (M.l + W - M.r) / 2, y: H - 6, 'text-anchor': 'middle' }).textContent = 'period N (tokens per cycle), log scale';
+const basePath = el('path', { fill: 'none', stroke: '#7fb2d9', 'stroke-width': 2, 'stroke-dasharray': '5 5' });
+const livePath = el('path', { fill: 'none', stroke: '#f5c542', 'stroke-width': 3, 'stroke-linejoin': 'round' });
+const dots = PER.map(() => el('circle', { r: 4, fill: '#f5c542' }));
+const baseLbl = el('text', { fill: '#7fb2d9' }); baseLbl.textContent = 'dial at 0 (dashed)';
+const pathOf = (c) => PER.map((N, i) => (i ? 'L' : 'M') + xs(N).toFixed(1) + ' ' + ys(c[i]).toFixed(1)).join('');
+function drawCurve() {
+  if (hello) { basePath.setAttribute('d', pathOf(hello.baseline.curve)); baseLbl.setAttribute('x', xs(4) + 8); baseLbl.setAttribute('y', Math.min(H - M.b - 6, ys(hello.baseline.curve[1]) + 22)); }
+  if (frame) { livePath.setAttribute('d', pathOf(frame.curve)); PER.forEach((N, i) => { dots[i].setAttribute('cx', xs(N)); dots[i].setAttribute('cy', ys(frame.curve[i])); }); }
+}
+
+// ---------- head grid ----------
+const cv = $('heads'), cx = cv.getContext('2d');
+let shown = [];                                                  // smoothed amplitudes per head
+const pbtns = $('pbtns');
+[0, 2, 4, 6].forEach(i => { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'N=' + PER[i]; b.dataset.i = i; b.onclick = () => { sel = i; [...pbtns.children].forEach(x => x.classList.toggle('on', +x.dataset.i === sel)); }; pbtns.appendChild(b); });
+pbtns.children[0].classList.add('on');
+function drawHeads(now) {
+  const Wc = cv.width, Hc = cv.height;
+  cx.fillStyle = '#161e2a'; cx.fillRect(0, 0, Wc, Hc);
+  const n = hello ? hello.n_heads : 32;
+  const rows = Math.ceil(n / Math.ceil(Math.sqrt(n * Wc / Hc))), cols = Math.ceil(n / rows);
+  const cw = Wc / cols, ch = Hc / rows;
+  const target = frame && hello ? frame.heads[sel].map(g => g / hello.ref) : new Array(n).fill(0);
+  if (shown.length !== n) shown = new Array(n).fill(0);
+  const t = now / 1000, cyc = 2;
+  for (let h = 0; h < n; h++) {
+    shown[h] += (target[h] - shown[h]) * 0.12;
+    const a = Math.min(1, shown[h]), c = h % cols, r = Math.floor(h / cols);
+    const x0 = c * cw + 10, x1 = (c + 1) * cw - 10, y = r * ch + ch / 2 + 6, flat = a < 0.08;
+    cx.strokeStyle = '#2c3749'; cx.lineWidth = 1; cx.strokeRect(c * cw + 3.5, r * ch + 3.5, cw - 7, ch - 7);
+    cx.beginPath(); cx.moveTo(x0, y); cx.lineTo(x1, y); cx.stroke();
+    cx.strokeStyle = flat ? '#5d6a7e' : '#f5c542'; cx.lineWidth = 2; cx.beginPath();
+    const amp = Math.max(1.5, a * (ch / 2 - 18));
+    for (let px = 0; px <= x1 - x0; px += 2) { const yy = y - amp * Math.sin(px / (x1 - x0) * cyc * Math.PI * 2 - t * 3); px ? cx.lineTo(x0 + px, yy) : cx.moveTo(x0 + px, yy); }
+    cx.stroke();
+    cx.fillStyle = '#8e99ab'; cx.font = '700 13px "Space Mono", monospace'; cx.fillText('H' + h, c * cw + 10, r * ch + 20);
+    cx.textAlign = 'right'; cx.fillText(Math.round(target[h] * 100) + '%', (c + 1) * cw - 10, r * ch + 20); cx.textAlign = 'left';
+  }
+  requestAnimationFrame(drawHeads);
+}
+requestAnimationFrame(drawHeads);
+
+// ---------- dial + socket ----------
+const dial = $('dial'), tickEls = [...$('ticks').children];
+const send = () => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ scale: +dial.value })); };
+function markTicks() { tickEls.forEach((e, i) => e.classList.toggle('on', Math.abs(+dial.value - i * 0.5) < 0.03)); }
+dial.addEventListener('input', () => { stopSweep(); markTicks(); send(); });
+let sweepT = null;
+function stopSweep() { sweepT = null; $('sweep').textContent = '▶ SWEEP 0 → 2×'; }
+$('sweep').onclick = () => {
+  if (sweepT !== null) return stopSweep();
+  sweepT = performance.now(); $('sweep').textContent = '■ STOP';
+  const dur = 8000;
+  (function step(now) {
+    if (sweepT === null) return;
+    const u = Math.min(1, (now - sweepT) / dur), s = u < 0.5 ? u * 4 : (1 - u) * 4;  // 0 -> 2 -> 0
+    dial.value = Math.round(s * 20) / 20; markTicks(); send();
+    if (u >= 1) return stopSweep();
+    requestAnimationFrame(step);
+  })(sweepT);
+};
+
+function setStatus(live, text) { $('status').classList.toggle('live', live); $('statusText').textContent = text; }
+function render() {
+  drawCurve();
+  if (!frame) return;
+  $('tilt').textContent = frame.tilt.toFixed(4);
+  $('flat').textContent = frame.flatter_pct == null ? '·' : (frame.flatter_pct >= 0 ? '−' : '+') + Math.abs(frame.flatter_pct).toFixed(1) + '%';
+  $('g2').textContent = fmtPct(frame.curve[0]);
+}
+function connect() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => { setStatus(true, 'LIVE · CONNECTED'); send(); };
+  ws.onmessage = (ev) => {
+    const d = JSON.parse(ev.data);
+    if (d.type === 'hello') {
+      hello = d; PER = d.periods; $('layerName').textContent = d.read_layer;
+      $('meta').textContent = `${d.model} · ${d.read_layer} · ${d.n_heads} heads · ${d.tokens.toLocaleString()} tokens per period · 7 periods per update`;
+    } else if (d.type === 'frame') {
+      frame = d; setStatus(true, `LIVE · ${d.scale.toFixed(2)}× · ${Math.round(d.ms)} ms`);
+    }
+    render();
+  };
+  ws.onclose = () => { setStatus(false, 'OFFLINE · START live/server.py'); setTimeout(connect, 1500); };
+  ws.onerror = () => ws.close();
+}
+connect();
+</script>
+</body>
+</html>

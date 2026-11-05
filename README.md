@@ -1,5 +1,5 @@
 # Dialed In
-**Live demo:** https://keewillidevnet.github.io/dialed-in/ · **Video (3 min):** https://www.youtube.com/watch?v=oRr43YZUMCE
+**Video (3 min):** https://www.youtube.com/watch?v=oRr43YZUMCE
 
 **We played test tones through a language model, found it lets slow ones through more strongly than fast ones, built a knob that turns that down, and traced about half of the knob to a single matrix. Meta's Muse models proposed and reviewed the experiments that found it.**
 

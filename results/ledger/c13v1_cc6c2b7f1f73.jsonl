@@ -1,0 +1,294 @@
+{"utc": "2026-11-10T06:11:05+00:00", "what": "startup and model load", "seconds": 3.57}
+{"utc": "2026-11-10T06:11:08+00:00", "what": "before undriven", "seconds": 2.445}
+{"utc": "2026-11-10T06:11:11+00:00", "what": "undriven", "seconds": 2.571}
+{"utc": "2026-11-10T06:11:11+00:00", "what": "before sham BASE", "seconds": 0.134}
+{"utc": "2026-11-10T06:11:13+00:00", "what": "sham BASE", "seconds": 2.484}
+{"utc": "2026-11-10T06:11:13+00:00", "what": "before phaseA BASE x1 N=2", "seconds": 0.041}
+{"utc": "2026-11-10T06:11:16+00:00", "what": "phaseA BASE x1 N=2", "seconds": 2.507}
+{"utc": "2026-11-10T06:11:16+00:00", "what": "before phaseA BASE x2 N=2", "seconds": 0.193}
+{"utc": "2026-11-10T06:11:18+00:00", "what": "phaseA BASE x2 N=2", "seconds": 2.456}
+{"utc": "2026-11-10T06:11:18+00:00", "what": "before phaseA BASE x1 N=4096", "seconds": 0.157}
+{"utc": "2026-11-10T06:11:21+00:00", "what": "phaseA BASE x1 N=4096", "seconds": 2.469}
+{"utc": "2026-11-10T06:11:21+00:00", "what": "before phaseA BASE x2 N=4096", "seconds": 0.124}
+{"utc": "2026-11-10T06:11:24+00:00", "what": "phaseA BASE x2 N=4096", "seconds": 2.461}
+{"utc": "2026-11-10T06:11:24+00:00", "what": "before sham VONLY", "seconds": 0.003}
+{"utc": "2026-11-10T06:11:26+00:00", "what": "sham VONLY", "seconds": 2.597}
+{"utc": "2026-11-10T06:11:26+00:00", "what": "before phaseA VONLY x1 N=2", "seconds": 0.036}
+{"utc": "2026-11-10T06:11:29+00:00", "what": "phaseA VONLY x1 N=2", "seconds": 2.604}
+{"utc": "2026-11-10T06:11:29+00:00", "what": "before phaseA VONLY x2 N=2", "seconds": 0.111}
+{"utc": "2026-11-10T06:11:32+00:00", "what": "phaseA VONLY x2 N=2", "seconds": 2.681}
+{"utc": "2026-11-10T06:11:32+00:00", "what": "before phaseA VONLY x1 N=4096", "seconds": 0.117}
+{"utc": "2026-11-10T06:11:34+00:00", "what": "phaseA VONLY x1 N=4096", "seconds": 2.645}
+{"utc": "2026-11-10T06:11:34+00:00", "what": "before phaseA VONLY x2 N=4096", "seconds": 0.15}
+{"utc": "2026-11-10T06:11:37+00:00", "what": "phaseA VONLY x2 N=4096", "seconds": 2.609}
+{"utc": "2026-11-10T06:11:37+00:00", "what": "before sham PONLY", "seconds": 0.004}
+{"utc": "2026-11-10T06:11:40+00:00", "what": "sham PONLY", "seconds": 2.603}
+{"utc": "2026-11-10T06:11:40+00:00", "what": "before phaseA PONLY x1 N=2", "seconds": 0.018}
+{"utc": "2026-11-10T06:11:42+00:00", "what": "phaseA PONLY x1 N=2", "seconds": 2.607}
+{"utc": "2026-11-10T06:11:42+00:00", "what": "before phaseA PONLY x2 N=2", "seconds": 0.158}
+{"utc": "2026-11-10T06:11:45+00:00", "what": "phaseA PONLY x2 N=2", "seconds": 2.606}
+{"utc": "2026-11-10T06:11:45+00:00", "what": "before phaseA PONLY x1 N=4096", "seconds": 0.096}
+{"utc": "2026-11-10T06:11:48+00:00", "what": "phaseA PONLY x1 N=4096", "seconds": 2.612}
+{"utc": "2026-11-10T06:11:48+00:00", "what": "before phaseA PONLY x2 N=4096", "seconds": 0.188}
+{"utc": "2026-11-10T06:11:51+00:00", "what": "phaseA PONLY x2 N=4096", "seconds": 2.612}
+{"utc": "2026-11-10T06:11:51+00:00", "what": "before undriven", "seconds": 0.276}
+{"utc": "2026-11-10T06:11:53+00:00", "what": "undriven", "seconds": 2.528}
+{"utc": "2026-11-10T06:11:54+00:00", "what": "before sham BASE", "seconds": 0.116}
+{"utc": "2026-11-10T06:11:56+00:00", "what": "sham BASE", "seconds": 2.467}
+{"utc": "2026-11-10T06:11:56+00:00", "what": "before 1342 BASE N=2", "seconds": 0.022}
+{"utc": "2026-11-10T06:11:58+00:00", "what": "1342 BASE N=2", "seconds": 2.474}
+{"utc": "2026-11-10T06:11:59+00:00", "what": "before 1342 BASE N=4", "seconds": 0.193}
+{"utc": "2026-11-10T06:12:01+00:00", "what": "1342 BASE N=4", "seconds": 2.477}
+{"utc": "2026-11-10T06:12:01+00:00", "what": "before 1342 BASE N=16", "seconds": 0.133}
+{"utc": "2026-11-10T06:12:04+00:00", "what": "1342 BASE N=16", "seconds": 2.475}
+{"utc": "2026-11-10T06:12:04+00:00", "what": "before 1342 BASE N=64", "seconds": 0.126}
+{"utc": "2026-11-10T06:12:06+00:00", "what": "1342 BASE N=64", "seconds": 2.477}
+{"utc": "2026-11-10T06:12:06+00:00", "what": "before 1342 BASE N=256", "seconds": 0.126}
+{"utc": "2026-11-10T06:12:09+00:00", "what": "1342 BASE N=256", "seconds": 2.48}
+{"utc": "2026-11-10T06:12:09+00:00", "what": "before 1342 BASE N=1024", "seconds": 0.12}
+{"utc": "2026-11-10T06:12:12+00:00", "what": "1342 BASE N=1024", "seconds": 2.482}
+{"utc": "2026-11-10T06:12:12+00:00", "what": "before 1342 BASE N=4096", "seconds": 0.121}
+{"utc": "2026-11-10T06:12:14+00:00", "what": "1342 BASE N=4096", "seconds": 2.567}
+{"utc": "2026-11-10T06:12:14+00:00", "what": "before sham VONLY", "seconds": 0.004}
+{"utc": "2026-11-10T06:12:17+00:00", "what": "sham VONLY", "seconds": 2.616}
+{"utc": "2026-11-10T06:12:17+00:00", "what": "before 1342 VONLY N=2", "seconds": 0.017}
+{"utc": "2026-11-10T06:12:20+00:00", "what": "1342 VONLY N=2", "seconds": 2.622}
+{"utc": "2026-11-10T06:12:20+00:00", "what": "before 1342 VONLY N=4", "seconds": 0.167}
+{"utc": "2026-11-10T06:12:22+00:00", "what": "1342 VONLY N=4", "seconds": 2.621}
+{"utc": "2026-11-10T06:12:22+00:00", "what": "before 1342 VONLY N=16", "seconds": 0.176}
+{"utc": "2026-11-10T06:12:25+00:00", "what": "1342 VONLY N=16", "seconds": 2.624}
+{"utc": "2026-11-10T06:12:25+00:00", "what": "before 1342 VONLY N=64", "seconds": 0.169}
+{"utc": "2026-11-10T06:12:28+00:00", "what": "1342 VONLY N=64", "seconds": 2.622}
+{"utc": "2026-11-10T06:12:28+00:00", "what": "before 1342 VONLY N=256", "seconds": 0.086}
+{"utc": "2026-11-10T06:12:31+00:00", "what": "1342 VONLY N=256", "seconds": 2.623}
+{"utc": "2026-11-10T06:12:31+00:00", "what": "before 1342 VONLY N=1024", "seconds": 0.17}
+{"utc": "2026-11-10T06:12:33+00:00", "what": "1342 VONLY N=1024", "seconds": 2.623}
+{"utc": "2026-11-10T06:12:34+00:00", "what": "before 1342 VONLY N=4096", "seconds": 0.176}
+{"utc": "2026-11-10T06:12:36+00:00", "what": "1342 VONLY N=4096", "seconds": 2.628}
+{"utc": "2026-11-10T06:12:36+00:00", "what": "before sham PONLY", "seconds": 0.003}
+{"utc": "2026-11-10T06:12:39+00:00", "what": "sham PONLY", "seconds": 2.622}
+{"utc": "2026-11-10T06:12:39+00:00", "what": "before 1342 PONLY N=2", "seconds": 0.013}
+{"utc": "2026-11-10T06:12:41+00:00", "what": "1342 PONLY N=2", "seconds": 2.625}
+{"utc": "2026-11-10T06:12:42+00:00", "what": "before 1342 PONLY N=4", "seconds": 0.121}
+{"utc": "2026-11-10T06:12:44+00:00", "what": "1342 PONLY N=4", "seconds": 2.627}
+{"utc": "2026-11-10T06:12:44+00:00", "what": "before 1342 PONLY N=16", "seconds": 0.167}
+{"utc": "2026-11-10T06:12:47+00:00", "what": "1342 PONLY N=16", "seconds": 2.627}
+{"utc": "2026-11-10T06:12:47+00:00", "what": "before 1342 PONLY N=64", "seconds": 0.168}
+{"utc": "2026-11-10T06:12:50+00:00", "what": "1342 PONLY N=64", "seconds": 2.627}
+{"utc": "2026-11-10T06:12:50+00:00", "what": "before 1342 PONLY N=256", "seconds": 0.173}
+{"utc": "2026-11-10T06:12:53+00:00", "what": "1342 PONLY N=256", "seconds": 2.628}
+{"utc": "2026-11-10T06:12:53+00:00", "what": "before 1342 PONLY N=1024", "seconds": 0.082}
+{"utc": "2026-11-10T06:12:55+00:00", "what": "1342 PONLY N=1024", "seconds": 2.705}
+{"utc": "2026-11-10T06:12:55+00:00", "what": "before 1342 PONLY N=4096", "seconds": 0.086}
+{"utc": "2026-11-10T06:12:58+00:00", "what": "1342 PONLY N=4096", "seconds": 2.631}
+{"utc": "2026-11-10T06:12:58+00:00", "what": "before sham BASE", "seconds": 0.003}
+{"utc": "2026-11-10T06:13:01+00:00", "what": "sham BASE", "seconds": 2.489}
+{"utc": "2026-11-10T06:13:01+00:00", "what": "before undriven", "seconds": 0.48}
+{"utc": "2026-11-10T06:13:04+00:00", "what": "undriven", "seconds": 2.546}
+{"utc": "2026-11-10T06:13:04+00:00", "what": "before sham BASE", "seconds": 0.116}
+{"utc": "2026-11-10T06:13:06+00:00", "what": "sham BASE", "seconds": 2.489}
+{"utc": "2026-11-10T06:13:06+00:00", "what": "before 2701 BASE N=2", "seconds": 0.012}
+{"utc": "2026-11-10T06:13:09+00:00", "what": "2701 BASE N=2", "seconds": 2.497}
+{"utc": "2026-11-10T06:13:09+00:00", "what": "before 2701 BASE N=4", "seconds": 0.145}
+{"utc": "2026-11-10T06:13:11+00:00", "what": "2701 BASE N=4", "seconds": 2.494}
+{"utc": "2026-11-10T06:13:11+00:00", "what": "before 2701 BASE N=16", "seconds": 0.098}
+{"utc": "2026-11-10T06:13:14+00:00", "what": "2701 BASE N=16", "seconds": 2.497}
+{"utc": "2026-11-10T06:13:14+00:00", "what": "before 2701 BASE N=64", "seconds": 0.118}
+{"utc": "2026-11-10T06:13:17+00:00", "what": "2701 BASE N=64", "seconds": 2.523}
+{"utc": "2026-11-10T06:13:17+00:00", "what": "before 2701 BASE N=256", "seconds": 0.161}
+{"utc": "2026-11-10T06:13:19+00:00", "what": "2701 BASE N=256", "seconds": 2.501}
+{"utc": "2026-11-10T06:13:19+00:00", "what": "before 2701 BASE N=1024", "seconds": 0.1}
+{"utc": "2026-11-10T06:13:22+00:00", "what": "2701 BASE N=1024", "seconds": 2.5}
+{"utc": "2026-11-10T06:13:22+00:00", "what": "before 2701 BASE N=4096", "seconds": 0.1}
+{"utc": "2026-11-10T06:13:24+00:00", "what": "2701 BASE N=4096", "seconds": 2.503}
+{"utc": "2026-11-10T06:13:24+00:00", "what": "before sham VONLY", "seconds": 0.003}
+{"utc": "2026-11-10T06:13:27+00:00", "what": "sham VONLY", "seconds": 2.625}
+{"utc": "2026-11-10T06:13:27+00:00", "what": "before 2701 VONLY N=2", "seconds": 0.014}
+{"utc": "2026-11-10T06:13:30+00:00", "what": "2701 VONLY N=2", "seconds": 2.63}
+{"utc": "2026-11-10T06:13:30+00:00", "what": "before 2701 VONLY N=4", "seconds": 0.127}
+{"utc": "2026-11-10T06:13:32+00:00", "what": "2701 VONLY N=4", "seconds": 2.631}
+{"utc": "2026-11-10T06:13:33+00:00", "what": "before 2701 VONLY N=16", "seconds": 0.168}
+{"utc": "2026-11-10T06:13:35+00:00", "what": "2701 VONLY N=16", "seconds": 2.63}
+{"utc": "2026-11-10T06:13:35+00:00", "what": "before 2701 VONLY N=64", "seconds": 0.17}
+{"utc": "2026-11-10T06:13:38+00:00", "what": "2701 VONLY N=64", "seconds": 2.632}
+{"utc": "2026-11-10T06:13:38+00:00", "what": "before 2701 VONLY N=256", "seconds": 0.169}
+{"utc": "2026-11-10T06:13:41+00:00", "what": "2701 VONLY N=256", "seconds": 2.629}
+{"utc": "2026-11-10T06:13:41+00:00", "what": "before 2701 VONLY N=1024", "seconds": 0.17}
+{"utc": "2026-11-10T06:13:44+00:00", "what": "2701 VONLY N=1024", "seconds": 2.629}
+{"utc": "2026-11-10T06:13:44+00:00", "what": "before 2701 VONLY N=4096", "seconds": 0.175}
+{"utc": "2026-11-10T06:13:47+00:00", "what": "2701 VONLY N=4096", "seconds": 2.633}
+{"utc": "2026-11-10T06:13:47+00:00", "what": "before sham PONLY", "seconds": 0.006}
+{"utc": "2026-11-10T06:13:49+00:00", "what": "sham PONLY", "seconds": 2.626}
+{"utc": "2026-11-10T06:13:49+00:00", "what": "before 2701 PONLY N=2", "seconds": 0.014}
+{"utc": "2026-11-10T06:13:52+00:00", "what": "2701 PONLY N=2", "seconds": 2.631}
+{"utc": "2026-11-10T06:13:52+00:00", "what": "before 2701 PONLY N=4", "seconds": 0.088}
+{"utc": "2026-11-10T06:13:54+00:00", "what": "2701 PONLY N=4", "seconds": 2.63}
+{"utc": "2026-11-10T06:13:55+00:00", "what": "before 2701 PONLY N=16", "seconds": 0.172}
+{"utc": "2026-11-10T06:13:57+00:00", "what": "2701 PONLY N=16", "seconds": 2.63}
+{"utc": "2026-11-10T06:13:57+00:00", "what": "before 2701 PONLY N=64", "seconds": 0.167}
+{"utc": "2026-11-10T06:14:00+00:00", "what": "2701 PONLY N=64", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:00+00:00", "what": "before 2701 PONLY N=256", "seconds": 0.173}
+{"utc": "2026-11-10T06:14:03+00:00", "what": "2701 PONLY N=256", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:03+00:00", "what": "before 2701 PONLY N=1024", "seconds": 0.167}
+{"utc": "2026-11-10T06:14:06+00:00", "what": "2701 PONLY N=1024", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:06+00:00", "what": "before 2701 PONLY N=4096", "seconds": 0.17}
+{"utc": "2026-11-10T06:14:08+00:00", "what": "2701 PONLY N=4096", "seconds": 2.633}
+{"utc": "2026-11-10T06:14:08+00:00", "what": "before sham BASE", "seconds": 0.003}
+{"utc": "2026-11-10T06:14:11+00:00", "what": "sham BASE", "seconds": 2.493}
+{"utc": "2026-11-10T06:14:11+00:00", "what": "before undriven", "seconds": 0.405}
+{"utc": "2026-11-10T06:14:14+00:00", "what": "undriven", "seconds": 2.55}
+{"utc": "2026-11-10T06:14:14+00:00", "what": "before sham BASE", "seconds": 0.117}
+{"utc": "2026-11-10T06:14:17+00:00", "what": "sham BASE", "seconds": 2.498}
+{"utc": "2026-11-10T06:14:17+00:00", "what": "before 1400 BASE N=2", "seconds": 0.019}
+{"utc": "2026-11-10T06:14:19+00:00", "what": "1400 BASE N=2", "seconds": 2.505}
+{"utc": "2026-11-10T06:14:19+00:00", "what": "before 1400 BASE N=4", "seconds": 0.08}
+{"utc": "2026-11-10T06:14:22+00:00", "what": "1400 BASE N=4", "seconds": 2.504}
+{"utc": "2026-11-10T06:14:22+00:00", "what": "before 1400 BASE N=16", "seconds": 0.099}
+{"utc": "2026-11-10T06:14:24+00:00", "what": "1400 BASE N=16", "seconds": 2.504}
+{"utc": "2026-11-10T06:14:24+00:00", "what": "before 1400 BASE N=64", "seconds": 0.091}
+{"utc": "2026-11-10T06:14:27+00:00", "what": "1400 BASE N=64", "seconds": 2.505}
+{"utc": "2026-11-10T06:14:27+00:00", "what": "before 1400 BASE N=256", "seconds": 0.094}
+{"utc": "2026-11-10T06:14:29+00:00", "what": "1400 BASE N=256", "seconds": 2.504}
+{"utc": "2026-11-10T06:14:30+00:00", "what": "before 1400 BASE N=1024", "seconds": 0.101}
+{"utc": "2026-11-10T06:14:32+00:00", "what": "1400 BASE N=1024", "seconds": 2.501}
+{"utc": "2026-11-10T06:14:32+00:00", "what": "before 1400 BASE N=4096", "seconds": 0.094}
+{"utc": "2026-11-10T06:14:35+00:00", "what": "1400 BASE N=4096", "seconds": 2.507}
+{"utc": "2026-11-10T06:14:35+00:00", "what": "before sham VONLY", "seconds": 0.003}
+{"utc": "2026-11-10T06:14:37+00:00", "what": "sham VONLY", "seconds": 2.627}
+{"utc": "2026-11-10T06:14:37+00:00", "what": "before 1400 VONLY N=2", "seconds": 0.016}
+{"utc": "2026-11-10T06:14:40+00:00", "what": "1400 VONLY N=2", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:40+00:00", "what": "before 1400 VONLY N=4", "seconds": 0.116}
+{"utc": "2026-11-10T06:14:43+00:00", "what": "1400 VONLY N=4", "seconds": 2.632}
+{"utc": "2026-11-10T06:14:43+00:00", "what": "before 1400 VONLY N=16", "seconds": 0.169}
+{"utc": "2026-11-10T06:14:45+00:00", "what": "1400 VONLY N=16", "seconds": 2.632}
+{"utc": "2026-11-10T06:14:46+00:00", "what": "before 1400 VONLY N=64", "seconds": 0.168}
+{"utc": "2026-11-10T06:14:48+00:00", "what": "1400 VONLY N=64", "seconds": 2.631}
+{"utc": "2026-11-10T06:14:48+00:00", "what": "before 1400 VONLY N=256", "seconds": 0.174}
+{"utc": "2026-11-10T06:14:51+00:00", "what": "1400 VONLY N=256", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:51+00:00", "what": "before 1400 VONLY N=1024", "seconds": 0.171}
+{"utc": "2026-11-10T06:14:54+00:00", "what": "1400 VONLY N=1024", "seconds": 2.63}
+{"utc": "2026-11-10T06:14:54+00:00", "what": "before 1400 VONLY N=4096", "seconds": 0.164}
+{"utc": "2026-11-10T06:14:57+00:00", "what": "1400 VONLY N=4096", "seconds": 2.634}
+{"utc": "2026-11-10T06:14:57+00:00", "what": "before sham PONLY", "seconds": 0.004}
+{"utc": "2026-11-10T06:14:59+00:00", "what": "sham PONLY", "seconds": 2.628}
+{"utc": "2026-11-10T06:14:59+00:00", "what": "before 1400 PONLY N=2", "seconds": 0.016}
+{"utc": "2026-11-10T06:15:02+00:00", "what": "1400 PONLY N=2", "seconds": 2.631}
+{"utc": "2026-11-10T06:15:02+00:00", "what": "before 1400 PONLY N=4", "seconds": 0.087}
+{"utc": "2026-11-10T06:15:05+00:00", "what": "1400 PONLY N=4", "seconds": 2.641}
+{"utc": "2026-11-10T06:15:05+00:00", "what": "before 1400 PONLY N=16", "seconds": 0.167}
+{"utc": "2026-11-10T06:15:08+00:00", "what": "1400 PONLY N=16", "seconds": 2.634}
+{"utc": "2026-11-10T06:15:08+00:00", "what": "before 1400 PONLY N=64", "seconds": 0.158}
+{"utc": "2026-11-10T06:15:10+00:00", "what": "1400 PONLY N=64", "seconds": 2.634}
+{"utc": "2026-11-10T06:15:10+00:00", "what": "before 1400 PONLY N=256", "seconds": 0.176}
+{"utc": "2026-11-10T06:15:13+00:00", "what": "1400 PONLY N=256", "seconds": 2.634}
+{"utc": "2026-11-10T06:15:13+00:00", "what": "before 1400 PONLY N=1024", "seconds": 0.157}
+{"utc": "2026-11-10T06:15:16+00:00", "what": "1400 PONLY N=1024", "seconds": 2.633}
+{"utc": "2026-11-10T06:15:16+00:00", "what": "before 1400 PONLY N=4096", "seconds": 0.168}
+{"utc": "2026-11-10T06:15:19+00:00", "what": "1400 PONLY N=4096", "seconds": 2.637}
+{"utc": "2026-11-10T06:15:19+00:00", "what": "before sham BASE", "seconds": 0.004}
+{"utc": "2026-11-10T06:15:21+00:00", "what": "sham BASE", "seconds": 2.495}
+{"utc": "2026-11-10T06:15:22+00:00", "what": "before undriven", "seconds": 0.805}
+{"utc": "2026-11-10T06:15:25+00:00", "what": "undriven", "seconds": 2.549}
+{"utc": "2026-11-10T06:15:25+00:00", "what": "before sham BASE", "seconds": 0.117}
+{"utc": "2026-11-10T06:15:27+00:00", "what": "sham BASE", "seconds": 2.493}
+{"utc": "2026-11-10T06:15:27+00:00", "what": "before 145 BASE N=2", "seconds": 0.016}
+{"utc": "2026-11-10T06:15:30+00:00", "what": "145 BASE N=2", "seconds": 2.501}
+{"utc": "2026-11-10T06:15:30+00:00", "what": "before 145 BASE N=4", "seconds": 0.081}
+{"utc": "2026-11-10T06:15:32+00:00", "what": "145 BASE N=4", "seconds": 2.501}
+{"utc": "2026-11-10T06:15:32+00:00", "what": "before 145 BASE N=16", "seconds": 0.099}
+{"utc": "2026-11-10T06:15:35+00:00", "what": "145 BASE N=16", "seconds": 2.5}
+{"utc": "2026-11-10T06:15:35+00:00", "what": "before 145 BASE N=64", "seconds": 0.105}
+{"utc": "2026-11-10T06:15:37+00:00", "what": "145 BASE N=64", "seconds": 2.5}
+{"utc": "2026-11-10T06:15:38+00:00", "what": "before 145 BASE N=256", "seconds": 0.094}
+{"utc": "2026-11-10T06:15:40+00:00", "what": "145 BASE N=256", "seconds": 2.502}
+{"utc": "2026-11-10T06:15:40+00:00", "what": "before 145 BASE N=1024", "seconds": 0.098}
+{"utc": "2026-11-10T06:15:43+00:00", "what": "145 BASE N=1024", "seconds": 2.503}
+{"utc": "2026-11-10T06:15:43+00:00", "what": "before 145 BASE N=4096", "seconds": 0.097}
+{"utc": "2026-11-10T06:15:45+00:00", "what": "145 BASE N=4096", "seconds": 2.505}
+{"utc": "2026-11-10T06:15:45+00:00", "what": "before sham VONLY", "seconds": 0.005}
+{"utc": "2026-11-10T06:15:48+00:00", "what": "sham VONLY", "seconds": 2.626}
+{"utc": "2026-11-10T06:15:48+00:00", "what": "before 145 VONLY N=2", "seconds": 0.02}
+{"utc": "2026-11-10T06:15:51+00:00", "what": "145 VONLY N=2", "seconds": 2.63}
+{"utc": "2026-11-10T06:15:51+00:00", "what": "before 145 VONLY N=4", "seconds": 0.113}
+{"utc": "2026-11-10T06:15:53+00:00", "what": "145 VONLY N=4", "seconds": 2.632}
+{"utc": "2026-11-10T06:15:53+00:00", "what": "before 145 VONLY N=16", "seconds": 0.174}
+{"utc": "2026-11-10T06:15:56+00:00", "what": "145 VONLY N=16", "seconds": 2.634}
+{"utc": "2026-11-10T06:15:56+00:00", "what": "before 145 VONLY N=64", "seconds": 0.16}
+{"utc": "2026-11-10T06:15:59+00:00", "what": "145 VONLY N=64", "seconds": 2.633}
+{"utc": "2026-11-10T06:15:59+00:00", "what": "before 145 VONLY N=256", "seconds": 0.167}
+{"utc": "2026-11-10T06:16:02+00:00", "what": "145 VONLY N=256", "seconds": 2.633}
+{"utc": "2026-11-10T06:16:02+00:00", "what": "before 145 VONLY N=1024", "seconds": 0.175}
+{"utc": "2026-11-10T06:16:05+00:00", "what": "145 VONLY N=1024", "seconds": 2.632}
+{"utc": "2026-11-10T06:16:05+00:00", "what": "before 145 VONLY N=4096", "seconds": 0.17}
+{"utc": "2026-11-10T06:16:07+00:00", "what": "145 VONLY N=4096", "seconds": 2.633}
+{"utc": "2026-11-10T06:16:07+00:00", "what": "before sham PONLY", "seconds": 0.003}
+{"utc": "2026-11-10T06:16:10+00:00", "what": "sham PONLY", "seconds": 2.63}
+{"utc": "2026-11-10T06:16:10+00:00", "what": "before 145 PONLY N=2", "seconds": 0.017}
+{"utc": "2026-11-10T06:16:13+00:00", "what": "145 PONLY N=2", "seconds": 2.631}
+{"utc": "2026-11-10T06:16:13+00:00", "what": "before 145 PONLY N=4", "seconds": 0.176}
+{"utc": "2026-11-10T06:16:15+00:00", "what": "145 PONLY N=4", "seconds": 2.633}
+{"utc": "2026-11-10T06:16:16+00:00", "what": "before 145 PONLY N=16", "seconds": 0.169}
+{"utc": "2026-11-10T06:16:18+00:00", "what": "145 PONLY N=16", "seconds": 2.633}
+{"utc": "2026-11-10T06:16:18+00:00", "what": "before 145 PONLY N=64", "seconds": 0.174}
+{"utc": "2026-11-10T06:16:21+00:00", "what": "145 PONLY N=64", "seconds": 2.631}
+{"utc": "2026-11-10T06:16:21+00:00", "what": "before 145 PONLY N=256", "seconds": 0.17}
+{"utc": "2026-11-10T06:16:24+00:00", "what": "145 PONLY N=256", "seconds": 2.641}
+{"utc": "2026-11-10T06:16:24+00:00", "what": "before 145 PONLY N=1024", "seconds": 0.158}
+{"utc": "2026-11-10T06:16:27+00:00", "what": "145 PONLY N=1024", "seconds": 2.636}
+{"utc": "2026-11-10T06:16:27+00:00", "what": "before 145 PONLY N=4096", "seconds": 0.158}
+{"utc": "2026-11-10T06:16:29+00:00", "what": "145 PONLY N=4096", "seconds": 2.637}
+{"utc": "2026-11-10T06:16:29+00:00", "what": "before sham BASE", "seconds": 0.005}
+{"utc": "2026-11-10T06:16:32+00:00", "what": "sham BASE", "seconds": 2.497}
+{"utc": "2026-11-10T06:16:33+00:00", "what": "before undriven", "seconds": 1.126}
+{"utc": "2026-11-10T06:16:36+00:00", "what": "undriven", "seconds": 2.554}
+{"utc": "2026-11-10T06:16:36+00:00", "what": "before sham BASE", "seconds": 0.117}
+{"utc": "2026-11-10T06:16:38+00:00", "what": "sham BASE", "seconds": 2.497}
+{"utc": "2026-11-10T06:16:38+00:00", "what": "before 1184 BASE N=2", "seconds": 0.016}
+{"utc": "2026-11-10T06:16:41+00:00", "what": "1184 BASE N=2", "seconds": 2.5}
+{"utc": "2026-11-10T06:16:41+00:00", "what": "before 1184 BASE N=4", "seconds": 0.15}
+{"utc": "2026-11-10T06:16:43+00:00", "what": "1184 BASE N=4", "seconds": 2.501}
+{"utc": "2026-11-10T06:16:43+00:00", "what": "before 1184 BASE N=16", "seconds": 0.102}
+{"utc": "2026-11-10T06:16:46+00:00", "what": "1184 BASE N=16", "seconds": 2.501}
+{"utc": "2026-11-10T06:16:46+00:00", "what": "before 1184 BASE N=64", "seconds": 0.097}
+{"utc": "2026-11-10T06:16:49+00:00", "what": "1184 BASE N=64", "seconds": 2.502}
+{"utc": "2026-11-10T06:16:49+00:00", "what": "before 1184 BASE N=256", "seconds": 0.098}
+{"utc": "2026-11-10T06:16:51+00:00", "what": "1184 BASE N=256", "seconds": 2.501}
+{"utc": "2026-11-10T06:16:51+00:00", "what": "before 1184 BASE N=1024", "seconds": 0.099}
+{"utc": "2026-11-10T06:16:54+00:00", "what": "1184 BASE N=1024", "seconds": 2.5}
+{"utc": "2026-11-10T06:16:54+00:00", "what": "before 1184 BASE N=4096", "seconds": 0.1}
+{"utc": "2026-11-10T06:16:56+00:00", "what": "1184 BASE N=4096", "seconds": 2.504}
+{"utc": "2026-11-10T06:16:56+00:00", "what": "before sham VONLY", "seconds": 0.012}
+{"utc": "2026-11-10T06:16:59+00:00", "what": "sham VONLY", "seconds": 2.625}
+{"utc": "2026-11-10T06:16:59+00:00", "what": "before 1184 VONLY N=2", "seconds": 0.014}
+{"utc": "2026-11-10T06:17:02+00:00", "what": "1184 VONLY N=2", "seconds": 2.63}
+{"utc": "2026-11-10T06:17:02+00:00", "what": "before 1184 VONLY N=4", "seconds": 0.116}
+{"utc": "2026-11-10T06:17:04+00:00", "what": "1184 VONLY N=4", "seconds": 2.632}
+{"utc": "2026-11-10T06:17:05+00:00", "what": "before 1184 VONLY N=16", "seconds": 0.168}
+{"utc": "2026-11-10T06:17:07+00:00", "what": "1184 VONLY N=16", "seconds": 2.635}
+{"utc": "2026-11-10T06:17:07+00:00", "what": "before 1184 VONLY N=64", "seconds": 0.165}
+{"utc": "2026-11-10T06:17:10+00:00", "what": "1184 VONLY N=64", "seconds": 2.634}
+{"utc": "2026-11-10T06:17:10+00:00", "what": "before 1184 VONLY N=256", "seconds": 0.166}
+{"utc": "2026-11-10T06:17:13+00:00", "what": "1184 VONLY N=256", "seconds": 2.632}
+{"utc": "2026-11-10T06:17:13+00:00", "what": "before 1184 VONLY N=1024", "seconds": 0.168}
+{"utc": "2026-11-10T06:17:16+00:00", "what": "1184 VONLY N=1024", "seconds": 2.632}
+{"utc": "2026-11-10T06:17:16+00:00", "what": "before 1184 VONLY N=4096", "seconds": 0.172}
+{"utc": "2026-11-10T06:17:18+00:00", "what": "1184 VONLY N=4096", "seconds": 2.635}
+{"utc": "2026-11-10T06:17:18+00:00", "what": "before sham PONLY", "seconds": 0.005}
+{"utc": "2026-11-10T06:17:21+00:00", "what": "sham PONLY", "seconds": 2.625}
+{"utc": "2026-11-10T06:17:21+00:00", "what": "before 1184 PONLY N=2", "seconds": 0.014}
+{"utc": "2026-11-10T06:17:24+00:00", "what": "1184 PONLY N=2", "seconds": 2.63}
+{"utc": "2026-11-10T06:17:24+00:00", "what": "before 1184 PONLY N=4", "seconds": 0.087}
+{"utc": "2026-11-10T06:17:26+00:00", "what": "1184 PONLY N=4", "seconds": 2.631}
+{"utc": "2026-11-10T06:17:27+00:00", "what": "before 1184 PONLY N=16", "seconds": 0.169}
+{"utc": "2026-11-10T06:17:29+00:00", "what": "1184 PONLY N=16", "seconds": 2.631}
+{"utc": "2026-11-10T06:17:29+00:00", "what": "before 1184 PONLY N=64", "seconds": 0.169}
+{"utc": "2026-11-10T06:17:32+00:00", "what": "1184 PONLY N=64", "seconds": 2.631}
+{"utc": "2026-11-10T06:17:32+00:00", "what": "before 1184 PONLY N=256", "seconds": 0.17}
+{"utc": "2026-11-10T06:17:35+00:00", "what": "1184 PONLY N=256", "seconds": 2.631}
+{"utc": "2026-11-10T06:17:35+00:00", "what": "before 1184 PONLY N=1024", "seconds": 0.068}
+{"utc": "2026-11-10T06:17:37+00:00", "what": "1184 PONLY N=1024", "seconds": 2.634}
+{"utc": "2026-11-10T06:17:38+00:00", "what": "before 1184 PONLY N=4096", "seconds": 0.165}
+{"utc": "2026-11-10T06:17:40+00:00", "what": "1184 PONLY N=4096", "seconds": 2.636}
+{"utc": "2026-11-10T06:17:40+00:00", "what": "before sham BASE", "seconds": 0.006}
+{"utc": "2026-11-10T06:17:43+00:00", "what": "sham BASE", "seconds": 2.498}
+{"utc": "2026-11-10T06:17:43+00:00", "what": "process exit", "seconds": 0.036}

@@ -1,0 +1,297 @@
+{
+  "phase": "A",
+  "finished_utc": "2026-11-10T06:11:51+00:00",
+  "restart_reason": null,
+  "earlier_failures": [],
+  "wall_seconds_per_pass": 2.7347555309534073,
+  "book": 1342,
+  "a": 0.1,
+  "median_norm": 1.5802781581878662,
+  "perplexity": 5.654398634462607,
+  "identity_check": {
+    "layers": 30,
+    "modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj"
+    ],
+    "differ_from_q_input": [],
+    "as_expected": true
+  },
+  "logits_check": {
+    "max_abs_diff": 0.0,
+    "max_abs_logit": 35.0,
+    "tolerance": 0.17500000000000002,
+    "as_expected": true
+  },
+  "effect_check": {
+    "vonly_differs_from_base_N2": true,
+    "vonly_differs_from_base_N4096": true,
+    "ponly_differs_from_base_N2": true,
+    "ponly_differs_from_base_N4096": true,
+    "vonly_differs_from_ponly": true,
+    "as_expected": true
+  },
+  "stopped": null,
+  "outcome_if_stopped": null,
+  "sham_differences": {
+    "BASE": 0,
+    "VONLY": 0,
+    "PONLY": 0
+  },
+  "rows": [
+    {
+      "condition": "BASE",
+      "frozen": [],
+      "by_N": {
+        "2": {
+          "response_a": 13.439281160570681,
+          "response_2a": 26.524910218827426,
+          "ratio": 1.9736851920806961,
+          "within_10pct": true,
+          "snr_at_a": 5.470468339304075
+        },
+        "4096": {
+          "response_a": 69.44775477598111,
+          "response_2a": 138.79456869711478,
+          "ratio": 1.9985465209757602,
+          "within_10pct": true,
+          "snr_at_a": 3.1719268481921508
+        }
+      },
+      "linear": true,
+      "powered": true,
+      "gated": true
+    },
+    {
+      "condition": "VONLY",
+      "frozen": [
+        "q_proj",
+        "k_proj"
+      ],
+      "by_N": {
+        "2": {
+          "response_a": 4.972020842938218,
+          "response_2a": 9.94790159931872,
+          "ratio": 2.000776326882814,
+          "within_10pct": true,
+          "snr_at_a": 14.966973445580697
+        },
+        "4096": {
+          "response_a": 75.7493025522679,
+          "response_2a": 154.44187370787066,
+          "ratio": 2.038855388817659,
+          "within_10pct": true,
+          "snr_at_a": 4.132243038014556
+        }
+      },
+      "linear": true,
+      "powered": true,
+      "gated": true
+    },
+    {
+      "condition": "PONLY",
+      "frozen": [
+        "v_proj"
+      ],
+      "by_N": {
+        "2": {
+          "response_a": 11.804598631026844,
+          "response_2a": 23.059607427256804,
+          "ratio": 1.9534427343126806,
+          "within_10pct": true,
+          "snr_at_a": 4.041644422571763
+        },
+        "4096": {
+          "response_a": 10.0511807333678,
+          "response_2a": 18.425440976396203,
+          "ratio": 1.8331618408997088,
+          "within_10pct": true,
+          "snr_at_a": 1.4332599785276867
+        }
+      },
+      "linear": true,
+      "powered": false,
+      "gated": false
+    }
+  ],
+  "chosen_a": 0.1,
+  "seconds_per_pass_last": 2.6122260093688965,
+  "record": {
+    "conditions": {
+      "BASE": {
+        "frozen": []
+      },
+      "VONLY": {
+        "frozen": [
+          "q_proj",
+          "k_proj"
+        ]
+      },
+      "PONLY": {
+        "frozen": [
+          "v_proj"
+        ]
+      }
+    },
+    "freeze": {
+      "layers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj"
+      ],
+      "pinned": true,
+      "store_bytes": 8053063680
+    },
+    "softcap": null,
+    "output_multiplier": null,
+    "sealed_file": "criteria/sealed/c13-llama-lean-path-v1.yaml",
+    "seal_sha256": "cc6c2b7f1f73e41f9f3347aa8cb34ec5702b119ef41a31bbfde81ebb588ac618",
+    "code_sha256": {
+      "src/dialedin/metrics.py": "be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113",
+      "src/dialedin/hooks.py": "f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd",
+      "src/dialedin/glimmer.py": "b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c",
+      "src/dialedin/wave.py": "2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5",
+      "src/dialedin/analyze_c1v5.py": "43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f",
+      "src/dialedin/metrics_c2.py": "44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac",
+      "src/dialedin/metrics_c11.py": "eb482f380ba519307f3703ec575ae0973731687e2795d61da11de330e29306f9",
+      "src/dialedin/run_c13.py": "3930ff6611a8c3eb7f6051a24c91b4ff5a666717d2f31a58f714cd3a6aa85402",
+      "src/dialedin/analyze_c13.py": "c840d9e20c29b8f5d274746f28e01d9645732159f9415103ba618f5a1561da4f"
+    },
+    "platform": {
+      "dtype": "bfloat16",
+      "attention": "sdpa",
+      "revision": "0e9e39f249a16976918f6564b8830bc894c89659",
+      "transformers": "5.21.0",
+      "torch": "2.8.0+cu128",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "shape": {
+        "layers": 32,
+        "hidden": 4096,
+        "heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128
+      },
+      "global_layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "batch_size": 1,
+      "deterministic": true,
+      "tf32": false
+    },
+    "gutenberg_id": 1342,
+    "text_sha256": "cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138",
+    "token_ids_sha256": "16593a69d90bdbaa15b6f4fa50b525d5e6996374a3041d67d856d184f6afe8c6",
+    "tokenizer": "TokenizersBackend",
+    "direction_seed": 0,
+    "direction_sha256": "c825cb9e23650c58d99cd7f84f161822765ec00025fee354b653d92f62ba0760",
+    "drive": {
+      "form": "amplitude * cos(2 pi t / N + phase) at every token t",
+      "phase_main": 0.0
+    },
+    "segment_tokens": [
+      0,
+      32768
+    ],
+    "window": [
+      8192,
+      32768
+    ],
+    "T": 32768,
+    "layers_measured": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  }
+}

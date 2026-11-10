@@ -208,8 +208,18 @@ budget:
     (results/raw/c11v1-20261110T040043Z/phaseA.json) and used 0.56 hours; at 14 s a pass and one 70 s load, C12 needs
     about 0.77 hours.
   peak_gpu_memory: about C11's 74.7 GiB
-  pre_seal_smoke: SMOKE_RESULT
-  smoke_code_note: SMOKE_RESULT
+  pre_seal_smoke: >
+    PASSED on the pod 2026-11-10 with run_c12.py sha256 c67782b480cded6c6f270799aa803f0d23cb5e0a859a606c3973b1208ad52269
+    (python3 -m dialedin.run_c12 --smoke, log /workspace/c12_smoke.log): load 72 s; preflight passed (revision
+    cec94fcfd651, transformers 5.21.0, torch 2.8.0+cu128, deterministic, TF32 off); host memory: cgroup limit 175 GiB,
+    116.4 GiB usable before the store, 91.3 GiB after; store 20.3 GiB, pinned; set B books 1260, 768, 345, 84 and
+    25344 have 259,274, 165,676, 214,362, 99,044 and 120,158 tokens (each needs 32,768); attention input identity true
+    on all 50 layers; perplexity path max |logit difference| 0 of max |logit| 19.88; on book 1260's segment the
+    recording undriven pass and every sham and driven pass (BASE, VONLY, HOLDQK, HOLDG at N = 2 and 4096) took 13.15
+    to 13.79 s each, peak 74.7 GiB; freeze hook firings per sham 0 (BASE), 150 (VONLY), 100 (HOLDQK) and 50 (HOLDG), as
+    expected; 5 shams with 0 differing values; all outputs finite; VONLY, HOLDQK and HOLDG each changed the driven head
+    outputs at both N; BASE perplexity on book 1260's segment 3.774. No gains, tilts or shares were printed.
+  smoke_code_note: run_c12.py is the same file the smoke ran; metrics_c12.py and analyze_c12.py are as hashed below, unchanged since the smoke
 
 analysis:
   runner: src/dialedin/run_c12.py
@@ -220,9 +230,9 @@ analysis:
     src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
     src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
     src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
-    src/dialedin/metrics_c12.py: FILL_AT_SEAL
-    src/dialedin/run_c12.py: FILL_AT_SEAL
-    src/dialedin/analyze_c12.py: FILL_AT_SEAL
+    src/dialedin/metrics_c12.py: 4e11e831eca8f808bf43f735a1a754ec4ceef7296d37eadc1b8d49a49565772a
+    src/dialedin/run_c12.py: c67782b480cded6c6f270799aa803f0d23cb5e0a859a606c3973b1208ad52269
+    src/dialedin/analyze_c12.py: 175a80970d3009002ef67114a4f7f32bc7f2c8c00757cc30648df4a2405591a4
 outputs:
   raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the identity, perplexity-path and freeze-effect checks; one book_B_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; the amplitude reference, perplexity and sham counts; a record of seal, code, platform, freeze setup, segment and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
   derived: results/derived/<run_id>/c12_summary.json and c12_curves.png, citing every raw file used

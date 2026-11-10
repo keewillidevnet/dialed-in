@@ -1,0 +1,238 @@
+# C12: which part pushes Glimmer's lean back, the attention patterns or the output gate? v1 (confirmatory)
+# DRAFT. Designed by Claude in conversation with Keenan after C11. Not yet critiqued in the lab loop or independently
+# reviewed; both are recommended before sealing.
+#   Its question: C11 (run c11v1-20261110T040043Z, outcome VX) found that when the probe reaches only the values, with
+#   queries, keys and the attention gate of layers 2 to 51 held at their undriven state, the whole-model tilt is 1.865
+#   times the model's own (0.256 against 0.137 on set A; 95 percent 1.813 to 1.927). Averaging the values through fixed
+#   patterns leans more than the model; letting the probe move the patterns and gates takes part of that lean away (the
+#   pushback). C12 holds the patterns alone and the gate alone, to see which carries the pushback.
+# Design notes (each with its reason):
+#   1. Set B, tokens 0 to 32,767 (C1 v5's segment of set B): new books for C11's effect, which must replicate first
+#      (T_V between 1.40 and 2.40) before the split is judged, and BASE can still be compared with C1 v5's records.
+#   2. VONLY is C11's condition. HOLDQK holds q_proj and k_proj (every attention pattern at its undriven state, the gate
+#      free); HOLDG holds the gate (patterns free). The holding mechanism, checks and measurement are C11's, unchanged.
+#   3. Shares are set-level, from the set-mean curves, as in C7 to C9: share(X) = (tilt(X) - tilt(BASE)) /
+#      (tilt(VONLY) - tilt(BASE)), the fraction of the excess lean that holding X alone recovers.
+#   4. Validity and the Phase A gates use BASE and VONLY only, as C11. HOLDQK and HOLDG are recorded, with their own
+#      validity; in C11 the condition that held only the values was not linear at N = 4096 (2A/A 1.765), so a held
+#      condition could be nonlinear too, and that must not stop the replication test.
+#   5. The shares need not add to 1: holding the patterns may change what holding the gate does. Their sum is reported.
+# Follows C11 (sealed; run c11v1-20261110T040043Z: outcome VX). Every value is a proposal until Keenan seals this file.
+
+id: c12-glimmer-pushback-split-v1
+version: 1
+drafted: 2026-11-10
+follows: c11-glimmer-lean-path-v1 (sealed, run complete, outcome VX)
+proposed_by: Claude (claude-opus-5-5), in conversation with Keenan; lab-loop critique and independent review pending
+status: draft
+
+questions:
+  replication: >
+    On set B, tokens 0 to 32,767, is T_V = tilt(VONLY) / tilt(BASE) between 1.40 and 2.40 (C11 found 1.865 on set A)?
+    If not, the outcome is R0 and the split is not judged.
+  split: >
+    If it replicates: holding queries and keys alone (HOLDQK), and holding the attention gate alone (HOLDG), what share
+    of VONLY's excess tilt does each recover? P if the patterns carry the pushback (share(HOLDQK) at least 0.70 and
+    share(HOLDG) below 0.30), G for the mirror, B if both carry a part (both at least 0.30), N if neither held alone
+    recovers much (both below 0.30), W otherwise.
+  predictions: >
+    BASE tilt about 0.141 (C1 v5, set B, the same seven periods and segment). T_V about 1.9 if C11's effect is not
+    specific to set A. No earlier run predicts the shares, so no outcome is expected over another.
+
+platform:
+  model: meta-models/Muse-Glimmer-30B
+  revision: cec94fcfd651            # full hash in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForMultimodalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  host_memory: the recorded attention inputs (50 layers x 32,768 tokens x 6,656 x 2 bytes, about 20.3 GiB) are kept in host memory, pinned if the system allows; the runner refuses to start unless 1.25 times that is available
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout, seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  segment_start_token: 0
+  start: token 0 of the main text, after the Project Gutenberg header is stripped (token ids 0 to 32,767 of the stripped text)
+  special_tokens: none (no BOS); input = token ids [0, 32768) of the stripped text, as C1 v5
+  prompt_sets:
+    B: {1260: Jane Eyre, 768: Wuthering Heights, 345: Dracula, 84: Frankenstein, 25344: The Scarlet Letter}
+  why_this_text: >
+    C1 v5's segment of set B: books C11 did not measure, so C11's effect is tested for replication on new text, and
+    BASE has an earlier record to match.
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest; all 15 sealed as in C5 to C11, set B measured
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+
+conditions:
+  BASE: {frozen: []}                                  # the model as it is
+  VONLY: {frozen: [q_proj, k_proj, gate_proj]}        # C11's condition: patterns and gate held
+  HOLDQK: {frozen: [q_proj, k_proj]}                  # patterns held, gate free
+  HOLDG: {frozen: [gate_proj]}                        # gate held, patterns free
+  freezing: >
+    A frozen module (under self_attn, in every layer 2 to 51; gate_proj is the attention output gate, not the MLP's)
+    receives, in place of its input on the driven pass, the attention input recorded on the book's undriven pass
+    (the q_proj input, held in host memory and copied to one GPU slot layer by layer). Its output is then exactly
+    its undriven output. Every hook counts its firings; each pass must fire each active hook exactly once per layer,
+    or the run stops.
+  order_per_book: one undriven pass (BASE; records head outputs, attention inputs, the amplitude reference and perplexity), then for BASE, VONLY, HOLDQK, HOLDG a sham and one driven pass per period, then a closing sham
+  setup_checks: >
+    At the start of Phase A, on the first 2,048 tokens of book 1260: in every layer 2 to 51, the inputs of q_proj,
+    k_proj, v_proj and the attention gate must be equal bit for bit (attention input identity). Perplexity path: the
+    logits must match the full model's own logits to within 0.5 percent of the largest absolute logit. After the
+    Phase A driven passes: at a = 0.1 and N = 2 and 4096, VONLY's, HOLDQK's and HOLDG's head targets must each differ from BASE's
+    and from each other (the freeze takes effect). If any check fails, phaseA.json is written and C12 is not run,
+    outcome U.
+  perplexity: >
+    On every undriven pass, exp of the mean next-token loss over predictions of the segment's tokens 8,193 to 32,767.
+    Reported, not gated (only BASE has an undriven pass).
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 51 (37 local, 13 global)
+  direction: one unit vector in the 6,656-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every segment position t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0 (C1 v5's main drive)
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, the value C1 v5's sealed Phase A chose; amplitude reference = median per-token residual norm at the layer 1 output from the book's undriven pass (the freeze acts only in later layers, so it is the same under every condition)
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1260's segment, after the setup checks: one undriven pass, then under each of BASE, VONLY, HOLDQK and HOLDG a
+    sham and A and 2A at N = 2 and 4096. BASE and VONLY pass if the 2A/A response ratio is within 10 percent of 2 at
+    both N and the whole-model SNR at A, N = 4096 is at least 3; if either fails, stop: C12 is not run, outcome U.
+    HOLDQK's and HOLDG's linearity and SNR are recorded, not gated.
+  controls:
+    sham: zero wave under every condition of every book with that condition's freeze armed, plus a closing sham per book; every head-output value must have the same bits as the book's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: BASE's head targets and mean gains compared with C1 v5's raw records of the same books (results/raw/c1v5-20261027T152040Z); reported, not gated
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (gated head outputs, 32 heads x 128), layers 2 to 51 as in C1 v5
+  response: driven minus undriven head output, per head, per token, computed in float32; the undriven pass is the book's single BASE undriven pass for every condition
+  window: segment positions [8192, 32768), W = 24576, as C1 v5 (every N divides W; the first 8,192 positions are burn-in)
+  operator: as C1 v5 (remove the least-squares line, periodic Hann, Fourier sum at each analysis frequency; the same operator on the input drive)
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction; the nominal component is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: as C1 v5
+  floor_rule: as C1 v5 (two-sided)
+  snr: whole-model SNR per book, condition and N, as C1 v5
+  validity: >
+    Per condition, a period counts only if the median over the five books of that condition's whole-model SNR is at
+    least 3. BASE and VONLY tilts are fit over the periods valid under both; each held condition's over those that are
+    also valid under it. Invalid periods are listed in the output.
+  curves:
+    main: per book, mean gain over all heads in layers 2 to 51 (whole), per N; per set, the mean over the five books
+    per_condition: every curve is computed separately for each condition
+
+tilt:
+  definition: the least-squares slope of ln(set-mean gain) against ln(N) (metrics_c2.tilt, sealed with C2); a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  book_tilts: each book's tilts per condition from its own curves, over the periods valid in that book under BASE and VONLY (and the held condition, for its tilt)
+
+pass_criteria:
+  T_V: tilt(VONLY) / tilt(BASE), set-level, main window (layers 2 to 51)
+  share: for X in HOLDQK and HOLDG, (tilt(X) - tilt(BASE)) / (tilt(VONLY) - tilt(BASE)), set-level tilts
+  outcome_U: tilt(BASE) or tilt(VONLY) undefined, tilt(BASE) not positive, or (after replication) a held condition's tilt undefined
+  outcome_R0_no_replication: T_V outside 1.40 to 2.40; the split is not judged
+  outcome_P_patterns: share(HOLDQK) >= 0.70 and share(HOLDG) < 0.30
+  outcome_G_gate: share(HOLDG) >= 0.70 and share(HOLDQK) < 0.30
+  outcome_B_both: share(HOLDQK) >= 0.30 and share(HOLDG) >= 0.30
+  outcome_N_neither: both shares below 0.30 (either path alone pushes the lean back)
+  outcome_W_one_partly: one share in [0.30, 0.70), the other below 0.30
+  books: each book's own class from its own tilts is reported with the count of books matching the set's class; not gated
+  limits: >
+    As C11: the MLPs and the residual stream are never held, and the separation is first order only, so shares need
+    not add to 1 (their sum is reported, not interpreted). Holding queries and keys holds the attention pattern of every
+    head exactly (checked on a toy model), but HOLDQK still lets the gate respond to the probe, and HOLDG lets the
+    patterns respond; neither isolates a single head or layer.
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is written to results/derived/<run_id>-PARTIAL-<UTC timestamp>/ with a warning field (a run with no book file is refused), its outcome object is kept under C12.partial_diagnostic with C12.outcome null, and it is never reported as C12
+  every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished
+  secondary: >
+    Reported, never gated, pre-registered: the sum of the two shares; per-period gain ratios of every condition to
+    BASE; per-book tilts, T_V, shares and classes; T_V, shares and class over (a) layer 2's heads, (b) layers 3 to 51,
+    (c) local layers, (d) global layers (in C11 the global layers leaned hardest under VONLY, T_V 3.35); BASE against
+    C1 v5's set B records; Phase A linearity and SNR under HOLDQK and HOLDG; BASE perplexity. Headline: the two shares
+    with their bootstrap intervals.
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts. Report 95 percent percentile intervals of T_V, share(HOLDQK), share(HOLDG) and
+    tilt(BASE), and the number of resamples used for each (a resample is dropped when tilt(BASE) or tilt(VONLY) is
+    undefined or tilt(BASE) is not positive; a share is dropped where it is undefined).
+  not_covered: one probe direction; one injection point (layer 1's output); one segment of one book set; the bootstrap covers books only; the MLP path is not separated
+
+decisions:
+  R0: C11's effect does not hold on set B; reported as a failure to replicate, and the split is not judged
+  P: the pushback is carried by the probe moving the attention patterns; the gate's response adds little
+  G: the pushback is carried by the probe moving the attention gate; the patterns' response adds little
+  B: both carry a part of the pushback
+  N: holding either alone leaves most of the pushback in place; either path alone can push the lean back
+  W: one path carries part of the pushback alone and the other little; the rest needs both to move together
+  U: inconclusive; reported as is
+  no_rescue: other hold sets, layers, books, segments, periods, amplitudes or analysis code cannot be used to rescue a result
+  restarts: >
+    As C9: one complete run per sealed version, one runner process at a time (a lock file in results/ledger/), a new
+    run writes STARTED.json before any GPU work and is refused if any earlier run under the seal is complete or was
+    stopped by rule in Phase A; otherwise a new run needs a written reason (an infrastructure failure). A run is
+    continued with --run-id; only the newest run may continue; a Phase A retry after a failure record, and every book
+    with an earlier attempt or failure record, need a written reason, stamped on the record. All records are kept.
+    Before admission: seal and code hashes, condition names and frozen lists, segment start 0, no placeholder left in
+    this file, and every text hash. The analysis refuses to run if more than one run under the seal is complete,
+    requires phaseA.json (not stopped, every setup check passed), and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 1.5                # wall-clock hours of every run process under this seal, including model loads
+  ledger: results/ledger/c12v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  ledger_limit: a step is written to the ledger when it ends, so a process killed during a step loses that step's time from the count (at most one model load or one pass per killed process)
+  seconds_per_pass_estimate: 16     # C11 measured 13.7 s; used only for the Phase A preflight
+  estimate: >
+    Phase A 21 passes and 3 short check passes; Phase B 5 books x 34 passes = 170. C11 ran at 13.7 wall s a pass
+    (results/raw/c11v1-20261110T040043Z/phaseA.json) and used 0.56 hours; at 14 s a pass and one 70 s load, C12 needs
+    about 0.77 hours.
+  peak_gpu_memory: about C11's 74.7 GiB
+  pre_seal_smoke: >
+    PASSED on the pod 2026-11-10 with run_c12.py sha256 c67782b480cded6c6f270799aa803f0d23cb5e0a859a606c3973b1208ad52269
+    (python3 -m dialedin.run_c12 --smoke, log /workspace/c12_smoke.log): load 72 s; preflight passed (revision
+    cec94fcfd651, transformers 5.21.0, torch 2.8.0+cu128, deterministic, TF32 off); host memory: cgroup limit 175 GiB,
+    116.4 GiB usable before the store, 91.3 GiB after; store 20.3 GiB, pinned; set B books 1260, 768, 345, 84 and
+    25344 have 259,274, 165,676, 214,362, 99,044 and 120,158 tokens (each needs 32,768); attention input identity true
+    on all 50 layers; perplexity path max |logit difference| 0 of max |logit| 19.88; on book 1260's segment the
+    recording undriven pass and every sham and driven pass (BASE, VONLY, HOLDQK, HOLDG at N = 2 and 4096) took 13.15
+    to 13.79 s each, peak 74.7 GiB; freeze hook firings per sham 0 (BASE), 150 (VONLY), 100 (HOLDQK) and 50 (HOLDG), as
+    expected; 5 shams with 0 differing values; all outputs finite; VONLY, HOLDQK and HOLDG each changed the driven head
+    outputs at both N; BASE perplexity on book 1260's segment 3.774. No gains, tilts or shares were printed.
+  smoke_code_note: run_c12.py is the same file the smoke ran; metrics_c12.py and analyze_c12.py are as hashed below, unchanged since the smoke
+
+analysis:
+  runner: src/dialedin/run_c12.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/metrics_c12.py: 4e11e831eca8f808bf43f735a1a754ec4ceef7296d37eadc1b8d49a49565772a
+    src/dialedin/run_c12.py: c67782b480cded6c6f270799aa803f0d23cb5e0a859a606c3973b1208ad52269
+    src/dialedin/analyze_c12.py: 175a80970d3009002ef67114a4f7f32bc7f2c8c00757cc30648df4a2405591a4
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the identity, perplexity-path and freeze-effect checks; one book_B_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; the amplitude reference, perplexity and sham counts; a record of seal, code, platform, freeze setup, segment and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c12_summary.json and c12_curves.png, citing every raw file used

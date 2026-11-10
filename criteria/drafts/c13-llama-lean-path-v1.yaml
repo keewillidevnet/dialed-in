@@ -42,7 +42,7 @@ questions:
 
 platform:
   model: meta-llama/Llama-3.1-8B-Instruct
-  revision: FILL_AT_SEAL            # the first 12 characters of the revision in /workspace/weights/DOWNLOAD_LOG.txt, printed by the smoke run
+  revision: 0e9e39f249a1            # full hash 0e9e39f249a16976918f6564b8830bc894c89659 in /workspace/weights/DOWNLOAD_LOG.txt
   loader: AutoModelForCausalLM
   precision: bfloat16               # no quantization_config
   attention: sdpa
@@ -194,10 +194,21 @@ budget:
   ledger: results/ledger/c13v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
   ledger_limit: a step is written to the ledger when it ends, so a process killed during a step loses that step's time from the count (at most one model load or one pass per killed process)
   seconds_per_pass_estimate: 8      # a guess for an 8B model at 32,768 tokens until the smoke run measures it; used only for the Phase A preflight
-  estimate: Phase A 16 passes and 3 short check passes; Phase B 5 books x 26 passes = 130. The smoke run measures the pass time; the estimate is filled from it.
-  peak_gpu_memory: measured by the smoke run
-  pre_seal_smoke: SMOKE_RESULT
-  smoke_code_note: SMOKE_RESULT
+  estimate: Phase A 16 passes and 3 short check passes; Phase B 5 books x 26 passes = 130. The smoke run measured 2.5 to 2.7 s a pass and a 23 s load, so about 0.12 hours; the 1.0-hour cap leaves wide headroom.
+  peak_gpu_memory: 26.4 GiB in the smoke run
+  pre_seal_smoke: >
+    PASSED on the pod 2026-11-10 with run_c13.py sha256 3930ff6611a8c3eb7f6051a24c91b4ff5a666717d2f31a58f714cd3a6aa85402
+    (python3 -m dialedin.run_c13 --smoke, log /workspace/c13_smoke.log): load 23 s; the download log gave revision
+    0e9e39f249a16976918f6564b8830bc894c89659; preflight passed (transformers 5.21.0, torch 2.8.0+cu128, deterministic,
+    TF32 off, shape 32 layers, hidden 4,096, 32 heads, 8 key-value heads, head_dim 128); host memory: cgroup limit 175 GiB,
+    101.7 GiB usable before the store, 94.1 GiB after; store 7.5 GiB, pinned; set A books 1342, 2701, 1400, 145 and 1184
+    have 171,478, 307,438, 250,929, 430,823 and 647,624 Llama tokens (each needs 32,768); attention input identity true
+    on all 30 layers; perplexity path max |logit difference| 0 of max |logit| 35; on book 1342's segment the recording
+    undriven pass and every sham and driven pass (BASE, VONLY, PONLY at N = 2 and 4096) took 2.49 to 2.72 s each, peak
+    26.4 GiB; hook firings per sham 0 (BASE), 60 (VONLY) and 30 (PONLY), as expected; 4 shams with 0 differing values;
+    all outputs finite; VONLY and PONLY each changed the driven head outputs at both N; BASE perplexity on book 1342's
+    segment 5.654. No gains, tilts or ratios were printed.
+  smoke_code_note: run_c13.py is the same file the smoke ran; analyze_c13.py is as hashed below, unchanged since the smoke
 
 analysis:
   runner: src/dialedin/run_c13.py
@@ -209,8 +220,8 @@ analysis:
     src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
     src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
     src/dialedin/metrics_c11.py: eb482f380ba519307f3703ec575ae0973731687e2795d61da11de330e29306f9
-    src/dialedin/run_c13.py: FILL_AT_SEAL
-    src/dialedin/analyze_c13.py: FILL_AT_SEAL
+    src/dialedin/run_c13.py: 3930ff6611a8c3eb7f6051a24c91b4ff5a666717d2f31a58f714cd3a6aa85402
+    src/dialedin/analyze_c13.py: c840d9e20c29b8f5d274746f28e01d9645732159f9415103ba618f5a1561da4f
 outputs:
   raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the identity, perplexity-path and freeze-effect checks; one book_A_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; the amplitude reference, perplexity and sham counts; a record of seal, code, platform, freeze setup, segment and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
   derived: results/derived/<run_id>/c13_summary.json and c13_curves.png, citing every raw file used

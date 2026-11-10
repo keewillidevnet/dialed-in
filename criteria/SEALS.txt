@@ -12,3 +12,4 @@
 2026-10-30T02:28:23Z c92e51966339e5ccf520b30af290bb629286e8dfcd19237e546bc706766a6114 criteria/sealed/c9-glimmer-necessity-v1.yaml
 2026-11-10T03:59:48Z b3791cc36cf2fedf692b4cded9681bae64e993d5975f0ad703c0faa96fcd3b46 criteria/sealed/c11-glimmer-lean-path-v1.yaml
 2026-11-10T05:03:00Z 739165f477cb3bd4fc9b7ef23ccfeee538d4d6459396e60772a17b7d1475ea06 criteria/sealed/c12-glimmer-pushback-split-v1.yaml
+2026-11-10T06:08:18Z cc6c2b7f1f73e41f9f3347aa8cb34ec5702b119ef41a31bbfde81ebb588ac618 criteria/sealed/c13-llama-lean-path-v1.yaml

@@ -1,0 +1,227 @@
+# C13: does C11's lean-path result hold in another model family? Llama-3.1-8B-Instruct, v1 (confirmatory)
+# DRAFT. Designed by Claude in conversation with Keenan after C11. Not yet critiqued in the lab loop or independently
+# reviewed; both are recommended before sealing.
+#   Its question: C11 (run c11v1-20261110T040043Z, outcome VX) found in Muse Glimmer-30B that holding every attention
+#   pattern and gate at its undriven state, so the probe reaches only the values, nearly doubles the lean (T_V 1.865,
+#   95 percent 1.813 to 1.927). Is that a property of attention, or of Glimmer? Llama-3.1-8B-Instruct is a different
+#   family: no attention output gate, no sliding-window layers, grouped-query attention with 8 key-value heads.
+# Design notes (each with its reason):
+#   1. Everything C11 fixed is kept: set A, tokens 0 to 32,767; injection at the layer 1 output; the probe direction
+#      rule (torch.randn seeded 0 in the model's residual width, normalized); a = 0.1; the seven periods; the window,
+#      operator, noise floor, SNR and validity rules; the outcome bands of metrics_c11, unchanged.
+#   2. VONLY holds q_proj and k_proj in layers 2 to 31 (Llama has no gate to hold), so every attention pattern is its
+#      undriven one. PONLY holds v_proj. The holding mechanism and checks are C11's (run_c13.py is forked from run_c11.py).
+#   3. Llama is loaded and checked by run_c13.load_llama; glimmer.py provides only the seal, code, text and
+#      determinism helpers. The platform section is new and is checked by the preflight.
+#   4. No earlier run measured Llama, so BASE has no record to match, and nothing here predicts BASE's tilt or SNR.
+#      If Llama's lean is too weak for a defined tilt, the outcome is U and that is reported as found.
+#   5. The model sees the token ids with no BOS, as in C1 v5 and C11, so the input rule is the same across models.
+# Every value is a proposal until Keenan seals this file.
+
+id: c13-llama-lean-path-v1
+version: 1
+drafted: 2026-11-10
+follows: c11-glimmer-lean-path-v1 (sealed, run complete, outcome VX); C12 (sealed, run complete, outcome W) seen before sealing
+proposed_by: Claude (claude-opus-5-5), in conversation with Keenan; lab-loop critique and independent review pending
+status: draft
+
+questions:
+  lean_path: >
+    In Llama-3.1-8B-Instruct, on set A, tokens 0 to 32,767, with the probe at the layer 1 output: what is
+    T_V = tilt(VONLY) / tilt(BASE), where VONLY holds q_proj and k_proj of layers 2 to 31 at their undriven inputs?
+    The outcome uses C11's bands unchanged (V1, V1S, VX, VH, V0, U). C11's result replicates in Llama if the outcome is
+    VX (T_V above 1.15).
+  predictions: >
+    If the pushback C11 found is a property of attention patterns responding to the probe, VX, as in Glimmer. If it
+    needs Glimmer's gate or its sliding-window layers, something else (most likely V1). No measurement of Llama
+    predicts either. C12 finished before this file was sealed (run c12v1-20261110T051140Z, outcome W): on set B,
+    T_V was 1.864 (95 percent 1.850 to 1.877); holding Glimmer's gate alone recovered 0.496 of the excess and holding
+    its patterns alone 0.082, so in Glimmer the gate's response alone undoes about 92 percent of the excess and the
+    patterns' response alone about 50 percent. Llama has no gate, so if its patterns behave like Glimmer's, T_V would
+    sit above 1 but below Glimmer's. That reading was not used to set any bar: the bands are C11's, unchanged.
+
+platform:
+  model: meta-llama/Llama-3.1-8B-Instruct
+  revision: 0e9e39f249a1            # full hash 0e9e39f249a16976918f6564b8830bc894c89659 in /workspace/weights/DOWNLOAD_LOG.txt
+  loader: AutoModelForCausalLM
+  precision: bfloat16               # no quantization_config
+  attention: sdpa
+  transformers: "5.21.0"
+  torch: "2.8.0+cu128"
+  gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition
+  shape: {layers: 32, hidden: 4096, heads: 32, kv_heads: 8, head_dim: 128}
+  batch_size: 1                     # every pass, so undriven and driven runs use identical kernels
+  deterministic: torch.use_deterministic_algorithms(True, warn_only=False) so any op without a deterministic implementation stops the run; CUBLAS_WORKSPACE_CONFIG=:4096:8, TF32 off, fixed seeds
+  allocator: PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+  host_memory: the recorded attention inputs (30 layers x 32,768 tokens x 4,096 x 2 bytes, 7.5 GiB) are kept in host memory, pinned if the system allows; the runner refuses to start unless 1.25 times that is available
+  preflight_must_pass: [dtype_bf16, no_quantization, sdpa, batch_size_1, revision_match, versions_match, gpu_match, layer_layout (the shape above, no sliding window, o_proj input = heads x head_dim), seal_hash_match, code_hash_match, text_hash_match, budget_projection]
+
+inputs:
+  length_tokens: 32768
+  segment_start_token: 0
+  start: token 0 of the main text, after the Project Gutenberg header is stripped (Llama's token ids 0 to 32,767 of the stripped text)
+  special_tokens: none (no BOS); input = Llama's token ids [0, 32768) of the stripped text, the same rule as C1 v5 and C11
+  prompt_sets:
+    A: {1342: Pride and Prejudice, 2701: Moby Dick, 1400: Great Expectations, 145: Middlemarch, 1184: The Count of Monte Cristo}
+  why_this_text: C11's books and segment rule, so the two models are compared on the same text (each through its own tokenizer)
+  text_manifest: /workspace/data/books/MANIFEST.json
+  text_sha256:                      # gutenberg_id -> sha256 of the stripped text, from the manifest; all 15 sealed as in C5 to C12, set A measured
+    1342: cb7c0d9af2041d31e655fafe79becb0877c3fc775690c7a558eb8707035e5138
+    2701: 6b74a36cf4b629ac137c8832b2ba2be071a02c348f3accde0c026a893a2f30eb
+    1400: c6196113039a054e075999518fd4f081838335b58cc0371f04b99080de03e7fe
+    145: 9d0ce5c0b701c05b38198f6fab45b8ebf2eb3645a81aa55794ccd0aa66cdaf0d
+    1184: ea17c0e73310be451ea977324ff72be950aa63ae76b95eac946386cfb8f97045
+    1260: 67453a6d7b7ebe4c3f4525bea71e5564ca1562eb4c62c01e8e086d65370627e1
+    768: d23b4feab29dcfa7411bbb8041e825dd48e3e1c1721c61c392ccfb46968fd6fd
+    345: f20fc68a26f548cbc0c7ea33129b0d65dffb6cbd9f5d382fde64837dea445fc3
+    84: 3839fa35c116713f811903545470041a86079268307ae9fd3ed4d04c88788bc0
+    25344: 47e262c46b86b85f8cb5f830366396dc47f9c4e0a2ab7625390231afa290111a
+    37106: c0e400eaac9e8e3306ab46909e17a94689237c05ebcb86266708f4a033f2be09
+    74: 02cf604599664a5fb5853d144b3488ff8df4953bf66f63b1aa8bf948ad07528a
+    120: ce5b10ab3756b36db3a037c8c412e5835e4095cd1059ddf02ea4a3c2add776bc
+    174: 1311e14e3576ced84f2760043afc85194eabdd2db55d2c59b957299eb65075a6
+    940: 0cc61502739d626dc42149e72639e49367726f7dd703d0eef0cbbe20ab4b34d9
+  provenance: the run refuses to start if any book's text hash differs from text_sha256
+
+conditions:
+  BASE: {frozen: []}                                  # the model as it is
+  VONLY: {frozen: [q_proj, k_proj]}                   # every attention pattern held; the probe reaches the values (and the MLPs) only
+  PONLY: {frozen: [v_proj]}                           # the values held; queries and keys see the probe
+  freezing: >
+    As C11: a held module (under self_attn, in every layer 2 to 31) receives, in place of its input on the driven
+    pass, the attention input recorded on the book's undriven pass (the q_proj input, held in host memory and copied to
+    one GPU slot layer by layer). Its output is then exactly its undriven output. Every hook counts its firings; each
+    pass must fire each active hook exactly once per layer, or the run stops.
+  order_per_book: one undriven pass (BASE; records head outputs, attention inputs, the amplitude reference and perplexity), then for BASE, VONLY, PONLY a sham and one driven pass per period, then a closing sham
+  setup_checks: >
+    At the start of Phase A, on the first 2,048 tokens of book 1342: in every layer 2 to 31, the inputs of q_proj,
+    k_proj and v_proj must be equal bit for bit. Perplexity path: the logits from lm_head on the decoder's output must
+    match the full model's own logits to within 0.5 percent of the largest absolute logit. After the Phase A driven
+    passes: at a = 0.1 and N = 2 and 4096, VONLY's and PONLY's head targets must each differ from BASE's and from each
+    other. If any check fails, phaseA.json is written and C13 is not run, outcome U.
+  perplexity: On every undriven pass, exp of the mean next-token loss over predictions of the segment's tokens 8,193 to 32,767. Reported, not gated.
+
+drive:
+  injection_point: residual stream output of decoder layer 1
+  measured_layers: 2 to 31 (all full attention; 30 layers, 960 heads)
+  direction: one unit vector in the 4,096-dim residual space, torch.randn on CPU with torch.Generator seeded 0, float32, divided by its norm
+  waveform: at every segment position t = 0 .. 32767, add A * cos(2 pi t / N) * direction, A = a times the amplitude reference, phase 0
+  add: computed in float32, cast once to bfloat16; zero products keep the stored value; the realized drive along the direction is used for the input component (src/dialedin/wave.py, sealed with C1 v5)
+  amplitude: a = 0.1, as C11; amplitude reference = median per-token residual norm at the layer 1 output from the book's undriven pass
+  periods_N: [2, 4, 16, 64, 256, 1024, 4096]
+  phase_A: >
+    On book 1342's segment, after the setup checks: one undriven pass, then under each of BASE, VONLY and PONLY a sham
+    and A and 2A at N = 2 and 4096. BASE and VONLY pass if the 2A/A response ratio is within 10 percent of 2 at both N
+    and the whole-model SNR at A, N = 4096 is at least 3; if either fails, stop: C13 is not run, outcome U. PONLY's
+    linearity and SNR are recorded, not gated.
+  controls:
+    sham: zero wave under every condition of every book with that condition's hold armed, plus a closing sham per book; every head-output value must have the same bits as the book's undriven pass (int16 view), or the run stops and the book is not written
+    reproduction: not applicable; no earlier run measured Llama
+
+measurement:
+  read_point: forward pre-hook on self_attn.o_proj (head outputs, 32 heads x 128), layers 2 to 31
+  response: driven minus undriven head output, per head, per token, computed in float32; the undriven pass is the book's single BASE undriven pass for every condition
+  window: segment positions [8192, 32768), W = 24576, as C1 v5 and C11
+  operator: as C1 v5 (remove the least-squares line, periodic Hann, Fourier sum at each analysis frequency; the same operator on the input drive)
+  target_component: per head, the norm over its 128 dims of the operator output at frequency 1/N
+  input_component: the operator output at 1/N for the realized drive along the direction; the nominal component is recorded beside it
+  gain: target_component divided by input_component
+  noise_bins: as C1 v5
+  floor_rule: as C1 v5 (two-sided)
+  snr: whole-model SNR per book, condition and N, as C1 v5, over the 960 measured heads
+  validity: >
+    Per condition, a period counts only if the median over the five books of that condition's whole-model SNR is at
+    least 3. BASE and VONLY tilts are fit over the periods valid under both; PONLY's over those that are also valid
+    under PONLY. Invalid periods are listed in the output.
+  curves:
+    main: per book, mean gain over all heads in layers 2 to 31, per N; per set, the mean over the five books
+    per_condition: every curve is computed separately for each condition
+
+tilt:
+  definition: the least-squares slope of ln(set-mean gain) against ln(N) (metrics_c2.tilt, sealed with C2); a tilt needs at least 5 of the 7 periods valid, otherwise it is undefined
+  book_tilts: each book's tilts per condition from its own curves, over the periods valid in that book under BASE and VONLY (and PONLY, for PONLY's tilt)
+
+pass_criteria:
+  T_V: tilt(VONLY) / tilt(BASE), set-level, main window (layers 2 to 31)
+  outcomes: C11's, from metrics_c11.path_outcome unchanged
+  outcome_U: tilt(BASE) or tilt(VONLY) undefined, or tilt(BASE) not positive (a Llama with no positive lean on this grid gives U)
+  outcome_V1: 0.85 <= T_V <= 1.15 and at least 4 of 5 books with their own T_V between 0.70 and 1.30
+  outcome_V1S: 0.85 <= T_V <= 1.15 and fewer than 4 books agree
+  outcome_VX: T_V above 1.15 (C11's result in Glimmer)
+  outcome_VH: 0.50 <= T_V < 0.85
+  outcome_V0: T_V below 0.50
+  replicates_c11: the outcome is VX
+  limits: >
+    As C11: the MLPs and the residual stream are never held, the paths are separated to first order only, and gains
+    are magnitudes. The two models differ in more than the gate (size, depth, width, training, tokenizer, positional
+    scaling, attention layout), so a different outcome says C11's result does not carry over, not which difference is
+    responsible. A tilt here is Llama's on its own tokens; it is compared with Glimmer's only as a ratio within each model.
+  incomplete_run: if any of the 5 books lacks a valid record, there are no outcomes; a partial look is written to results/derived/<run_id>-PARTIAL-<UTC timestamp>/ with a warning field (a run with no book file is refused), its outcome object is kept under C13.partial_diagnostic with C13.outcome null, and it is never reported as C13
+  every_run_reported: every run under this seal is reported; a run that is never finished is reported as unfinished
+  secondary: >
+    Reported, never gated, pre-registered: T_P = tilt(PONLY) / tilt(BASE); per-period gain ratios VONLY / BASE and
+    PONLY / BASE; per-book tilts, T_V and T_P; T_V and T_P over (a) layer 2's heads, (b) layers 3 to 31, (c) layers 2
+    to 16, (d) layers 17 to 31; Phase A linearity and SNR under PONLY; BASE perplexity; C11's T_V beside this one.
+    Headline: T_V with its bootstrap interval, beside C11's.
+
+uncertainty:
+  bootstrap: >
+    Resample the five books with replacement 1,000 times (numpy default_rng([0, 0])); for each resample recompute
+    validity, curves and tilts. Report 95 percent percentile intervals of T_V, T_P, tilt(BASE) and tilt(VONLY), and the
+    number of resamples used for each (a resample is dropped when tilt(BASE) is undefined or not positive).
+  not_covered: one probe direction; one injection point; one segment of one book set; one model of the second family; the bootstrap covers books only; the MLP path is not separated
+
+decisions:
+  VX: C11's result holds in Llama; holding the attention patterns makes the lean stronger in both models, so the pushback does not need Glimmer's gate or its sliding-window layers
+  V1: in Llama, averaging through held patterns gives about the model's own lean; C11's pushback does not carry over
+  V1S: as V1 at set level only; reported with the book count
+  VH: in Llama, holding the patterns weakens the lean; the opposite direction from Glimmer
+  V0: in Llama, the lean mostly needs the patterns to respond; the opposite direction from Glimmer, strongly
+  U: inconclusive; reported as is
+  no_rescue: other hold sets, layers, books, segments, periods, amplitudes, models or analysis code cannot be used to rescue a result
+  restarts: >
+    As C9 and C11: one complete run per sealed version, one runner process at a time (a lock file in results/ledger/), a
+    new run writes STARTED.json before any GPU work and is refused if any earlier run under the seal is complete or was
+    stopped by rule in Phase A; otherwise a new run needs a written reason (an infrastructure failure). A run is
+    continued with --run-id; only the newest run may continue; a Phase A retry after a failure record, and every book
+    with an earlier attempt or failure record, need a written reason, stamped on the record. All records are kept.
+    Before admission: seal and code hashes, condition names and frozen lists, segment start 0, no placeholder left in
+    this file, and every text hash. The analysis refuses to run if more than one run under the seal is complete,
+    requires phaseA.json (not stopped, every setup check passed), and never overwrites a summary.
+
+budget:
+  max_gpu_hours: 1.0                # wall-clock hours of every run process under this seal, including model loads
+  ledger: results/ledger/c13v1_<first 12 of seal hash>.jsonl, append-only, one line per step; outside results/raw/
+  ledger_limit: a step is written to the ledger when it ends, so a process killed during a step loses that step's time from the count (at most one model load or one pass per killed process)
+  seconds_per_pass_estimate: 8      # a guess for an 8B model at 32,768 tokens until the smoke run measures it; used only for the Phase A preflight
+  estimate: Phase A 16 passes and 3 short check passes; Phase B 5 books x 26 passes = 130. The smoke run measured 2.5 to 2.7 s a pass and a 23 s load, so about 0.12 hours; the 1.0-hour cap leaves wide headroom.
+  peak_gpu_memory: 26.4 GiB in the smoke run
+  pre_seal_smoke: >
+    PASSED on the pod 2026-11-10 with run_c13.py sha256 3930ff6611a8c3eb7f6051a24c91b4ff5a666717d2f31a58f714cd3a6aa85402
+    (python3 -m dialedin.run_c13 --smoke, log /workspace/c13_smoke.log): load 23 s; the download log gave revision
+    0e9e39f249a16976918f6564b8830bc894c89659; preflight passed (transformers 5.21.0, torch 2.8.0+cu128, deterministic,
+    TF32 off, shape 32 layers, hidden 4,096, 32 heads, 8 key-value heads, head_dim 128); host memory: cgroup limit 175 GiB,
+    101.7 GiB usable before the store, 94.1 GiB after; store 7.5 GiB, pinned; set A books 1342, 2701, 1400, 145 and 1184
+    have 171,478, 307,438, 250,929, 430,823 and 647,624 Llama tokens (each needs 32,768); attention input identity true
+    on all 30 layers; perplexity path max |logit difference| 0 of max |logit| 35; on book 1342's segment the recording
+    undriven pass and every sham and driven pass (BASE, VONLY, PONLY at N = 2 and 4096) took 2.49 to 2.72 s each, peak
+    26.4 GiB; hook firings per sham 0 (BASE), 60 (VONLY) and 30 (PONLY), as expected; 4 shams with 0 differing values;
+    all outputs finite; VONLY and PONLY each changed the driven head outputs at both N; BASE perplexity on book 1342's
+    segment 5.654. No gains, tilts or ratios were printed.
+  smoke_code_note: run_c13.py is the same file the smoke ran; analyze_c13.py is as hashed below, unchanged since the smoke
+
+analysis:
+  runner: src/dialedin/run_c13.py
+  code_sha256:                      # the runner and the analysis refuse to start if any file differs; the hashes are written into every raw record
+    src/dialedin/metrics.py: be148ff5096cbd9493996053c0101e21c35a74ae827ea6b6c6b26392afd2a113
+    src/dialedin/hooks.py: f39389fa148869d59befcb12caf1ab2d4b59432117e53847c7db71d7be6cf8dd
+    src/dialedin/glimmer.py: b64d1e60470f7f654b3137e65b5e4d554d3b82dde5fb30b755acbddd4cfff74c
+    src/dialedin/wave.py: 2219d974b4d48dccbbb44d13808358f082793104c0ea4bc6a93ce07d00c4d5a5
+    src/dialedin/analyze_c1v5.py: 43b58adce1b90cc3336ca151a583d22ff2b850cf98d76cd021e2d6b6fa7fe46f
+    src/dialedin/metrics_c2.py: 44d8219aa7848c3a564105f7ea588d4bf5a85736dd26873ad3493f52df3a84ac
+    src/dialedin/metrics_c11.py: eb482f380ba519307f3703ec575ae0973731687e2795d61da11de330e29306f9
+    src/dialedin/run_c13.py: 3930ff6611a8c3eb7f6051a24c91b4ff5a666717d2f31a58f714cd3a6aa85402
+    src/dialedin/analyze_c13.py: c840d9e20c29b8f5d274746f28e01d9645732159f9415103ba618f5a1561da4f
+outputs:
+  raw: results/raw/<run_id>/ (STARTED.json; phaseA.json with the identity, perplexity-path and freeze-effect checks; one book_A_<id>.json per book with, per condition and period, per-head target magnitude and noise floor, noise-bin power summed over heads, realized and nominal input component and realized-drive statistics; the amplitude reference, perplexity and sham counts; a record of seal, code, platform, freeze setup, segment and text hashes; any ATTEMPT and FAILED records). Every file is written atomically and never overwritten.
+  derived: results/derived/<run_id>/c13_summary.json and c13_curves.png, citing every raw file used
